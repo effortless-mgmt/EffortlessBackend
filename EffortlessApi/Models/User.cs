@@ -9,7 +9,7 @@ namespace EffortlessApi.Models
         public string Firstname { get; set; }
         public string Lastname { get; set; }
         public string Email { get; set; }
-        public IList<Hour> Hours { get; set; }
-        public IList<Company> Companies { get; set; }
+        public List<Hour> Hours { get; set; }
+        // public List<Company> Companies { get; set; }
     }
 }

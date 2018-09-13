@@ -1,0 +1,15 @@
+version: "3"
+services:
+  db:
+    image: postgres
+    ports:
+    - "5432:5432"
+    environment:
+      POSTGRES_USER: "root"
+      POSTGRES_PASSWORD: "root"
+  phppgadmin:
+    environment:
+      - DB_HOST=postgres-server
+    image: 'keepitcool/phppgadmin:latest'
+    ports:
+      - '8085:80'

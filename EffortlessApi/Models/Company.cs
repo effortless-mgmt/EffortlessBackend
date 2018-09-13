@@ -6,6 +6,6 @@ namespace EffortlessApi.Models
     {
         public long Id { get; set; }
         public string Name { get; set; }
-        public IList<User> Employees { get; set; }
+        // public List<User> Employees { get; set; }
     }
 }
