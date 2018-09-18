@@ -27,13 +27,12 @@ namespace EffortlessApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             var dbHost = Configuration["DB_HOST"] ?? "localhost";
             var dbPort = Configuration["DB_PORT"] ?? "5432";
             var dbUser = Configuration["DB_USER"] ?? "root";
             var dbPass = Configuration["DB_PASS"] ?? "root";
 
-            var connectionString = $"User ID={dbUser};Password={dbPass};Server={dbHost};port={dbPort};Database=EffortlessApi;Integrated Security=true; Pooling=true;";
+            var connectionString = $"User ID={dbUser}; Password={dbPass}; Server={dbHost}; port={dbPort}; Database=EffortlessApi;Integrated Security=true; Pooling=true;";
             
             services.AddEntityFrameworkNpgsql().AddDbContext<EffortlessContext>(opt =>
                 opt.UseNpgsql(connectionString));
