@@ -4,10 +4,13 @@ services:
     build: ./EffortlessApi
     ports:
       - "5000:80"
-    volumes:
-      - ./EffortlessApi:/App
+    # volumes:
+    #   - ./EffortlessApi:/App
     depends_on:
       - db
+    environment:
+      - DB_HOST=db
+      - ASPNETCORE_ENVIRONMENT=Development
   db:
     image: postgres
     ports:
@@ -15,9 +18,3 @@ services:
     environment:
       POSTGRES_USER: "root"
       POSTGRES_PASSWORD: "root"
-  # phppgadmin:
-  #   environment:
-  #     - DB_HOST=postgres-server
-  #   image: 'keepitcool/phppgadmin:latest'
-  #   ports:
-  #     - '8085:80'
