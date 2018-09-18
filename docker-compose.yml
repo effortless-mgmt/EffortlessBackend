@@ -1,20 +1,26 @@
-version: "3"
+version: '3'
+# volumes:
+#   datafiles:
 services:
-  api:
-    build: ./EffortlessApi
-    ports:
-      - "5000:80"
-    # volumes:
-    #   - ./EffortlessApi:/App
+  restapi:
+    build:
+      context: ./EffortlessApi
+      dockerfile: Dockerfile
     depends_on:
       - db
+    ports:
+      - "5000:80"
+    restart: always
     environment:
       - DB_HOST=db
       - ASPNETCORE_ENVIRONMENT=Development
   db:
-    image: postgres
-    ports:
-    - "5432:5432"
-    environment:
-      POSTGRES_USER: "root"
-      POSTGRES_PASSWORD: "root"
+   image: postgres
+   ports:
+     - "5432:5432"
+  #  volumes: 
+  #   - datafiles:/var/lib/postgres
+   restart: always
+   environment:
+     POSTGRES_USER: "root"
+     POSTGRES_PASSWORD: "root"
