@@ -16,5 +16,7 @@ namespace EffortlessApi.Models
         public string Lastname { get; set; }
         [Required]
         public string Email { get; set; }
+        [Required]
+        public string Phone { get; set; }
     }
 }

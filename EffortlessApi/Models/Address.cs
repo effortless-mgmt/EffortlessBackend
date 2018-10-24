@@ -14,11 +14,11 @@ namespace EffortlessApi.Models
         [Required]
         public string City { get; set; }
         [Required]
-        public int Pcode { get; set; }
+        public int ZipCode { get; set; }
         [Required]
         public string Country { get; set; }
 
-        public string toString()
+        public override string ToString()
         {
             if (this.getSide() == null && this.getFloor() == null)
             {

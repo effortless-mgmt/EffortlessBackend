@@ -10,6 +10,6 @@ namespace EffortlessApi.Models
         [Required]
         public long BranchId { get; set; }
         [Required]
-        public long AdressId { get; set; }
+        public long AddressId { get; set; }
     }
 }
