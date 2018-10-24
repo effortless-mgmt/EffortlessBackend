@@ -1,8 +1,8 @@
-using System.Collections.Generic;
+using System;
 
 namespace EffortlessApi.Models
 {
-    public class Company
+    public class Role
     {
         public long Id { get; set; }
         public string Name { get; set; }

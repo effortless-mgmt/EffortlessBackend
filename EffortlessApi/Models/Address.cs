@@ -4,20 +4,19 @@ namespace EffortlessApi.Models
 {
     public class Address
     {
-
-        long id { get; set; }
+        public long Id { get; set; }
         [Required]
-        string road { get; set; }
+        public string Road { get; set; }
         [Required]
-        int no { get; set; }
-        int floor { get; set; }
-        string side { get; set; }
+        public int No { get; set; }
+        public int Floor { get; set; }
+        public string Side { get; set; }
         [Required]
-        string city { get; set; }
+        public string City { get; set; }
         [Required]
-        int pcode { get; set; }
+        public int Pcode { get; set; }
         [Required]
-        string country { get; set; }
+        public string Country { get; set; }
 
         public string toString()
         {
