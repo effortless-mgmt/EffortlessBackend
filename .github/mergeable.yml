@@ -1,7 +1,5 @@
 mergeable:
         pull_requests:
                 approvals: 1
-                milestone: 
-                        min: 1
-                project:
-                        min: 1
+                milestone: Basic Working API
+                project: EMS
