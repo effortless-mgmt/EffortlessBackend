@@ -1,4 +1,4 @@
-using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace EffortlessApi.Models
 {
@@ -8,8 +8,8 @@ namespace EffortlessApi.Models
         [Required]
         public string Road { get; set; }
         [Required]
-        public int No { get; set; }
-        public int Floor { get; set; }
+        public int No { get; set; } = -1;
+        public string Floor { get; set; }
         public string Side { get; set; }
         [Required]
         public string City { get; set; }
@@ -20,28 +20,20 @@ namespace EffortlessApi.Models
 
         public override string ToString()
         {
-            if (this.getSide() == null && this.getFloor() == null)
+            if (this.Side == null && this.Floor == null)
             {
-                return this.getRoad() + " " + this.getNo() + "\n"
-                    + this.getPcode() + " " + this.getCity() + "\n"
-                    + this.getCountry();
+                return $"{this.Road} {this.No}\n{this.ZipCode} {this.City}\n{this.Country}";
             }
-            else if (this.getSide() == null)
+            else if (this.Side == null)
             {
-                return this.getRoad() + " " + this.getNo() + " " + this.getFloor() + "\n"
-                + this.getPcode() + " " + this.getCity() + "\n"
-                + this.getCountry();
+                return $"{this.Road} {this.No}, {this.Floor}\n{this.ZipCode} {this.City}\n{this.Country}";
             }
-            else if (this.getFloor() == null)
+            else if (this.Floor == null)
             {
-                return this.getRoad() + " " + this.getNo() + " " + this.getSide() + "\n"
-                + this.getPcode() + " " + this.getCity() + "\n"
-                + this.getCountry();
+                return $"{this.Road} {this.No}, {this.Side}\n{this.ZipCode} {this.City}\n{this.Country}";
             }
 
-            return this.getRoad() + " " + this.getNo() + " " + this.getFloor() + this.getSide() + "\n"
-                + this.getPcode() + " " + this.getCity() + "\n"
-                + this.getCountry();
+            return $"{this.Road} {this.No}, {this.Floor}{this.Side}\n{this.ZipCode} {this.City}\n{this.Country}";
         }
     }
 }
