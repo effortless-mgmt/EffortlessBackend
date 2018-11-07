@@ -1,11 +1,14 @@
+
 using System.ComponentModel.DataAnnotations;
 
 namespace EffortlessApi.Models
 {
-    public class Company
+    public class RolePrivilege
     {
         public long Id { get; set; }
         [Required]
-        public string Name { get; set; }
+        public long RoleId { get; set; }
+        [Required]
+        public long PrivilegeId { get; set; }
     }
 }

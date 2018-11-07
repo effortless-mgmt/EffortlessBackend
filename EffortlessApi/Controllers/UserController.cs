@@ -66,7 +66,6 @@ namespace EffortlessApi.Controllers
             oldUser.Firstname = user.Firstname;
             oldUser.Lastname = user.Lastname;
             oldUser.Email = user.Email;
-            oldUser.Hours = user.Hours;
 
             _context.Users.Update(oldUser);
             _context.SaveChanges();

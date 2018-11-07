@@ -14,7 +14,10 @@ namespace EffortlessApi.Models
         public string Firstname { get; set; }
         [Required]
         public string Lastname { get; set; }
-        public List<Hour> Hours { get; set; }
-        // public List<Company> Companies { get; set; }
+        public long AddressId { get; set; }
+        [Required]
+        public string Email { get; set; }
+        [Required]
+        public string Phone { get; set; }
     }
 }
