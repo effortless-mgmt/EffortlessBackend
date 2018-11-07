@@ -9,9 +9,9 @@ namespace EffortlessApi.Models
         [Required]
         public string Password { get; set; }
         [Required]
-        public string Firstname { get; set; }
+        public string FirstName { get; set; }
         [Required]
-        public string Lastname { get; set; }
+        public string LastName { get; set; }
         public long AddressId { get; set; }
         [Required]
         public string Phone { get; set; }
