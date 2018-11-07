@@ -24,13 +24,13 @@ namespace EffortlessApi.Controllers
         }
 
         [HttpGet("{username}")]
-        public ActionResult<User> GetByUsername(string username) 
+        public ActionResult<User> GetByUsername(string userName) 
         {
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
 
             if (user == null)
             {
-                return NotFound($"User {username} could not be found.");
+                return NotFound($"User {userName} could not be found.");
             }
 
             return user;
@@ -53,18 +53,18 @@ namespace EffortlessApi.Controllers
         }
 
         [HttpPut("{username}")]
-        public ActionResult<User> Put(string username, User user)
+        public ActionResult<User> Put(string userName, User user)
         {
-            var oldUser = _context.Users.FirstOrDefault(u => u.Username == username);
+            var oldUser = _context.Users.FirstOrDefault(u => u.UserName == userName);
 
             if (oldUser == null) 
             {
-                return NotFound($"User {user.Username} could not be found.");
+                return NotFound($"User {user.UserName} could not be found.");
             }
 
-            oldUser.Username = user.Username;
-            oldUser.Firstname = user.Firstname;
-            oldUser.Lastname = user.Lastname;
+            oldUser.UserName = user.UserName;
+            oldUser.FirstName = user.FirstName;
+            oldUser.LastName = user.LastName;
             oldUser.Email = user.Email;
 
             _context.Users.Update(oldUser);
@@ -74,13 +74,13 @@ namespace EffortlessApi.Controllers
         }
 
         [HttpDelete("{username}")]
-        public ActionResult Delete(string username)
+        public ActionResult Delete(string userName)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
 
             if (user == null)
             {
-                return NotFound($"User {username} could not be found.");
+                return NotFound($"User {userName} could not be found.");
             }
 
             _context.Remove(user);
