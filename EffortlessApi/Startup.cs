@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EffortlessApi.Extensions;
 using EffortlessApi.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -32,10 +33,14 @@ namespace EffortlessApi
             var dbUser = Configuration["DB_USER"] ?? "root";
             var dbPass = Configuration["DB_PASS"] ?? "root";
 
+            var authSigningKey = Configuration["AUTH_SIGNING_KEY"] ?? "secret";
+
             var connectionString = $"User ID={dbUser}; Password={dbPass}; Server={dbHost}; port={dbPort}; Database=EffortlessApi;Integrated Security=true; Pooling=true;";
             
             services.AddEntityFrameworkNpgsql().AddDbContext<EffortlessContext>(opt =>
                 opt.UseNpgsql(connectionString));
+            services.ConfigureCors();
+            services.ConfigureAuthorization(authSigningKey);
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
@@ -53,6 +58,8 @@ namespace EffortlessApi
 
             app.UseHttpsRedirection();
             context.Database.Migrate();
+            app.UseCors("CorsPolicy");
+            app.UseAuthentication();
             app.UseMvc();
         }
     }
