@@ -26,7 +26,7 @@ namespace EffortlessApi.Controllers
         [HttpGet("{username}")]
         public ActionResult<User> GetByUsername(string username) 
         {
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            var user = _context.Users.FirstOrDefault(u => u.UserName == username);
 
             if (user == null)
             {
@@ -55,16 +55,16 @@ namespace EffortlessApi.Controllers
         [HttpPut("{username}")]
         public ActionResult<User> Put(string username, User user)
         {
-            var oldUser = _context.Users.FirstOrDefault(u => u.Username == username);
+            var oldUser = _context.Users.FirstOrDefault(u => u.UserName == username);
 
             if (oldUser == null) 
             {
-                return NotFound($"User {user.Username} could not be found.");
+                return NotFound($"User {user.UserName} could not be found.");
             }
 
-            oldUser.Username = user.Username;
-            oldUser.Firstname = user.Firstname;
-            oldUser.Lastname = user.Lastname;
+            oldUser.UserName = user.UserName;
+            oldUser.FirstName = user.FirstName;
+            oldUser.LastName = user.LastName;
             oldUser.Email = user.Email;
 
             _context.Users.Update(oldUser);
@@ -76,7 +76,7 @@ namespace EffortlessApi.Controllers
         [HttpDelete("{username}")]
         public ActionResult Delete(string username)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            var user = _context.Users.FirstOrDefault(u => u.UserName == username);
 
             if (user == null)
             {
