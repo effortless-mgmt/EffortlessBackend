@@ -11,7 +11,6 @@ namespace EffortlessApi.Controllers {
     [Route ("api/[controller]")]
     [ApiController]
     public class AddressController : ControllerBase {
-        // private readonly EffortlessContext _context;
         private readonly IUnitOfWork _unitOfWork;
 
         public AddressController (EffortlessContext context) {
@@ -40,12 +39,6 @@ namespace EffortlessApi.Controllers {
 
         [HttpPost]
         public async Task<IActionResult> CreateAsync ([FromBody] Address address) {
-            // var existingAddress = await _unitOfWork.Addresses.GetByIdAsync(address.Id);
-
-            // if (existingAddress != null)
-            // {
-            //     Ok(existingAddress);
-            // }
             if (address == null) {
                 return BadRequest ();
             }
