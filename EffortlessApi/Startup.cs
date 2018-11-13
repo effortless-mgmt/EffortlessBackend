@@ -33,7 +33,7 @@ namespace EffortlessApi
             var dbUser = Configuration["DB_USER"] ?? "root";
             var dbPass = Configuration["DB_PASS"] ?? "root";
 
-            var authSigningKey = Configuration["AUTH_SIGNING_KEY"] ?? "secret";
+            var authSigningKey = Configuration["AUTH_SIGNING_KEY"] ?? "fNGxeQqjhXhRduHA";
 
             var connectionString = $"User ID={dbUser}; Password={dbPass}; Server={dbHost}; port={dbPort}; Database=EffortlessApi;Integrated Security=true; Pooling=true;";
             

@@ -24,6 +24,12 @@ namespace EffortlessApi.Controllers
             return Ok("This is a secure resource.");
         }
 
+        [HttpGet("admin"), Authorize(Roles = "admin")]
+        public IActionResult GetAdmin()
+        {
+            return Ok("This is an admin message.");
+        }
+
         // GET api/values/5
         [HttpGet("{id}")]
         public ActionResult<string> Get(int id)
