@@ -41,10 +41,14 @@ namespace EffortlessApi.Controllers
         [HttpPost]
         public async Task<IActionResult> PostAsync(User user)
         {
+            var existingUser = await _unitOfWork.Users.GetByUsernameAsync(user.UserName);
+
+            if (existingUser != null) return Ok(user);
+
             await _unitOfWork.Users.AddAsync(user);
             await _unitOfWork.CompleteAsync();
 
-            return CreatedAtRoute("GetUser", new { id = user.Id}, user);
+            return CreatedAtRoute("GetUser", new { userName = user.UserName}, user);
         }
 
         [HttpPut("{userName}")]
