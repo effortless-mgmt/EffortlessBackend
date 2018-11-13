@@ -11,6 +11,21 @@ namespace EffortlessApi.Migrations
             migrationBuilder.DropTable(
                 name: "Hours");
 
+            migrationBuilder.RenameColumn(
+                name: "Username",
+                table: "Users",
+                newName: "UserName");
+
+            migrationBuilder.RenameColumn(
+                name: "Lastname",
+                table: "Users",
+                newName: "LastName");
+
+            migrationBuilder.RenameColumn(
+                name: "Firstname",
+                table: "Users",
+                newName: "FirstName");
+
             migrationBuilder.AddColumn<long>(
                 name: "AddressId",
                 table: "Users",
@@ -243,6 +258,21 @@ namespace EffortlessApi.Migrations
             migrationBuilder.DropColumn(
                 name: "Phone",
                 table: "Users");
+
+            migrationBuilder.RenameColumn(
+                name: "UserName",
+                table: "Users",
+                newName: "Username");
+
+            migrationBuilder.RenameColumn(
+                name: "LastName",
+                table: "Users",
+                newName: "Lastname");
+
+            migrationBuilder.RenameColumn(
+                name: "FirstName",
+                table: "Users",
+                newName: "Firstname");
 
             migrationBuilder.AlterColumn<string>(
                 name: "Name",

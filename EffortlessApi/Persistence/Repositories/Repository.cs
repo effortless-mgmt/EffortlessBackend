@@ -39,12 +39,12 @@ namespace EffortlessApi.Persistence.Repositories
             return await _context.Set<TEntity>().FindAsync(id);
         }
 
-        public async Task Remove(TEntity entity) 
+        public void Remove(TEntity entity) 
         {
             _context.Set<TEntity>().Remove(entity);
         }
 
-        public async Task RemoveRange(IEnumerable<TEntity> entities) 
+        public void RemoveRange(IEnumerable<TEntity> entities) 
         {
             _context.Set<TEntity>().RemoveRange(entities);
         }

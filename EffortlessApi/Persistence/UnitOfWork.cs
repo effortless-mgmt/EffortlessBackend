@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using EffortlessApi.Core;
 using EffortlessApi.Core.Repositories;
 using EffortlessApi.Persistence.Repositories;
@@ -18,9 +19,9 @@ namespace EffortlessApi.Persistence
         public IUserRepository Users { get; private set; }
         public IAddressRepository Addresses { get; private set; }
 
-        public int Complete()
+        public async Task<int> CompleteAsync()
         {
-            return _context.SaveChanges();
+            return await _context.SaveChangesAsync();
         }
 
         public void Dispose()

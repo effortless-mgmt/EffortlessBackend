@@ -170,10 +170,10 @@ namespace EffortlessApi.Migrations
                     b.Property<string>("Email")
                         .IsRequired();
 
-                    b.Property<string>("Firstname")
+                    b.Property<string>("FirstName")
                         .IsRequired();
 
-                    b.Property<string>("Lastname")
+                    b.Property<string>("LastName")
                         .IsRequired();
 
                     b.Property<string>("Password")
@@ -182,7 +182,7 @@ namespace EffortlessApi.Migrations
                     b.Property<string>("Phone")
                         .IsRequired();
 
-                    b.Property<string>("Username")
+                    b.Property<string>("UserName")
                         .IsRequired();
 
                     b.HasKey("Id");

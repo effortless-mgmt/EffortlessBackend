@@ -38,16 +38,16 @@ namespace EffortlessApi.Controllers {
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync ([FromBody] Address address) {
+        public async Task<IActionResult> CreateAsync ([FromBody] Address address) 
+        {
             if (address == null) {
                 return BadRequest ();
             }
 
             await _unitOfWork.Addresses.AddAsync (address);
-            _unitOfWork.Complete ();
+            await _unitOfWork.CompleteAsync();
 
             return CreatedAtRoute ($"GetAddress", new { id = address.Id}, address);
-            // return StatusCode(201, address);
         }
     }
 }

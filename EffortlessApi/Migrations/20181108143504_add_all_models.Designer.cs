@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EffortlessApi.Migrations
 {
     [DbContext(typeof(EffortlessContext))]
-    [Migration("20181111191125_add_all_models")]
+    [Migration("20181108143504_add_all_models")]
     partial class add_all_models
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -172,10 +172,10 @@ namespace EffortlessApi.Migrations
                     b.Property<string>("Email")
                         .IsRequired();
 
-                    b.Property<string>("Firstname")
+                    b.Property<string>("FirstName")
                         .IsRequired();
 
-                    b.Property<string>("Lastname")
+                    b.Property<string>("LastName")
                         .IsRequired();
 
                     b.Property<string>("Password")
@@ -184,7 +184,7 @@ namespace EffortlessApi.Migrations
                     b.Property<string>("Phone")
                         .IsRequired();
 
-                    b.Property<string>("Username")
+                    b.Property<string>("UserName")
                         .IsRequired();
 
                     b.HasKey("Id");

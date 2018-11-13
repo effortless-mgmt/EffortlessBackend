@@ -7,13 +7,13 @@ namespace EffortlessApi.Core.Models
     {
         public long Id { get; set; }
         [Required]
-        public string Username { get; set; }
+        public string UserName { get; set; }
         [Required]
         public string Password { get; set; }
         [Required]
-        public string Firstname { get; set; }
+        public string FirstName { get; set; }
         [Required]
-        public string Lastname { get; set; }
+        public string LastName { get; set; }
         public long AddressId { get; set; }
         [Required]
         public string Email { get; set; }

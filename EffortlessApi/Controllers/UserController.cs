@@ -13,8 +13,6 @@ namespace EffortlessApi.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-
-        // public UserController(IUnitOfWork unitOfWork) => _unitOfWork = unitOfWork;
         public UserController(EffortlessContext context) => _unitOfWork = new UnitOfWork(context);
 
         [HttpGet]
@@ -27,33 +25,60 @@ namespace EffortlessApi.Controllers
             return Ok(users);
         }
 
+        [HttpGet("{username}", Name = "GetUser")]
+        public async Task<IActionResult> GetByUsername(string userName) 
+        {
+            var user = await _unitOfWork.Users.GetByUsernameAsync(userName);
+
+            if (user == null)
+            {
+                return NotFound($"User {userName} could not be found.");
+            }
+
+            return Ok(user);
+        }
+
         [HttpPost]
         public async Task<IActionResult> PostAsync(User user)
         {
+            var existingUser = await _unitOfWork.Users.GetByUsernameAsync(user.UserName);
+
+            if (existingUser != null) return Ok(user);
+
             await _unitOfWork.Users.AddAsync(user);
-            _unitOfWork.Complete();
-            return CreatedAtRoute("user/", user);
+            await _unitOfWork.CompleteAsync();
+
+            return CreatedAtRoute("GetUser", new { userName = user.UserName}, user);
         }
 
-        [HttpPut("{username}")]
-        public async Task<IActionResult> Put(string username, User user)
+        [HttpPut("{userName}")]
+        public async Task<IActionResult> Put(string userName, User user)
         {
-            // var oldUsers = await _unitOfWork.Users.FindAsync(u => u.Username == username);
-            // var oldUser = oldUsers.FirstOrDefault();
+            var existing = await _unitOfWork.Users.GetByUsernameAsync(userName);
 
-            var oldUser = await _unitOfWork.Users.GetByUsernameAsync(username);
+            if (existing == null) return NotFound($"User {user.UserName} could not be found.");
 
-            if (oldUser == null) return NotFound($"User {user.Username} could not be found.");
+            await _unitOfWork.Users.UpdateAsync(userName, user);
+            await _unitOfWork.CompleteAsync();
 
-            oldUser.Username = user.Username;
-            oldUser.Firstname = user.Firstname;
-            oldUser.Lastname = user.Lastname;
-            oldUser.Email = user.Email;
-            oldUser.Password = user.Password;
+            return Ok(user);
+        }
 
-            _unitOfWork.Complete();
+        [HttpDelete("{userName}")]
+        public async Task<IActionResult> Delete(string userName)
+        {
+            var user = await _unitOfWork.Users.GetByUsernameAsync(userName);
 
-            return Ok(oldUser);
+            if (user == null)
+            {
+                return NotFound($"User {userName} could not be found.");
+            }
+            
+            _unitOfWork.Users.Remove(user);
+
+            await _unitOfWork.CompleteAsync();
+
+            return Ok(user);
         }
     }
 }

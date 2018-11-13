@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using EffortlessApi.Core.Repositories;
 
 namespace EffortlessApi.Core
@@ -7,6 +8,6 @@ namespace EffortlessApi.Core
     {
         IUserRepository Users { get; }
         IAddressRepository Addresses { get; }
-        int Complete();
+        Task<int> CompleteAsync();
     }
 }
