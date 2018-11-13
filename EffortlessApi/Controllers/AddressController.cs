@@ -1,40 +1,53 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using EffortlessApi.Models;
+using System.Threading.Tasks;
+using EffortlessApi.Core;
+using EffortlessApi.Core.Models;
+using EffortlessApi.Persistence;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EffortlessApi.Controllers
-{
-    [Route("api/[controller]")]
+namespace EffortlessApi.Controllers {
+    [Route ("api/[controller]")]
     [ApiController]
-    public class AddressController : ControllerBase
-    {
-        private readonly EffortlessContext _context;
+    public class AddressController : ControllerBase {
+        private readonly IUnitOfWork _unitOfWork;
 
-        public AddressController(EffortlessContext context)
-        {
-            _context = context;
+        public AddressController (EffortlessContext context) {
+            _unitOfWork = new UnitOfWork (context);
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Address>> getAll()
-        {
-            return _context.Addresses;
+        public async Task<IActionResult> GetAllAsync () {
+            var addresses = await _unitOfWork.Addresses.GetAllAsync ();
+
+            if (addresses == null) return NotFound ();
+
+            return Ok (addresses);
         }
 
-        [HttpGet("{id}")]
-        public ActionResult<Address> getById(long id)
-        {
-            var address = _context.Addresses.FirstOrDefault(a => a.Id == id);
+        [HttpGet ("{id}", Name = "GetAddress")]
+        public async Task<IActionResult> GetByIdAsync (long id) {
+            var address = await _unitOfWork.Addresses.GetByIdAsync (id);
 
-            if (address == null)
-            {
-                return NotFound($"Address {address} could not be found.");
+            if (address == null) {
+                return NotFound ($"Address with id {id} could not be found.");
             }
 
-            return address;
+            return Ok (address);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> CreateAsync ([FromBody] Address address) 
+        {
+            if (address == null) {
+                return BadRequest ();
+            }
+
+            await _unitOfWork.Addresses.AddAsync (address);
+            await _unitOfWork.CompleteAsync();
+
+            return CreatedAtRoute ($"GetAddress", new { id = address.Id}, address);
+        }
     }
 }

@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace EffortlessApi.Models
+namespace EffortlessApi.Core.Models
 {
     public class WorkingHours
     {

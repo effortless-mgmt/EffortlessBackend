@@ -1,6 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EffortlessApi", "EffortlessApi\EffortlessApi.csproj", "{8F070D9A-9807-40F7-9C46-9FB4A2BBBE5D}"
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2050
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EffortlessApi", "EffortlessApi\EffortlessApi.csproj", "{8F070D9A-9807-40F7-9C46-9FB4A2BBBE5D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EffortlessApi.Tests", "EffortlessApi.Tests\EffortlessApi.Tests.csproj", "{2574B22E-9570-4DD7-8872-0B8E504AB86A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +17,15 @@ Global
 		{8F070D9A-9807-40F7-9C46-9FB4A2BBBE5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F070D9A-9807-40F7-9C46-9FB4A2BBBE5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F070D9A-9807-40F7-9C46-9FB4A2BBBE5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2574B22E-9570-4DD7-8872-0B8E504AB86A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2574B22E-9570-4DD7-8872-0B8E504AB86A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2574B22E-9570-4DD7-8872-0B8E504AB86A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2574B22E-9570-4DD7-8872-0B8E504AB86A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {65D617DF-F8B7-4B54-B18A-E2911CF7E753}
 	EndGlobalSection
 EndGlobal

@@ -1,13 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace EffortlessApi.Models
+namespace EffortlessApi.Core.Models
 {
-    public class UserTemporaryWorkPeriod
+    public class UserJobActive
     {
         public long Id { get; set; }
         [Required]
         public long UserId { get; set; }
         [Required]
-        public long TemporaryWorkPeriodId { get; set; }
+        public long JobId { get; set; }
     }
 }

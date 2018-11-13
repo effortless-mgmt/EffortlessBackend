@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EffortlessApi.Models;
+using EffortlessApi.Core;
+using EffortlessApi.Core.Models;
+using EffortlessApi.Persistence;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EffortlessApi.Controllers
@@ -10,83 +12,69 @@ namespace EffortlessApi.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly EffortlessContext _context;
-
-        public UserController(EffortlessContext context)
-        {
-            _context = context;
-        }
+        private readonly IUnitOfWork _unitOfWork;
+        public UserController(EffortlessContext context) => _unitOfWork = new UnitOfWork(context);
 
         [HttpGet]
-        public ActionResult<IEnumerable<User>> GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
-            return _context.Users;
+            var users = await _unitOfWork.Users.GetAllAsync();
+
+            if (users == null) return NotFound();
+
+            return Ok(users);
         }
 
-        [HttpGet("{username}")]
-        public ActionResult<User> GetByUsername(string userName) 
+        [HttpGet("{username}", Name = "GetUser")]
+        public async Task<IActionResult> GetByUsername(string userName) 
         {
-            var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
+            var user = await _unitOfWork.Users.GetByUsernameAsync(userName);
 
             if (user == null)
             {
                 return NotFound($"User {userName} could not be found.");
             }
 
-            return user;
+            return Ok(user);
         }
 
         [HttpPost]
-        public async Task<ActionResult<User>> PostAsync(User user)
+        public async Task<IActionResult> PostAsync(User user)
         {
-            var existingUser = await _context.Users.FindAsync(user.Id);
+            await _unitOfWork.Users.AddAsync(user);
+            await _unitOfWork.CompleteAsync();
 
-            if (existingUser != null) 
-            {
-                return existingUser;
-            }
-
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
-
-            return await _context.Users.FindAsync(user.Id);
+            return CreatedAtRoute("GetUser", new { id = user.Id}, user);
         }
 
-        [HttpPut("{username}")]
-        public ActionResult<User> Put(string userName, User user)
+        [HttpPut("{userName}")]
+        public async Task<IActionResult> Put(string userName, User user)
         {
-            var oldUser = _context.Users.FirstOrDefault(u => u.UserName == userName);
+            var existing = await _unitOfWork.Users.GetByUsernameAsync(userName);
 
-            if (oldUser == null) 
-            {
-                return NotFound($"User {user.UserName} could not be found.");
-            }
+            if (existing == null) return NotFound($"User {user.UserName} could not be found.");
 
-            oldUser.UserName = user.UserName;
-            oldUser.FirstName = user.FirstName;
-            oldUser.LastName = user.LastName;
-            oldUser.Email = user.Email;
+            await _unitOfWork.Users.UpdateAsync(userName, user);
+            await _unitOfWork.CompleteAsync();
 
-            _context.Users.Update(oldUser);
-            _context.SaveChanges();
-
-            return oldUser;
+            return Ok(user);
         }
 
-        [HttpDelete("{username}")]
-        public ActionResult Delete(string userName)
+        [HttpDelete("{userName}")]
+        public async Task<IActionResult> Delete(string userName)
         {
-            var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
+            var user = await _unitOfWork.Users.GetByUsernameAsync(userName);
 
             if (user == null)
             {
                 return NotFound($"User {userName} could not be found.");
             }
+            
+            _unitOfWork.Users.Remove(user);
 
-            _context.Remove(user);
-            _context.SaveChanges();
+            await _unitOfWork.CompleteAsync();
 
-            return Ok();
+            return Ok(user);
         }
     }
 }

@@ -5,7 +5,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using EffortlessApi.Models;
+using EffortlessApi.Core.Models;
+using EffortlessApi.Persistence;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
