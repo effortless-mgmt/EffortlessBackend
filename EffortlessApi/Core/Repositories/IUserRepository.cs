@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using EffortlessApi.Models;
+using EffortlessApi.Core.Models;
 
 namespace EffortlessApi.Core.Repositories {
     public interface IUserRepository : IRepository<User> {

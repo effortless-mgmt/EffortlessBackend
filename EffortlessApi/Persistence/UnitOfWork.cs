@@ -1,6 +1,5 @@
 using EffortlessApi.Core;
 using EffortlessApi.Core.Repositories;
-using EffortlessApi.Models;
 using EffortlessApi.Persistence.Repositories;
 
 namespace EffortlessApi.Persistence
@@ -13,9 +12,11 @@ namespace EffortlessApi.Persistence
         {
             _context = context;
             Users = new UserRepository(_context);
+            Addresses = new AddressRepository(_context);
         }
 
         public IUserRepository Users { get; private set; }
+        public IAddressRepository Addresses { get; private set; }
 
         public int Complete()
         {

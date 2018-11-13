@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EffortlessApi.Models;
-using EffortlessApi.Repositories;
+using EffortlessApi.Core;
+using EffortlessApi.Core.Models;
+using EffortlessApi.Persistence;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EffortlessApi.Controllers

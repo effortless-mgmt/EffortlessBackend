@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
+using EffortlessApi.Core.Models;
 using EffortlessApi.Core.Repositories;
-using EffortlessApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace EffortlessApi.Persistence.Repositories
@@ -18,7 +18,7 @@ namespace EffortlessApi.Persistence.Repositories
 
         public async Task<User> GetByUsernameAsync(string username)
         {
-            return await _context.Set<User>().SingleOrDefaultAsync(user => user.UserName == username);
+            return await _context.Set<User>().SingleOrDefaultAsync(user => user.Username == username);
         }
     }
 }
