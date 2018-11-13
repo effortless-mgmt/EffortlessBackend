@@ -1,6 +1,9 @@
+using EffortlessApi.Core;
+using EffortlessApi.Core.Repositories;
 using EffortlessApi.Models;
+using EffortlessApi.Persistence.Repositories;
 
-namespace EffortlessApi.Repositories
+namespace EffortlessApi.Persistence
 {
     public class UnitOfWork : IUnitOfWork
     {

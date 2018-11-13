@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace EffortlessApi.Models
+namespace EffortlessApi.Core.Models
 {
-    public class UserJobActive
+    public class UserJobInactive
     {
         public long Id { get; set; }
         [Required]

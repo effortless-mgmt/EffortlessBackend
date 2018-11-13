@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using EffortlessApi.Core.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace EffortlessApi.Repositories 
+namespace EffortlessApi.Persistence.Repositories 
 {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : class 
     {

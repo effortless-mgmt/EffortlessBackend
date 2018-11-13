@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace EffortlessApi.Repositories
+namespace EffortlessApi.Core.Repositories
 {
     public interface IRepository<TEntity> where TEntity : class
     {

@@ -1,6 +1,7 @@
 using System;
+using EffortlessApi.Core.Repositories;
 
-namespace EffortlessApi.Repositories
+namespace EffortlessApi.Core
 {
     public interface IUnitOfWork : IDisposable
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace EffortlessApi.Models
+namespace EffortlessApi.Core.Models
 {
     public class Hour
     {
