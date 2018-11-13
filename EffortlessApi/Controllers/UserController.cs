@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EffortlessApi.Models;
+using EffortlessApi.Core;
+using EffortlessApi.Core.Models;
+using EffortlessApi.Persistence;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EffortlessApi.Controllers
@@ -10,83 +12,48 @@ namespace EffortlessApi.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly EffortlessContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UserController(EffortlessContext context)
-        {
-            _context = context;
-        }
+        // public UserController(IUnitOfWork unitOfWork) => _unitOfWork = unitOfWork;
+        public UserController(EffortlessContext context) => _unitOfWork = new UnitOfWork(context);
 
         [HttpGet]
-        public ActionResult<IEnumerable<User>> GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
-            return _context.Users;
-        }
+            var users = await _unitOfWork.Users.GetAllAsync();
 
-        [HttpGet("{username}")]
-        public ActionResult<User> GetByUsername(string username) 
-        {
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            if (users == null) return NotFound();
 
-            if (user == null)
-            {
-                return NotFound($"User {username} could not be found.");
-            }
-
-            return user;
+            return Ok(users);
         }
 
         [HttpPost]
-        public async Task<ActionResult<User>> PostAsync(User user)
+        public async Task<IActionResult> PostAsync(User user)
         {
-            var existingUser = await _context.Users.FindAsync(user.Id);
-
-            if (existingUser != null) 
-            {
-                return existingUser;
-            }
-
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
-
-            return await _context.Users.FindAsync(user.Id);
+            await _unitOfWork.Users.AddAsync(user);
+            _unitOfWork.Complete();
+            return CreatedAtRoute("user/", user);
         }
 
         [HttpPut("{username}")]
-        public ActionResult<User> Put(string username, User user)
+        public async Task<IActionResult> Put(string username, User user)
         {
-            var oldUser = _context.Users.FirstOrDefault(u => u.Username == username);
+            // var oldUsers = await _unitOfWork.Users.FindAsync(u => u.Username == username);
+            // var oldUser = oldUsers.FirstOrDefault();
 
-            if (oldUser == null) 
-            {
-                return NotFound($"User {user.Username} could not be found.");
-            }
+            var oldUser = await _unitOfWork.Users.GetByUsernameAsync(username);
+
+            if (oldUser == null) return NotFound($"User {user.Username} could not be found.");
 
             oldUser.Username = user.Username;
             oldUser.Firstname = user.Firstname;
             oldUser.Lastname = user.Lastname;
             oldUser.Email = user.Email;
+            oldUser.Password = user.Password;
 
-            _context.Users.Update(oldUser);
-            _context.SaveChanges();
+            _unitOfWork.Complete();
 
-            return oldUser;
-        }
-
-        [HttpDelete("{username}")]
-        public ActionResult Delete(string username)
-        {
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
-
-            if (user == null)
-            {
-                return NotFound($"User {username} could not be found.");
-            }
-
-            _context.Remove(user);
-            _context.SaveChanges();
-
-            return Ok();
+            return Ok(oldUser);
         }
     }
 }

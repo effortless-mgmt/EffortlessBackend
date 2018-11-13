@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace EffortlessApi.Models
+namespace EffortlessApi.Core.Models
 {
     public class CompanyToUser
     {

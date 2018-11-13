@@ -1,6 +1,7 @@
+using EffortlessApi.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace EffortlessApi.Models
+namespace EffortlessApi.Persistence
 {
     public class EffortlessContext : DbContext
     {
