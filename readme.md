@@ -18,3 +18,23 @@ The name should be `<folder_name>_db_1`, i.e.: `backend_db_1`. Now we can connec
 docker exec -it backend_db_1 psql EffortlessApi
 ```
 
+## Only start database container
+
+To start a docker container with database only:
+
+```bash
+./start-docker.sh
+```
+
+To stop it again:
+
+```bash
+./start-docker.sh
+```
+
+To reset the container (stop, remove and create a new one):
+
+```bash
+./start-docker.sh reset
+```
+
