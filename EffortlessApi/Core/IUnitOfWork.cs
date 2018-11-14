@@ -8,6 +8,8 @@ namespace EffortlessApi.Core
     {
         IUserRepository Users { get; }
         IAddressRepository Addresses { get; }
+
+        IBranchRepository Branches { get; }
         Task<int> CompleteAsync();
     }
 }
