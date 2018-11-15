@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Serialization;
 
 namespace EffortlessApi {
     public class Startup {
@@ -33,11 +34,14 @@ namespace EffortlessApi {
 
             var connectionString = $"User ID={dbUser}; Password={dbPass}; Server={dbHost}; port={dbPort}; Database=EffortlessApi;Integrated Security=true; Pooling=true;";
 
-            services.AddEntityFrameworkNpgsql ().AddDbContext<EffortlessContext> (opt =>
-                opt.UseNpgsql (connectionString));
-            services.ConfigureCors ();
-            services.ConfigureAuthorization (authSigningKey);
-            services.AddMvc ().SetCompatibilityVersion (CompatibilityVersion.Version_2_1);
+            services.AddEntityFrameworkNpgsql().AddDbContext<EffortlessContext>(opt =>
+                opt.UseNpgsql(connectionString));
+            services.ConfigureCors();
+            services.ConfigureAuthorization(authSigningKey);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1).AddJsonOptions(o => {
+                o.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                o.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

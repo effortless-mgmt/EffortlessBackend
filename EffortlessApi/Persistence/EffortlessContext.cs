@@ -1,9 +1,10 @@
 using EffortlessApi.Core.Models;
+using EffortlessApi.Persistence.EntityConfigurations;
 using Microsoft.EntityFrameworkCore;
 
-namespace EffortlessApi.Persistence
+namespace EffortlessApi.Persistence 
 {
-    public class EffortlessContext : DbContext
+    public class EffortlessContext : DbContext 
     {
         public EffortlessContext(DbContextOptions<EffortlessContext> options) : base(options) { }
 
@@ -16,9 +17,16 @@ namespace EffortlessApi.Persistence
         public DbSet<RolePrivilege> RolePrivileges { get; set; }
         public DbSet<TemporaryWorkPeriod> TemporaryWorkPeriods { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<UserRole> UserRole { get; set; }
         public DbSet<UserJobActive> UsersJobActive { get; set; }
         public DbSet<UserJobInactive> UsersJobInactive { get; set; }
         public DbSet<UserTemporaryWorkPeriod> UserTemoraryWorkPeriods { get; set; }
         public DbSet<WorkingHours> WorkingHours { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
+        }
     }
 }
