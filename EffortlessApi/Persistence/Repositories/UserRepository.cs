@@ -19,7 +19,7 @@ namespace EffortlessApi.Persistence.Repositories
             return await _context.Set<User>()
                 .Include(u => u.UserRoles)
                 .ThenInclude(userRole => userRole.Role)
-                .SingleAsync(u => u.UserName == userName);
+                .SingleOrDefaultAsync(u => u.UserName == userName);
         }
 
         public async Task UpdateAsync(string userName, User newUser)
