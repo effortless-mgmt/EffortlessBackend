@@ -26,7 +26,7 @@ namespace EffortlessApi.Controllers
         }
 
         [HttpGet("{username}", Name = "GetUser")]
-        public async Task<IActionResult> GetByUsername(string userName) 
+        public async Task<IActionResult> GetByUsername(string userName)
         {
             var user = await _unitOfWork.Users.GetByUsernameAsync(userName);
 
@@ -41,9 +41,9 @@ namespace EffortlessApi.Controllers
         [HttpPost]
         public async Task<IActionResult> PostAsync(User user)
         {
-            var existingUser = await _unitOfWork.Users.GetByUsernameAsync(user.UserName);
+            // var existingUser = await _unitOfWork.Users.GetByUsernameAsync(user.UserName);
 
-            if (existingUser != null) return Ok(user);
+            // if (existingUser != null) return Ok(user);
 
             await _unitOfWork.Users.AddAsync(user);
             await _unitOfWork.CompleteAsync();
