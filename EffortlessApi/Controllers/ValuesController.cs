@@ -21,7 +21,12 @@ namespace EffortlessApi.Controllers
         [HttpGet("secure"), Authorize]
         public IActionResult GetSecure()
         {
-            return Ok("This is a secure resource.");
+            var message = $"Welcome {User.Identity.Name}. This is a secure resource.";
+            if (User.IsInRole("admin"))
+            {
+                message += $" You are an administrator.";
+            }
+            return Ok(message);
         }
 
         [HttpGet("admin"), Authorize(Roles = "admin")]
