@@ -8,12 +8,12 @@ namespace EffortlessApi.Core.Models
         [Required]
         public string Street { get; set; }
         [Required]
-        public int No { get; set; };
+        public int No { get; set; }
         public string Floor { get; set; }
         public string Side { get; set; }
         [Required]
         public string City { get; set; }
-        [Required]
+        public string State { get; set; }
         public int ZipCode { get; set; }
         [Required]
         public string Country { get; set; }
