@@ -6,7 +6,7 @@ namespace EffortlessApi.Core.Models
     {
         public long Id { get; set; }
         [Required]
-        public string Road { get; set; }
+        public string Street { get; set; }
         [Required]
         public int No { get; set; } = -1;
         public string Floor { get; set; }
@@ -22,18 +22,18 @@ namespace EffortlessApi.Core.Models
         {
             if (this.Side == null && this.Floor == null)
             {
-                return $"{this.Road} {this.No}\n{this.ZipCode} {this.City}\n{this.Country}";
+                return $"{this.Street} {this.No}\n{this.ZipCode} {this.City}\n{this.Country}";
             }
             else if (this.Side == null)
             {
-                return $"{this.Road} {this.No}, {this.Floor}\n{this.ZipCode} {this.City}\n{this.Country}";
+                return $"{this.Street} {this.No}, {this.Floor}\n{this.ZipCode} {this.City}\n{this.Country}";
             }
             else if (this.Floor == null)
             {
-                return $"{this.Road} {this.No}, {this.Side}\n{this.ZipCode} {this.City}\n{this.Country}";
+                return $"{this.Street} {this.No}, {this.Side}\n{this.ZipCode} {this.City}\n{this.Country}";
             }
 
-            return $"{this.Road} {this.No}, {this.Floor}{this.Side}\n{this.ZipCode} {this.City}\n{this.Country}";
+            return $"{this.Street} {this.No}, {this.Floor}{this.Side}\n{this.ZipCode} {this.City}\n{this.Country}";
         }
     }
 }
