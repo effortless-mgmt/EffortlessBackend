@@ -4,47 +4,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace EffortlessApi.Migrations
 {
-    public partial class add_all_models : Migration
+    public partial class AllMigrations : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Hours");
-
-            migrationBuilder.RenameColumn(
-                name: "Username",
-                table: "Users",
-                newName: "UserName");
-
-            migrationBuilder.RenameColumn(
-                name: "Lastname",
-                table: "Users",
-                newName: "LastName");
-
-            migrationBuilder.RenameColumn(
-                name: "Firstname",
-                table: "Users",
-                newName: "FirstName");
-
-            migrationBuilder.AddColumn<long>(
-                name: "AddressId",
-                table: "Users",
-                nullable: false,
-                defaultValue: 0L);
-
-            migrationBuilder.AddColumn<string>(
-                name: "Phone",
-                table: "Users",
-                nullable: false,
-                defaultValue: "");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Name",
-                table: "Companies",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldNullable: true);
-
             migrationBuilder.CreateTable(
                 name: "Addresses",
                 columns: table => new
@@ -96,31 +59,29 @@ namespace EffortlessApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Companies",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    Name = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Companies", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Privileges",
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    RoleId = table.Column<long>(nullable: false),
                     Name = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Privileges", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "RolePrivileges",
-                columns: table => new
-                {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    RoleId = table.Column<long>(nullable: false),
-                    PrivilegeId = table.Column<long>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RolePrivileges", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -153,6 +114,25 @@ namespace EffortlessApi.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TemporaryWorkPeriods", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    UserName = table.Column<string>(nullable: false),
+                    Password = table.Column<string>(nullable: false),
+                    FirstName = table.Column<string>(nullable: false),
+                    LastName = table.Column<string>(nullable: false),
+                    AddressId = table.Column<long>(nullable: false),
+                    Email = table.Column<string>(nullable: false),
+                    Phone = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -214,6 +194,82 @@ namespace EffortlessApi.Migrations
                 {
                     table.PrimaryKey("PK_WorkingHours", x => x.Id);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "RolePrivileges",
+                columns: table => new
+                {
+                    RoleId = table.Column<long>(nullable: false),
+                    PrivilegeId = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RolePrivileges", x => new { x.RoleId, x.PrivilegeId });
+                    table.ForeignKey(
+                        name: "FK_RolePrivileges_Privileges_PrivilegeId",
+                        column: x => x.PrivilegeId,
+                        principalTable: "Privileges",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_RolePrivileges_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserRole",
+                columns: table => new
+                {
+                    UserId = table.Column<long>(nullable: false),
+                    RoleId = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserRole", x => new { x.UserId, x.RoleId });
+                    table.ForeignKey(
+                        name: "FK_UserRole_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserRole_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Privileges_Name",
+                table: "Privileges",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RolePrivileges_PrivilegeId",
+                table: "RolePrivileges",
+                column: "PrivilegeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserRole_RoleId",
+                table: "UserRole",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Email",
+                table: "Users",
+                column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_UserName",
+                table: "Users",
+                column: "UserName",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -228,16 +284,16 @@ namespace EffortlessApi.Migrations
                 name: "Branches");
 
             migrationBuilder.DropTable(
-                name: "Privileges");
+                name: "Companies");
 
             migrationBuilder.DropTable(
                 name: "RolePrivileges");
 
             migrationBuilder.DropTable(
-                name: "Roles");
+                name: "TemporaryWorkPeriods");
 
             migrationBuilder.DropTable(
-                name: "TemporaryWorkPeriods");
+                name: "UserRole");
 
             migrationBuilder.DropTable(
                 name: "UsersJobActive");
@@ -251,72 +307,14 @@ namespace EffortlessApi.Migrations
             migrationBuilder.DropTable(
                 name: "WorkingHours");
 
-            migrationBuilder.DropColumn(
-                name: "AddressId",
-                table: "Users");
+            migrationBuilder.DropTable(
+                name: "Privileges");
 
-            migrationBuilder.DropColumn(
-                name: "Phone",
-                table: "Users");
+            migrationBuilder.DropTable(
+                name: "Roles");
 
-            migrationBuilder.RenameColumn(
-                name: "UserName",
-                table: "Users",
-                newName: "Username");
-
-            migrationBuilder.RenameColumn(
-                name: "LastName",
-                table: "Users",
-                newName: "Lastname");
-
-            migrationBuilder.RenameColumn(
-                name: "FirstName",
-                table: "Users",
-                newName: "Firstname");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Name",
-                table: "Companies",
-                nullable: true,
-                oldClrType: typeof(string));
-
-            migrationBuilder.CreateTable(
-                name: "Hours",
-                columns: table => new
-                {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    CompanyId = table.Column<long>(nullable: true),
-                    OwnerId = table.Column<long>(nullable: true),
-                    Start = table.Column<DateTime>(nullable: false),
-                    Stop = table.Column<DateTime>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Hours", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Hours_Companies_CompanyId",
-                        column: x => x.CompanyId,
-                        principalTable: "Companies",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Hours_Users_OwnerId",
-                        column: x => x.OwnerId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Hours_CompanyId",
-                table: "Hours",
-                column: "CompanyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Hours_OwnerId",
-                table: "Hours",
-                column: "OwnerId");
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }

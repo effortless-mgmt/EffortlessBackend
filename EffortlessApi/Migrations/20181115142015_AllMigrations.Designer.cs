@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EffortlessApi.Migrations
 {
     [DbContext(typeof(EffortlessContext))]
-    [Migration("20181114123453_FixUserRoleRelationship")]
-    partial class FixUserRoleRelationship
+    [Migration("20181115142015_AllMigrations")]
+    partial class AllMigrations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -104,11 +104,10 @@ namespace EffortlessApi.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<long>("RoleId");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("RoleId");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Privileges");
                 });
@@ -128,18 +127,13 @@ namespace EffortlessApi.Migrations
 
             modelBuilder.Entity("EffortlessApi.Core.Models.RolePrivilege", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<long>("RoleId");
 
                     b.Property<long>("PrivilegeId");
 
-                    b.Property<long>("RoleId");
-
-                    b.HasKey("Id");
+                    b.HasKey("RoleId", "PrivilegeId");
 
                     b.HasIndex("PrivilegeId");
-
-                    b.HasIndex("RoleId");
 
                     b.ToTable("RolePrivileges");
                 });
@@ -281,23 +275,15 @@ namespace EffortlessApi.Migrations
                     b.ToTable("WorkingHours");
                 });
 
-            modelBuilder.Entity("EffortlessApi.Core.Models.Privilege", b =>
-                {
-                    b.HasOne("EffortlessApi.Core.Models.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("EffortlessApi.Core.Models.RolePrivilege", b =>
                 {
                     b.HasOne("EffortlessApi.Core.Models.Privilege", "Privilege")
-                        .WithMany()
+                        .WithMany("RolePrivileges")
                         .HasForeignKey("PrivilegeId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("EffortlessApi.Core.Models.Role", "Role")
-                        .WithMany()
+                        .WithMany("RolePrivileges")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

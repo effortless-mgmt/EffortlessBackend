@@ -9,15 +9,18 @@ namespace EffortlessApi.Persistence
     {
         private readonly EffortlessContext _context;
 
-        public UnitOfWork(EffortlessContext context) 
+        public UnitOfWork(EffortlessContext context)
         {
             _context = context;
             Users = new UserRepository(_context);
             Addresses = new AddressRepository(_context);
+            Privileges = new PrivilegeRepository(_context);
         }
 
         public IUserRepository Users { get; private set; }
         public IAddressRepository Addresses { get; private set; }
+
+        public IPrivilegeRepository Privileges { get; private set; }
 
         public async Task<int> CompleteAsync()
         {

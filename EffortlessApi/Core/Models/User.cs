@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using Newtonsoft.Json;
 
 namespace EffortlessApi.Core.Models
 {
@@ -19,6 +22,16 @@ namespace EffortlessApi.Core.Models
         public string Email { get; set; }
         [Required]
         public string Phone { get; set; }
-        public ICollection<UserRole> UserRoles { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<UserRole> UserRoles { get; set; }
+        [NotMapped]
+        public IList<string> Privileges
+        {
+            get 
+            {
+                if (UserRoles == null) return null;
+                return UserRoles.Select(ur => ur.Role).SelectMany(r => r.PrivilegeNames).ToList();
+            }
+        }
     }
 }
