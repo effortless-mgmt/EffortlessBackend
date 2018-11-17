@@ -29,6 +29,7 @@ namespace EffortlessApi.Persistence
             modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
             modelBuilder.ApplyConfiguration(new PrivilegeConfiguration());
             modelBuilder.ApplyConfiguration(new RolePrivilegeConfiguration());
+            modelBuilder.ApplyConfiguration(new TemporaryWorkPeriodConfiguration());
         }
     }
 }
