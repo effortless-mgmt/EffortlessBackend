@@ -9,7 +9,7 @@ namespace EffortlessApi.Persistence.EntityConfigurations {
         {
             builder.HasIndex(u => u.UserName).IsUnique();
             builder.HasIndex(u => u.Email).IsUnique();
-            builder.HasMany<Appointment>().WithOne(a => a.User).HasForeignKey(a => a.UserId);
+            builder.HasMany<Appointment>().WithOne(a => a.Owner).HasForeignKey(a => a.OwnerId);
         }
     }
 }

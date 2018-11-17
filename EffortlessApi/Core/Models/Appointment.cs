@@ -16,11 +16,22 @@ namespace EffortlessApi.Core.Models
         [NotMapped]
         public TimeSpan BreakTimeSpan => new TimeSpan(Break);
         [JsonIgnore]
-        public long UserId { get; set; }
-        public virtual User User { get; set; }
+        public long OwnerId { get; set; }
+        public virtual User Owner { get; set; }
         [JsonIgnore]
         [Required]
         public long TemporaryWorkPeriodId { get; set; }
         public virtual TemporaryWorkPeriod TemporaryWorkPeriod { get; set;}
+        public bool ApprovedByOwner { get; set; }
+        public DateTime ApprovedByOwnerDate { get; set; }
+        [JsonIgnore]
+        public long ApprovedByUserId { get; set; }
+        public virtual User ApprovedBy { get; set; }
+        public DateTime ApprovedDate { get; set; }
+        [JsonIgnore]
+        public long CreatedByUserId { get; set; }
+        public virtual User CreatedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public decimal Earnings { get; set; }
     }
 }
