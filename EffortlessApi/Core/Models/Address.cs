@@ -8,7 +8,7 @@ namespace EffortlessApi.Core.Models
         [Required]
         public string Street { get; set; }
         [Required]
-        public int No { get; set; } = -1;
+        public int No { get; set; };
         public string Floor { get; set; }
         public string Side { get; set; }
         [Required]
