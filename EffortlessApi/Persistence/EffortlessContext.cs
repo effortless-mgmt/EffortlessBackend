@@ -2,9 +2,9 @@ using EffortlessApi.Core.Models;
 using EffortlessApi.Persistence.EntityConfigurations;
 using Microsoft.EntityFrameworkCore;
 
-namespace EffortlessApi.Persistence 
+namespace EffortlessApi.Persistence
 {
-    public class EffortlessContext : DbContext 
+    public class EffortlessContext : DbContext
     {
         public EffortlessContext(DbContextOptions<EffortlessContext> options) : base(options) { }
 
