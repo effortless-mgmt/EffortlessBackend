@@ -42,7 +42,7 @@ namespace EffortlessApi.Controllers
 
             if (role == null)
             {
-                return NotFound($"ROle with id {roleId} could not be found.");
+                return NotFound($"Role with id {roleId} could not be found.");
             }
 
             return Ok(role.Users);
