@@ -61,7 +61,7 @@ namespace EffortlessApi.Controllers
             await _unitOfWork.Users.UpdateAsync(userName, user);
             await _unitOfWork.CompleteAsync();
 
-            return Ok(user);
+            return Ok(existing);
         }
 
         [HttpDelete("{userName}")]
@@ -71,7 +71,7 @@ namespace EffortlessApi.Controllers
 
             if (user == null)
             {
-                return NotFound($"User {userName} could not be found.");
+                return NoContent();
             }
             
             _unitOfWork.Users.Remove(user);

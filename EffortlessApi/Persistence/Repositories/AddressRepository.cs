@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using EffortlessApi.Core.Models;
 using EffortlessApi.Core.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,26 @@ namespace EffortlessApi.Persistence.Repositories
     {
         public AddressRepository(DbContext context) : base(context)
         {
+        }
+
+        public EffortlessContext EffortlessContext
+        {
+            get { return _context as EffortlessContext; }
+        }
+
+        public async Task UpdateAsync(long id, Address newAddress)
+        {
+            var addressToEdit = await GetByIdAsync(id);
+
+            addressToEdit.Street = newAddress.Street;
+            addressToEdit.No = newAddress.No;
+            addressToEdit.Floor = newAddress.Floor;
+            addressToEdit.Side = newAddress.Side;
+            addressToEdit.ZipCode = newAddress.ZipCode;
+            addressToEdit.City = newAddress.City;
+            addressToEdit.Country = newAddress.Country;
+
+            _context.Set<Address>().Update(addressToEdit);
         }
     }
 }
