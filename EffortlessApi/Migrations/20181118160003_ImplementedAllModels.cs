@@ -21,12 +21,12 @@ namespace EffortlessApi.Migrations
                 name: "WorkingHours");
 
             migrationBuilder.DropPrimaryKey(
-                name: "PK_UserTemoraryWorkPeriods",
-                table: "UserTemoraryWorkPeriods");
+                name: "PK_UserTemporaryWorkPeriods",
+                table: "UserTemporaryWorkPeriods");
 
             migrationBuilder.DropColumn(
                 name: "Id",
-                table: "UserTemoraryWorkPeriods");
+                table: "UserTemporaryWorkPeriods");
 
             migrationBuilder.DropColumn(
                 name: "UserId",
@@ -39,7 +39,7 @@ namespace EffortlessApi.Migrations
 
             migrationBuilder.AddColumn<long>(
                 name: "TemporaryWorkPeriodId1",
-                table: "UserTemoraryWorkPeriods",
+                table: "UserTemporaryWorkPeriods",
                 nullable: true);
 
             migrationBuilder.AddColumn<long>(
@@ -120,8 +120,8 @@ namespace EffortlessApi.Migrations
                 defaultValue: 0m);
 
             migrationBuilder.AddPrimaryKey(
-                name: "PK_UserTemoraryWorkPeriods",
-                table: "UserTemoraryWorkPeriods",
+                name: "PK_UserTemporaryWorkPeriods",
+                table: "UserTemporaryWorkPeriods",
                 columns: new[] { "UserId", "TemporaryWorkPeriodId" });
 
             migrationBuilder.CreateTable(
@@ -152,13 +152,13 @@ namespace EffortlessApi.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserTemoraryWorkPeriods_TemporaryWorkPeriodId",
-                table: "UserTemoraryWorkPeriods",
+                name: "IX_UserTemporaryWorkPeriods_TemporaryWorkPeriodId",
+                table: "UserTemporaryWorkPeriods",
                 column: "TemporaryWorkPeriodId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserTemoraryWorkPeriods_TemporaryWorkPeriodId1",
-                table: "UserTemoraryWorkPeriods",
+                name: "IX_UserTemporaryWorkPeriods_TemporaryWorkPeriodId1",
+                table: "UserTemporaryWorkPeriods",
                 column: "TemporaryWorkPeriodId1");
 
             migrationBuilder.CreateIndex(
@@ -263,24 +263,24 @@ namespace EffortlessApi.Migrations
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_UserTemoraryWorkPeriods_TemporaryWorkPeriods_TemporaryWorkP~",
-                table: "UserTemoraryWorkPeriods",
+                name: "FK_UserTemporaryWorkPeriods_TemporaryWorkPeriods_TemporaryWorkP~",
+                table: "UserTemporaryWorkPeriods",
                 column: "TemporaryWorkPeriodId",
                 principalTable: "TemporaryWorkPeriods",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_UserTemoraryWorkPeriods_TemporaryWorkPeriods_TemporaryWork~1",
-                table: "UserTemoraryWorkPeriods",
+                name: "FK_UserTemporaryWorkPeriods_TemporaryWorkPeriods_TemporaryWork~1",
+                table: "UserTemporaryWorkPeriods",
                 column: "TemporaryWorkPeriodId1",
                 principalTable: "TemporaryWorkPeriods",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_UserTemoraryWorkPeriods_Users_UserId",
-                table: "UserTemoraryWorkPeriods",
+                name: "FK_UserTemporaryWorkPeriods_Users_UserId",
+                table: "UserTemporaryWorkPeriods",
                 column: "UserId",
                 principalTable: "Users",
                 principalColumn: "Id",
@@ -318,31 +318,31 @@ namespace EffortlessApi.Migrations
                 table: "Users");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_UserTemoraryWorkPeriods_TemporaryWorkPeriods_TemporaryWorkP~",
-                table: "UserTemoraryWorkPeriods");
+                name: "FK_UserTemporaryWorkPeriods_TemporaryWorkPeriods_TemporaryWorkP~",
+                table: "UserTemporaryWorkPeriods");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_UserTemoraryWorkPeriods_TemporaryWorkPeriods_TemporaryWork~1",
-                table: "UserTemoraryWorkPeriods");
+                name: "FK_UserTemporaryWorkPeriods_TemporaryWorkPeriods_TemporaryWork~1",
+                table: "UserTemporaryWorkPeriods");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_UserTemoraryWorkPeriods_Users_UserId",
-                table: "UserTemoraryWorkPeriods");
+                name: "FK_UserTemporaryWorkPeriods_Users_UserId",
+                table: "UserTemporaryWorkPeriods");
 
             migrationBuilder.DropTable(
                 name: "Departments");
 
             migrationBuilder.DropPrimaryKey(
-                name: "PK_UserTemoraryWorkPeriods",
-                table: "UserTemoraryWorkPeriods");
+                name: "PK_UserTemporaryWorkPeriods",
+                table: "UserTemporaryWorkPeriods");
 
             migrationBuilder.DropIndex(
-                name: "IX_UserTemoraryWorkPeriods_TemporaryWorkPeriodId",
-                table: "UserTemoraryWorkPeriods");
+                name: "IX_UserTemporaryWorkPeriods_TemporaryWorkPeriodId",
+                table: "UserTemporaryWorkPeriods");
 
             migrationBuilder.DropIndex(
-                name: "IX_UserTemoraryWorkPeriods_TemporaryWorkPeriodId1",
-                table: "UserTemoraryWorkPeriods");
+                name: "IX_UserTemporaryWorkPeriods_TemporaryWorkPeriodId1",
+                table: "UserTemporaryWorkPeriods");
 
             migrationBuilder.DropIndex(
                 name: "IX_Users_TemporaryWorkPeriodId",
@@ -374,7 +374,7 @@ namespace EffortlessApi.Migrations
 
             migrationBuilder.DropColumn(
                 name: "TemporaryWorkPeriodId1",
-                table: "UserTemoraryWorkPeriods");
+                table: "UserTemporaryWorkPeriods");
 
             migrationBuilder.DropColumn(
                 name: "TemporaryWorkPeriodId",
@@ -431,7 +431,7 @@ namespace EffortlessApi.Migrations
 
             migrationBuilder.AddColumn<long>(
                 name: "Id",
-                table: "UserTemoraryWorkPeriods",
+                table: "UserTemporaryWorkPeriods",
                 nullable: false,
                 defaultValue: 0L)
                 .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn);
@@ -449,8 +449,8 @@ namespace EffortlessApi.Migrations
                 oldClrType: typeof(long));
 
             migrationBuilder.AddPrimaryKey(
-                name: "PK_UserTemoraryWorkPeriods",
-                table: "UserTemoraryWorkPeriods",
+                name: "PK_UserTemporaryWorkPeriods",
+                table: "UserTemporaryWorkPeriods",
                 column: "Id");
 
             migrationBuilder.CreateTable(
