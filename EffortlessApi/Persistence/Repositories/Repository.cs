@@ -8,45 +8,89 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EffortlessApi.Persistence.Repositories 
 {
-    public class Repository<TEntity> : IRepository<TEntity> where TEntity : class 
+    public abstract class Repository<T> : IRepository<T> where T : class 
     {
         protected readonly DbContext _context;
 
+        /// <summary>
+        /// Created a new data repository.
+        /// </summary>
+        /// <param name="context"></param>
         public Repository(DbContext context) => _context = context;
 
-        public async Task AddAsync(TEntity entity) 
+        /// <summary>
+        /// Fetches all <see cref="T"/> entities in the database.
+        /// </summary>
+        /// <returns>All elements in the context.</returns>
+        public async virtual Task<IEnumerable<T>> GetAllAsync() 
         {
-            await _context.Set<TEntity>().AddAsync(entity);
+            return await _context.Set<T>().ToListAsync();
         }
 
-        public async Task AddRangeAsync(IEnumerable<TEntity> entities) 
+        /// <summary>
+        /// Fetches a specific <see cref="T"/> item in the database. 
+        /// </summary>
+        /// <param name="id">The id of the element</param>
+        /// <returns>The element with the given <see cref="id"/>.</returns>
+        public async virtual Task<T> GetByIdAsync(long id) 
         {
-            await _context.Set<TEntity>().AddRangeAsync(entities);
+            return await _context.Set<T>().FindAsync(id);
         }
 
-        public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate) 
+        /// <summary>
+        /// Finds all <see cref="T"/> entities that matches the given <see cref="predicate"/>.
+        /// </summary>
+        /// <param name="predicate">
+        /// The predicate to find the entity, for example:
+        /// <code>await entity.FindAsync(x => x.createdBy == someUser);</code>
+        /// </param>
+        /// <returns>A list of entities that mateches the predicate.</returns>
+        public async virtual Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate) 
         {
-            return await _context.Set<TEntity>().Where(predicate).ToListAsync();
+            return await _context.Set<T>().Where(predicate).ToListAsync();
         }
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync() 
+        /// <summary>
+        /// Adds a <see cref="T"/> entity to the database.
+        /// </summary>
+        /// <param name="entity"></param>
+        public async virtual Task AddAsync(T entity) 
         {
-            return await _context.Set<TEntity>().ToListAsync();
+            await _context.Set<T>().AddAsync(entity);
         }
 
-        public async Task<TEntity> GetByIdAsync(long id) 
+        /// <summary>
+        /// Adds multiple <see cref="T"/> entities to the database.
+        /// </summary>
+        /// <param name="entities"></param>
+        /// <returns></returns>
+        public async virtual Task AddRangeAsync(IEnumerable<T> entities) 
         {
-            return await _context.Set<TEntity>().FindAsync(id);
+            await _context.Set<T>().AddRangeAsync(entities);
         }
 
-        public void Remove(TEntity entity) 
+        /// <summary>
+        /// Updates non-key fields of an existing entity with those specified in <see cref="newEntity"/>.
+        /// </summary>
+        /// <param name="newEntity">A <see cref="T"/> entity containing the updated fields.</param>
+        public abstract Task UpdateAsync(T newEntity);
+
+        /// <summary>
+        /// Removes a specific <see cref="T"/> entity from the database.
+        /// </summary>
+        /// <param name="entity"></param>
+        public virtual void Remove(T entity) 
         {
-            _context.Set<TEntity>().Remove(entity);
+            _context.Set<T>().Remove(entity);
         }
 
-        public void RemoveRange(IEnumerable<TEntity> entities) 
+        /// <summary>
+        /// Removes a range of specified <see cref="T"/> entities from the database.
+        /// </summary>
+        /// <param name="entities"></param>
+        public virtual void RemoveRange(IEnumerable<T> entities) 
         {
-            _context.Set<TEntity>().RemoveRange(entities);
+            _context.Set<T>().RemoveRange(entities);
         }
     }
 }

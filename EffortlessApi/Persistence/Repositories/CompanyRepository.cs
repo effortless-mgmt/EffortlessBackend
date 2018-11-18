@@ -23,5 +23,10 @@ namespace EffortlessApi.Persistence.Repositories
 
             _context.Set<Company>().Update(companyToEdit);
         }
+
+        public override async Task UpdateAsync(Company newCompany)
+        {
+            await UpdateAsync(newCompany.Id, newCompany);
+        }
     }
 }
