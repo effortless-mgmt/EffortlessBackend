@@ -16,7 +16,7 @@ namespace EffortlessApi.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .HasAnnotation("ProductVersion", "2.1.2-rtm-30932")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("EffortlessApi.Core.Models.Address", b =>
@@ -134,23 +134,6 @@ namespace EffortlessApi.Migrations
                     b.HasIndex("CompanyId");
 
                     b.ToTable("Departments");
-                });
-
-            modelBuilder.Entity("EffortlessApi.Core.Models.Job", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<long>("AddressId");
-
-                    b.Property<long>("BranchId");
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Jobs");
                 });
 
             modelBuilder.Entity("EffortlessApi.Core.Models.Privilege", b =>
@@ -379,7 +362,7 @@ namespace EffortlessApi.Migrations
                     b.HasOne("EffortlessApi.Core.Models.TemporaryWorkPeriod")
                         .WithMany("UserTemporaryWorkPeriods")
                         .HasForeignKey("TemporaryWorkPeriodId1")
-                        .HasConstraintName("FK_UserTemporaryWorkPeriods_TemporaryWorkPeriods_TemporaryWork~1");
+                        .HasConstraintName("FK_UserTemporaryWorkPeriods_TemporaryWorkPeriods_TemporaryWor~1");
 
                     b.HasOne("EffortlessApi.Core.Models.User", "User")
                         .WithMany()
