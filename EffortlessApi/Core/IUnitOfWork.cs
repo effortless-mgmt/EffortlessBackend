@@ -8,7 +8,7 @@ namespace EffortlessApi.Core
     {
         IUserRepository Users { get; }
         IAddressRepository Addresses { get; }
-
+        ICompanyRepository Companies { get; }
         IPrivilegeRepository Privileges { get; }
         Task<int> CompleteAsync();
     }
