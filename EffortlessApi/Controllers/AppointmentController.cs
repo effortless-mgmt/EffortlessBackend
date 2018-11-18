@@ -37,11 +37,12 @@ namespace EffortlessApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync(Appointment appointment)
+        public async Task<IActionResult> PostAsync([FromBody] Appointment appointment)
         {
-            var existingAppointment = await _unitOfWork.Appointments.GetByIdAsync(appointment.Id);
-
-            if (existingAppointment != null) return Ok(appointment);
+            if (appointment == null)
+            {
+                return BadRequest();
+            }
 
             await _unitOfWork.Appointments.AddAsync(appointment);
             await _unitOfWork.CompleteAsync();
@@ -50,7 +51,7 @@ namespace EffortlessApi.Controllers
         }
 
         [HttpPut("{appointmentId}")]
-        public async Task<IActionResult> Put(long appointmentId, Appointment appointment)
+        public async Task<IActionResult> Put(long appointmentId, [FromBody] Appointment appointment)
         {
             var existingAppointment = await _unitOfWork.Appointments.GetByIdAsync(appointmentId);
 
