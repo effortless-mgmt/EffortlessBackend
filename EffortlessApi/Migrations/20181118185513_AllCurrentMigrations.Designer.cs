@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EffortlessApi.Migrations
 {
     [DbContext(typeof(EffortlessContext))]
-    [Migration("20181117191432_RemoveCompanyToUser")]
-    partial class RemoveCompanyToUser
+    [Migration("20181118185513_AllCurrentMigrations")]
+    partial class AllCurrentMigrations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -36,10 +36,12 @@ namespace EffortlessApi.Migrations
 
                     b.Property<int>("No");
 
-                    b.Property<string>("Road")
-                        .IsRequired();
-
                     b.Property<string>("Side");
+
+                    b.Property<string>("State");
+
+                    b.Property<string>("Street")
+                        .IsRequired();
 
                     b.Property<int>("ZipCode");
 
@@ -53,7 +55,23 @@ namespace EffortlessApi.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("Break");
+                    b.Property<bool>("ApprovedByOwner");
+
+                    b.Property<DateTime>("ApprovedByOwnerDate");
+
+                    b.Property<long>("ApprovedByUserId");
+
+                    b.Property<DateTime>("ApprovedDate");
+
+                    b.Property<long>("Break");
+
+                    b.Property<long>("CreatedByUserId");
+
+                    b.Property<DateTime>("CreatedDate");
+
+                    b.Property<decimal>("Earnings");
+
+                    b.Property<long>("OwnerId");
 
                     b.Property<DateTime>("Start");
 
@@ -61,17 +79,50 @@ namespace EffortlessApi.Migrations
 
                     b.Property<long>("TemporaryWorkPeriodId");
 
-                    b.Property<long>("UserId");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("ApprovedByUserId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("TemporaryWorkPeriodId");
 
                     b.ToTable("Appointments");
                 });
 
-            modelBuilder.Entity("EffortlessApi.Core.Models.Branch", b =>
+            modelBuilder.Entity("EffortlessApi.Core.Models.Company", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<long>("AddressId");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<long>("ParentCompanyId");
+
+                    b.Property<int>("Pno");
+
+                    b.Property<int>("Vat");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AddressId");
+
+                    b.HasIndex("ParentCompanyId");
+
+                    b.ToTable("Companies");
+                });
+
+            modelBuilder.Entity("EffortlessApi.Core.Models.Department", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<long>("AddressId");
 
                     b.Property<long>("CompanyId");
 
@@ -80,20 +131,11 @@ namespace EffortlessApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Branches");
-                });
+                    b.HasIndex("AddressId");
 
-            modelBuilder.Entity("EffortlessApi.Core.Models.Company", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.HasIndex("CompanyId");
 
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Companies");
+                    b.ToTable("Departments");
                 });
 
             modelBuilder.Entity("EffortlessApi.Core.Models.Privilege", b =>
@@ -155,8 +197,6 @@ namespace EffortlessApi.Migrations
 
                     b.Property<float>("UnitPrice");
 
-                    b.Property<long>("UserId");
-
                     b.HasKey("Id");
 
                     b.ToTable("TemporaryWorkPeriods");
@@ -184,6 +224,8 @@ namespace EffortlessApi.Migrations
                     b.Property<string>("Phone")
                         .IsRequired();
 
+                    b.Property<long?>("TemporaryWorkPeriodId");
+
                     b.Property<string>("UserName")
                         .IsRequired();
 
@@ -192,38 +234,12 @@ namespace EffortlessApi.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
+                    b.HasIndex("TemporaryWorkPeriodId");
+
                     b.HasIndex("UserName")
                         .IsUnique();
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("EffortlessApi.Core.Models.UserJobActive", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<long>("JobId");
-
-                    b.Property<long>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("UsersJobActive");
-                });
-
-            modelBuilder.Entity("EffortlessApi.Core.Models.UserJobInactive", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<long>("JobId");
-
-                    b.Property<long>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("UsersJobInactive");
                 });
 
             modelBuilder.Entity("EffortlessApi.Core.Models.UserRole", b =>
@@ -241,38 +257,68 @@ namespace EffortlessApi.Migrations
 
             modelBuilder.Entity("EffortlessApi.Core.Models.UserTemporaryWorkPeriod", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<long>("UserId");
 
                     b.Property<long>("TemporaryWorkPeriodId");
 
-                    b.Property<long>("UserId");
+                    b.Property<long?>("TemporaryWorkPeriodId1");
 
-                    b.HasKey("Id");
+                    b.HasKey("UserId", "TemporaryWorkPeriodId");
+
+                    b.HasIndex("TemporaryWorkPeriodId");
+
+                    b.HasIndex("TemporaryWorkPeriodId1");
 
                     b.ToTable("UserTemporaryWorkPeriods");
                 });
 
-            modelBuilder.Entity("EffortlessApi.Core.Models.WorkingHours", b =>
+            modelBuilder.Entity("EffortlessApi.Core.Models.Appointment", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.HasOne("EffortlessApi.Core.Models.User", "ApprovedBy")
+                        .WithMany()
+                        .HasForeignKey("ApprovedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.Property<long>("AppointmentId");
+                    b.HasOne("EffortlessApi.Core.Models.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.Property<int>("Break");
+                    b.HasOne("EffortlessApi.Core.Models.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.Property<bool>("IsApproved");
+                    b.HasOne("EffortlessApi.Core.Models.TemporaryWorkPeriod", "TemporaryWorkPeriod")
+                        .WithMany()
+                        .HasForeignKey("TemporaryWorkPeriodId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
 
-                    b.Property<DateTime>("Start");
+            modelBuilder.Entity("EffortlessApi.Core.Models.Company", b =>
+                {
+                    b.HasOne("EffortlessApi.Core.Models.Address", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.Property<DateTime>("Stop");
+                    b.HasOne("EffortlessApi.Core.Models.Company", "Parent")
+                        .WithMany()
+                        .HasForeignKey("ParentCompanyId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
 
-                    b.Property<long>("UserId");
+            modelBuilder.Entity("EffortlessApi.Core.Models.Department", b =>
+                {
+                    b.HasOne("EffortlessApi.Core.Models.Address", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasKey("Id");
-
-                    b.ToTable("WorkingHours");
+                    b.HasOne("EffortlessApi.Core.Models.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("EffortlessApi.Core.Models.RolePrivilege", b =>
@@ -288,6 +334,13 @@ namespace EffortlessApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("EffortlessApi.Core.Models.User", b =>
+                {
+                    b.HasOne("EffortlessApi.Core.Models.TemporaryWorkPeriod")
+                        .WithMany("AssignedUsers")
+                        .HasForeignKey("TemporaryWorkPeriodId");
+                });
+
             modelBuilder.Entity("EffortlessApi.Core.Models.UserRole", b =>
                 {
                     b.HasOne("EffortlessApi.Core.Models.Role", "Role")
@@ -297,6 +350,24 @@ namespace EffortlessApi.Migrations
 
                     b.HasOne("EffortlessApi.Core.Models.User", "User")
                         .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("EffortlessApi.Core.Models.UserTemporaryWorkPeriod", b =>
+                {
+                    b.HasOne("EffortlessApi.Core.Models.TemporaryWorkPeriod", "TemporaryWorkPeriod")
+                        .WithMany()
+                        .HasForeignKey("TemporaryWorkPeriodId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("EffortlessApi.Core.Models.TemporaryWorkPeriod")
+                        .WithMany("UserTemporaryWorkPeriods")
+                        .HasForeignKey("TemporaryWorkPeriodId1")
+                        .HasConstraintName("FK_UserTemporaryWorkPeriods_TemporaryWorkPeriods_TemporaryWor~1");
+
+                    b.HasOne("EffortlessApi.Core.Models.User", "User")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
