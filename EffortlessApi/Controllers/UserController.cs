@@ -68,6 +68,16 @@ namespace EffortlessApi.Controllers
             return CreatedAtRoute("GetUser", new { userName = user.UserName }, user);
         }
 
+        [HttpGet("{userName}/role")]
+        public async Task<IActionResult> GetRolesAssociatedWithUser(string userName)
+        {
+            var user = await _unitOfWork.Users.GetByUsernameAsync(userName);
+            if (user == null) return NotFound($"User {userName} does not exist.");
+
+            // TODO: Clean up output, don't output the user object for each role
+            return Ok(user.UserRoles.Select(ur => ur.Role));
+        }
+
         [HttpPut("{userName}")]
         public async Task<IActionResult> Put(string userName, User user)
         {
