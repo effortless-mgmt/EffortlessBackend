@@ -51,6 +51,23 @@ namespace EffortlessApi.Controllers
             return CreatedAtRoute("GetUser", new { userName = user.UserName}, user);
         }
 
+        [HttpPost("{userName}/role/{roleId}")]
+        public async Task<IActionResult> PostAsync(string userName, long roleId)
+        {
+            var user = await _unitOfWork.Users.GetByUsernameAsync(userName);
+            if (user == null) return NotFound($"User {userName} does not exist.");
+            
+            var role = await _unitOfWork.Roles.GetByIdWithUsersAsync(roleId);
+            if (role == null) return NotFound($"Role with id {roleId} does not exist.");
+
+            if (role.Users.Contains(user)) return BadRequest($"User {user.UserName} already has the role {role.Name}.");
+
+            user.UserRoles.Add(new UserRole{ Role = role, User = user });
+            await _unitOfWork.CompleteAsync();
+
+            return Ok(user);
+        }
+
         [HttpPut("{userName}")]
         public async Task<IActionResult> Put(string userName, User user)
         {
