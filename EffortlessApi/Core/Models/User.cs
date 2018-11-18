@@ -25,7 +25,7 @@ namespace EffortlessApi.Core.Models
         [JsonIgnore]
         public virtual ICollection<UserRole> UserRoles { get; set; }
         [NotMapped]
-        public IList<string> Privileges
+        public virtual IList<string> Privileges
         {
             get 
             {
