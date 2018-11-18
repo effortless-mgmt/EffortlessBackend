@@ -18,8 +18,6 @@ namespace EffortlessApi.Persistence
         public DbSet<TemporaryWorkPeriod> TemporaryWorkPeriods { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<UserRole> UserRole { get; set; }
-        public DbSet<UserJobActive> UsersJobActive { get; set; }
-        public DbSet<UserJobInactive> UsersJobInactive { get; set; }
         public DbSet<UserTemporaryWorkPeriod> UserTemoraryWorkPeriods { get; set; }
         public DbSet<WorkingHours> WorkingHours { get; set; }
 
