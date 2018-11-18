@@ -52,7 +52,7 @@ namespace EffortlessApi.Controllers
         }
 
         [HttpPost("{userName}/role/{roleId}")]
-        public async Task<IActionResult> PostAsync(string userName, long roleId)
+        public async Task<IActionResult> PostRoleToUserAsync(string userName, long roleId)
         {
             var user = await _unitOfWork.Users.GetByUsernameAsync(userName);
             if (user == null) return NotFound($"User {userName} does not exist.");
