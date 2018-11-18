@@ -47,6 +47,19 @@ namespace EffortlessApi.Controllers
             return CreatedAtRoute("GetAgreement", new { id = agreement.Id }, agreement);
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAsync(long id)
+        {
+            var agreement = await _unitOfWork.Agreements.GetByIdAsync(id);
+
+            if (agreement == null) return NoContent();
+
+            _unitOfWork.Agreements.Remove(agreement);
+            await _unitOfWork.CompleteAsync();
+
+            return NoContent();
+        }
+
         /* 
         ###################################################################################
         Agreements are final and can therefore not be updated. No implementation of HttpPut.
