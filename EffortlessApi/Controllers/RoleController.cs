@@ -35,7 +35,7 @@ namespace EffortlessApi.Controllers
             return Ok(role);
         }
 
-        [HttpGet("{roleId}/users")]
+        [HttpGet("{roleId}/user")]
         public async Task<IActionResult> GetUsersByRoleId(long roleId)
         {
             var role = await _unitOfWork.Roles.GetByIdWithUsersAsync(roleId);
