@@ -252,7 +252,7 @@ namespace EffortlessApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserTemoraryWorkPeriods");
+                    b.ToTable("UserTemporaryWorkPeriods");
                 });
 
             modelBuilder.Entity("EffortlessApi.Core.Models.WorkingHours", b =>

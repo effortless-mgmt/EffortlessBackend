@@ -164,7 +164,7 @@ namespace EffortlessApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserTemoraryWorkPeriods",
+                name: "UserTemporaryWorkPeriods",
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
@@ -174,7 +174,7 @@ namespace EffortlessApi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserTemoraryWorkPeriods", x => x.Id);
+                    table.PrimaryKey("PK_UserTemporaryWorkPeriods", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -302,7 +302,7 @@ namespace EffortlessApi.Migrations
                 name: "UsersJobInactive");
 
             migrationBuilder.DropTable(
-                name: "UserTemoraryWorkPeriods");
+                name: "UserTemporaryWorkPeriods");
 
             migrationBuilder.DropTable(
                 name: "WorkingHours");

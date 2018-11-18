@@ -379,7 +379,7 @@ namespace EffortlessApi.Migrations
                     b.HasOne("EffortlessApi.Core.Models.TemporaryWorkPeriod")
                         .WithMany("UserTemporaryWorkPeriods")
                         .HasForeignKey("TemporaryWorkPeriodId1")
-                        .HasConstraintName("FK_UserTemoraryWorkPeriods_TemporaryWorkPeriods_TemporaryWork~1");
+                        .HasConstraintName("FK_UserTemporaryWorkPeriods_TemporaryWorkPeriods_TemporaryWork~1");
 
                     b.HasOne("EffortlessApi.Core.Models.User", "User")
                         .WithMany()
