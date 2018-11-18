@@ -11,6 +11,7 @@ namespace EffortlessApi.Persistence
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<Company> Companies { get; set; }
+        public DbSet<Department> Departments { get; set; }
         public DbSet<Privilege> Privileges { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<RolePrivilege> RolePrivileges { get; set; }
@@ -30,6 +31,7 @@ namespace EffortlessApi.Persistence
             modelBuilder.ApplyConfiguration(new PrivilegeConfiguration());
             modelBuilder.ApplyConfiguration(new RolePrivilegeConfiguration());
             modelBuilder.ApplyConfiguration(new TemporaryWorkPeriodConfiguration());
+            modelBuilder.ApplyConfiguration(new CompanyConfiguration());
         }
     }
 }
