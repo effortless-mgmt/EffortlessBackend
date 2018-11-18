@@ -23,5 +23,10 @@ namespace EffortlessApi.Persistence.Repositories
 
             _context.Set<Privilege>().Update(privilegeToEdit);
         }
+
+        public override async Task UpdateAsync(Privilege newPrivilege)
+        {
+            await UpdateAsync(newPrivilege.Id, newPrivilege);
+        }
     }
 }

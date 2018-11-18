@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EffortlessApi.Persistence.Repositories
 {
-    public class JobRepository : Repository<Department>, IDepartmentRepository
+    public class DepartmentRepository : Repository<Department>, IDepartmentRepository
     {
-        public JobRepository(DbContext context) : base(context)
+        public DepartmentRepository(DbContext context) : base(context)
         {
         }
         public EffortlessContext EffortlessContext
@@ -24,6 +24,11 @@ namespace EffortlessApi.Persistence.Repositories
             departmentToEdit.CompanyId = newDepartment.CompanyId;
 
             _context.Set<Department>().Update(departmentToEdit);
+        }
+
+        public override async Task UpdateAsync(Department newDepartment)
+        {
+            await UpdateAsync(newDepartment.Id, newDepartment);
         }
     }
 }

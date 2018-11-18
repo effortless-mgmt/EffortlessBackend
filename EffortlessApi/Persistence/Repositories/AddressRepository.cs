@@ -30,5 +30,10 @@ namespace EffortlessApi.Persistence.Repositories
 
             _context.Set<Address>().Update(addressToEdit);
         }
+
+        public override async Task UpdateAsync(Address newAddress)
+        {
+            await UpdateAsync(newAddress.Id, newAddress);
+        }
     }
 }
