@@ -3,15 +3,17 @@ using System;
 using EffortlessApi.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace EffortlessApi.Migrations
 {
     [DbContext(typeof(EffortlessContext))]
-    partial class EffortlessContextModelSnapshot : ModelSnapshot
+    [Migration("20181118190819_AddTwpDepartmentRelation")]
+    partial class AddTwpDepartmentRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,32 +48,6 @@ namespace EffortlessApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Addresses");
-                });
-
-            modelBuilder.Entity("EffortlessApi.Core.Models.Agreement", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<decimal>("HolidaySubsidy");
-
-                    b.Property<bool>("IsBreakPaid");
-
-                    b.Property<string>("Name");
-
-                    b.Property<decimal>("NightSubsidy");
-
-                    b.Property<decimal>("Salary");
-
-                    b.Property<decimal>("UnitPrice");
-
-                    b.Property<string>("Version");
-
-                    b.Property<decimal>("WeekendSubsidy");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Agreements");
                 });
 
             modelBuilder.Entity("EffortlessApi.Core.Models.Appointment", b =>
