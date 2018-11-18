@@ -11,6 +11,8 @@ namespace EffortlessApi.Core
         IDepartmentRepository Department { get; }
         ICompanyRepository Companies { get; }
         IPrivilegeRepository Privileges { get; }
+
+        IAppointmentRepository Appointments { get; }
         Task<int> CompleteAsync();
     }
 }

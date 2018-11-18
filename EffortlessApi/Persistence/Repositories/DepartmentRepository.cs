@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EffortlessApi.Persistence.Repositories
 {
-    public class JobRepository : Repository<Department>, IDepartmentRepository
+    public class DepartmentRepository : Repository<Department>, IDepartmentRepository
     {
-        public JobRepository(DbContext context) : base(context)
+        public DepartmentRepository(DbContext context) : base(context)
         {
         }
         public EffortlessContext EffortlessContext
