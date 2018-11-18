@@ -65,7 +65,7 @@ namespace EffortlessApi.Controllers
             user.UserRoles.Add(new UserRole{ Role = role, User = user });
             await _unitOfWork.CompleteAsync();
 
-            return Ok(user);
+            return CreatedAtRoute("GetUser", new { userName = user.UserName }, user);
         }
 
         [HttpPut("{userName}")]
