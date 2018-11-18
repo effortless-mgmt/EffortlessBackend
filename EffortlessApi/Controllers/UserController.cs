@@ -43,7 +43,7 @@ namespace EffortlessApi.Controllers
         {
             var existingUser = await _unitOfWork.Users.GetByUsernameAsync(user.UserName);
 
-            if (existingUser != null) return Ok(user);
+            if (existingUser != null) return Ok(existingUser);
 
             await _unitOfWork.Users.AddAsync(user);
             await _unitOfWork.CompleteAsync();

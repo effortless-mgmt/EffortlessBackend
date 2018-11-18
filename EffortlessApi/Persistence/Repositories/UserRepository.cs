@@ -36,5 +36,10 @@ namespace EffortlessApi.Persistence.Repositories
 
             _context.Set<User>().Update(userToEdit);
         }
+
+        public override async Task UpdateAsync(User newEntity)
+        {
+            await UpdateAsync(newEntity.UserName, newEntity);
+        }
     }
 }
