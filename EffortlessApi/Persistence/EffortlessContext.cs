@@ -10,6 +10,7 @@ namespace EffortlessApi.Persistence
 
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
+        public DbSet<Agreement> Agreements { get; set; }
         public DbSet<Company> Companies { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Privilege> Privileges { get; set; }

@@ -8,7 +8,15 @@ namespace EffortlessApi.Persistence.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<TemporaryWorkPeriod> builder)
         {
-            builder.HasMany<Appointment>().WithOne(a => a.TemporaryWorkPeriod).HasForeignKey(a => a.TemporaryWorkPeriodId);
+            builder
+                .HasMany<Appointment>()
+                .WithOne(a => a.TemporaryWorkPeriod)
+                .HasForeignKey(a => a.TemporaryWorkPeriodId);
+
+            builder
+                .HasOne<Department>(tw => tw.Department)
+                .WithMany()
+                .HasForeignKey(tw => tw.DepartmentId);
         }
     }
 }

@@ -35,10 +35,7 @@ namespace EffortlessApi.Controllers
         {
             var address = await _unitOfWork.Addresses.GetByIdAsync(id);
 
-            if (address == null)
-            {
-                return NotFound($"Address with id {id} could not be found.");
-            }
+            if (address == null) return NotFound($"Address with id {id} could not be found.");
 
             return Ok(address);
         }
@@ -51,10 +48,12 @@ namespace EffortlessApi.Controllers
                 return BadRequest();
             }
 
+            //TODO Check if address already exists
+
             await _unitOfWork.Addresses.AddAsync(address);
             await _unitOfWork.CompleteAsync();
 
-            return CreatedAtRoute($"GetAddress", new { id = address.Id }, address);
+            return CreatedAtRoute("GetAddress", new { id = address.Id }, address);
         }
 
         [HttpPut("{id}")]

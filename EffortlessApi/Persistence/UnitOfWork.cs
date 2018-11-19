@@ -14,21 +14,24 @@ namespace EffortlessApi.Persistence
             _context = context;
             Users = new UserRepository(_context);
             Addresses = new AddressRepository(_context);
+            Agreements = new AgreementRepository(_context);
             Department = new DepartmentRepository(_context);
             Companies = new CompanyRepository(_context);
             Privileges = new PrivilegeRepository(_context);
             Roles = new RoleRepository(_context);
         }
 
-        public UnitOfWork(IUserRepository users, IAddressRepository addresses)
+        public UnitOfWork(IUserRepository users, IAddressRepository addresses, IAgreementRepository agreements)
         {
             this.Users = users;
             this.Addresses = addresses;
+            this.Agreements = agreements;
 
         }
-        
+
         public IUserRepository Users { get; private set; }
         public IAddressRepository Addresses { get; private set; }
+        public IAgreementRepository Agreements { get; private set; }
         public IDepartmentRepository Department { get; private set; }
         public ICompanyRepository Companies { get; private set; }
         public IPrivilegeRepository Privileges { get; private set; }
