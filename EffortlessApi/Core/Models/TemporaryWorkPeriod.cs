@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Newtonsoft.Json;
 
@@ -11,6 +12,7 @@ namespace EffortlessApi.Core.Models
         public long Id { get; set; }
         [JsonIgnore]
         public ICollection<UserTemporaryWorkPeriod> UserTemporaryWorkPeriods { get; set; }
+        [NotMapped]
         public virtual IList<User> AssignedUsers
         {
             get

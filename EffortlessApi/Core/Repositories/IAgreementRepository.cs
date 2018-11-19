@@ -5,6 +5,5 @@ namespace EffortlessApi.Core.Repositories
 {
     public interface IAgreementRepository : IRepository<Agreement>
     {
-        Task UpdateAsync(long id, Agreement newAgreement);
     }
 }

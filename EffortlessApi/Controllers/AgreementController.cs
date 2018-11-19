@@ -59,12 +59,5 @@ namespace EffortlessApi.Controllers
 
             return NoContent();
         }
-
-        /* 
-        ###################################################################################
-        Agreements are final and can therefore not be updated. No implementation of HttpPut.
-        ###################################################################################
-        */
-
     }
 }
