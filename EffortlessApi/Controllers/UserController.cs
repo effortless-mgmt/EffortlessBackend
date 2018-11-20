@@ -4,18 +4,21 @@ using System.Threading.Tasks;
 using EffortlessApi.Core;
 using EffortlessApi.Core.Models;
 using EffortlessApi.Persistence;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EffortlessApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public partial class UserController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         public UserController(EffortlessContext context) => _unitOfWork = new UnitOfWork(context);
 
-        [HttpGet]
+        [HttpGet, Authorize]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<User>))]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> GetAllAsync()
         {
             var users = await _unitOfWork.Users.GetAllAsync();
@@ -25,8 +28,10 @@ namespace EffortlessApi.Controllers
             return Ok(users);
         }
 
-        [HttpGet("{username}", Name = "GetUser")]
-        public async Task<IActionResult> GetByUsername(string userName)
+        [HttpGet("{username}"), Authorize]
+        [ProducesResponseType(200, Type = typeof(User))]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetByUsernameAsync(string userName)
         {
             var user = await _unitOfWork.Users.GetByUsernameAsync(userName);
 
@@ -38,9 +43,14 @@ namespace EffortlessApi.Controllers
             return Ok(user);
         }
 
-        [HttpPost]
+        [HttpPost, Authorize]
+        [ProducesResponseType(200, Type = typeof(User))]
+        [ProducesResponseType(201, Type = typeof(User))]
+        [ProducesResponseType(400)]
         public async Task<IActionResult> PostAsync(User user)
         {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
             var existingUser = await _unitOfWork.Users.GetByUsernameAsync(user.UserName);
 
             if (existingUser != null) return Ok(existingUser);
@@ -48,59 +58,12 @@ namespace EffortlessApi.Controllers
             await _unitOfWork.Users.AddAsync(user);
             await _unitOfWork.CompleteAsync();
 
-            return CreatedAtRoute("GetUser", new { userName = user.UserName}, user);
+            return CreatedAtAction(nameof(GetByUsernameAsync), new { userName = user.UserName}, user);
         }
 
-        [HttpPost("{userName}/role/{roleId}")]
-        public async Task<IActionResult> PostRoleToUserAsync(string userName, long roleId)
-        {
-            var user = await _unitOfWork.Users.GetByUsernameAsync(userName);
-            if (user == null) return NotFound($"User {userName} does not exist.");
-            
-            var role = await _unitOfWork.Roles.GetByIdWithUsersAsync(roleId);
-            if (role == null) return NotFound($"Role with id {roleId} does not exist.");
-
-            if (role.Users.Contains(user)) return BadRequest($"User {user.UserName} already has the role {role.Name}.");
-
-            user.UserRoles.Add(new UserRole{ Role = role, User = user });
-            await _unitOfWork.CompleteAsync();
-
-            return CreatedAtRoute("GetUser", new { userName = user.UserName }, user);
-        }
-
-        [HttpDelete("{userName}/role/{roleId}")]
-        public async Task<IActionResult> DeleteRoleFromUserAsync(string userName, long roleId)
-        {
-            var user = await _unitOfWork.Users.GetByUsernameAsync(userName);
-            if (user == null) return NotFound($"User {userName} does not exist.");
-
-            var role = await _unitOfWork.Roles.GetByIdAsync(roleId);
-            if (role == null) return NotFound($"Role with id {roleId} does not exist.");
-
-            if (user.UserRoles.Select(ur => ur.Role).ToList().Contains(role))
-            {
-                var userRole = user.UserRoles.FirstOrDefault(ur => ur.RoleId == roleId);
-                user.UserRoles.Remove(userRole);
-
-                await _unitOfWork.CompleteAsync();
-
-                return Ok(user);
-            }
-
-            return Ok(user);
-        }
-
-        [HttpGet("{userName}/role")]
-        public async Task<IActionResult> GetRolesAssociatedWithUser(string userName)
-        {
-            var user = await _unitOfWork.Users.GetByUsernameAsync(userName);
-            if (user == null) return NotFound($"User {userName} does not exist.");
-
-            // TODO: Clean up output, don't output the user object for each role
-            return Ok(user.UserRoles.Select(ur => ur.Role));
-        }
-
-        [HttpPut("{userName}")]
+        [HttpPut("{userName}"), Authorize]
+        [ProducesResponseType(200, Type = typeof(User))]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> Put(string userName, User user)
         {
             var existing = await _unitOfWork.Users.GetByUsernameAsync(userName);
@@ -113,7 +76,10 @@ namespace EffortlessApi.Controllers
             return Ok(existing);
         }
 
-        [HttpDelete("{userName}")]
+        [HttpDelete("{userName}"), Authorize]
+        [ProducesResponseType(200, Type = typeof(User))]
+        [ProducesResponseType(203)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> Delete(string userName)
         {
             var user = await _unitOfWork.Users.GetByUsernameAsync(userName);

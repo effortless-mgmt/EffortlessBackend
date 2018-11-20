@@ -8,6 +8,11 @@ namespace EffortlessApi.Core.Models
 {
     public class User : AuditableEntity
     {
+        public User() 
+        {
+            this.UserRoles = new List<UserRole>();
+        }
+        
         public long Id { get; set; }
         [Required]
         public string UserName { get; set; }
@@ -24,14 +29,7 @@ namespace EffortlessApi.Core.Models
         public string Phone { get; set; }
         [JsonIgnore]
         public virtual ICollection<UserRole> UserRoles { get; set; }
-        [NotMapped]
-        public virtual IList<string> Privileges
-        {
-            get 
-            {
-                if (UserRoles == null) return null;
-                return UserRoles.Select(ur => ur.Role).SelectMany(r => r.PrivilegeNames).ToList();
-            }
-        }
+        public virtual IEnumerable<string> Privileges => 
+            UserRoles?.Select(ur => ur.Role).SelectMany(r => r.PrivilegeNames);
     }
 }
