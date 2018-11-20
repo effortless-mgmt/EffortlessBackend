@@ -43,7 +43,7 @@ namespace EffortlessApi.Controllers
             return Ok(user);
         }
 
-        [HttpPost, Authorize]
+        [HttpPost]
         [ProducesResponseType(200, Type = typeof(User))]
         [ProducesResponseType(201, Type = typeof(User))]
         [ProducesResponseType(400)]
