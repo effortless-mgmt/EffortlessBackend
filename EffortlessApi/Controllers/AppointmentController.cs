@@ -44,6 +44,29 @@ namespace EffortlessApi.Controllers
                 return BadRequest();
             }
 
+            if (appointment.ApprovedByUserId >= 0)
+            {
+                var approvedByUser = await _unitOfWork.Users.GetByIdAsync(appointment.ApprovedByUserId);
+                if (approvedByUser == null)
+                {
+                    return NotFound($"ApprovedByUser {appointment.ApprovedByUserId} could not be found.");
+                }
+                appointment.ApprovedBy = approvedByUser;
+            }
+
+
+
+            if (appointment.CreatedByUserId >= 0)
+            {
+                var createdByUser = await _unitOfWork.Users.GetByIdAsync(appointment.CreatedByUserId);
+                if (createdByUser == null)
+                {
+                    return NotFound($"CreatedByUser {appointment.CreatedByUserId} could not be found.");
+                }
+
+                appointment.CreatedBy = createdByUser;
+            }
+
             await _unitOfWork.Appointments.AddAsync(appointment);
             await _unitOfWork.CompleteAsync();
 
