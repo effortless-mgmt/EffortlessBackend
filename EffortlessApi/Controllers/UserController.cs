@@ -68,6 +68,28 @@ namespace EffortlessApi.Controllers
             return CreatedAtRoute("GetUser", new { userName = user.UserName }, user);
         }
 
+        [HttpDelete("{userName}/role/{roleId}")]
+        public async Task<IActionResult> DeleteRoleFromUserAsync(string userName, long roleId)
+        {
+            var user = await _unitOfWork.Users.GetByUsernameAsync(userName);
+            if (user == null) return NotFound($"User {userName} does not exist.");
+
+            var role = await _unitOfWork.Roles.GetByIdAsync(roleId);
+            if (role == null) return NotFound($"Role with id {roleId} does not exist.");
+
+            if (user.UserRoles.Select(ur => ur.Role).ToList().Contains(role))
+            {
+                var userRole = user.UserRoles.FirstOrDefault(ur => ur.RoleId == roleId);
+                user.UserRoles.Remove(userRole);
+
+                await _unitOfWork.CompleteAsync();
+
+                return Ok(user);
+            }
+
+            return Ok(user);
+        }
+
         [HttpGet("{userName}/role")]
         public async Task<IActionResult> GetRolesAssociatedWithUser(string userName)
         {
