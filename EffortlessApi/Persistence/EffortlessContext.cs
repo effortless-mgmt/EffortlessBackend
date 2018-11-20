@@ -1,11 +1,14 @@
+using System.Linq;
+using System.Threading.Tasks;
 using EffortlessApi.Core.Models;
 using EffortlessApi.Persistence.EntityConfigurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace EffortlessApi.Persistence
 {
-    public class EffortlessContext : DbContext
+    public partial class EffortlessContext : DbContext
     {
+        private readonly string _userName;
         public EffortlessContext(DbContextOptions<EffortlessContext> options) : base(options) { }
 
         public DbSet<Address> Addresses { get; set; }
