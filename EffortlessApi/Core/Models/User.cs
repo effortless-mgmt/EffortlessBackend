@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace EffortlessApi.Core.Models
 {
-    public class User
+    public class User : AuditableEntity
     {
         public long Id { get; set; }
         [Required]
