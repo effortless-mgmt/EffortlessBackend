@@ -1,7 +1,11 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using EffortlessApi.Core;
 using EffortlessApi.Core.Models;
 using EffortlessApi.Persistence;
+using EffortlessLibrary.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EffortlessApi.Controllers
@@ -13,13 +17,25 @@ namespace EffortlessApi.Controllers
     public class CompanyController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public CompanyController(EffortlessContext context) => _unitOfWork = new UnitOfWork(context);
+        public CompanyController(EffortlessContext context, IMapper mapper)
+        {
+            _unitOfWork = new UnitOfWork(context);
+            _mapper = mapper;
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
             var companies = await _unitOfWork.Companies.GetAllAsync();
+            var companyDTOs = _mapper.Map<List<CompanyDTO>>(companies);
+
+            // DOES NOT WORK WITHOUT AN ADDRESS.ID REFERENCE IN COMPANYDTO
+            foreach (CompanyDTO c in companyDTOs)
+            {
+                c.Address = _mapper.Map<AddressDTO>(await _unitOfWork.Addresses.GetByIdAsync(c.Address.Id));
+            }
 
             if (companies == null) return NotFound();
 
@@ -28,27 +44,41 @@ namespace EffortlessApi.Controllers
         [HttpGet("{companyId}", Name = "GetCompany")]
         public async Task<IActionResult> GetById(long companyId)
         {
-            var company = await _unitOfWork.Companies.GetByIdAsync(companyId);
 
-            if (company == null)
+            var company = await _unitOfWork.Companies.GetByIdAsync(companyId);
+            var companyDTO = _mapper.Map<CompanyDTO>(company);
+
+            // CAN'T SET ADDRESS WITHOUT AN ADDRESS.ID REFERENCE
+            var address = await _unitOfWork.Addresses.GetByIdAsync(company?.AddressId);
+            var companyAddressDTO = _mapper.Map<AddressDTO>(address);
+            companyDTO.Address = companyAddressDTO;
+
+            if (companyDTO == null)
             {
                 return NotFound($"Company {companyId} could not be found.");
             }
 
-            return Ok(company);
+            return Ok(companyDTO);
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync(Company company)
+        public async Task<IActionResult> PostAsync([FromBody] CompanyDTO companyDTO)
         {
-            var existingCompany = await _unitOfWork.Companies.GetByIdAsync(company.Id);
+            var companyModel = _mapper.Map<Company>(companyDTO);
+            var addressModel = _mapper.Map<Address>(companyDTO.Address);
+            await _unitOfWork.Addresses.AddAsync(addressModel);
+            companyModel.AddressId = addressModel.Id;
 
-            if (existingCompany != null) return Ok(company);
+            // if (companyDTO.Address == null)
+            //     companyModel.AddressId = companyDTO?.Address.Id;
 
-            await _unitOfWork.Companies.AddAsync(company);
+            // if (existingCompany != null) return Ok(existingCompany);
+            if (companyModel == null) return BadRequest();
+
+            await _unitOfWork.Companies.AddAsync(companyModel);
             await _unitOfWork.CompleteAsync();
 
-            return CreatedAtRoute("GetCompany", new { companyId = company.Id }, company);
+            return CreatedAtRoute("GetCompany", new { companyId = companyModel.Id }, companyModel);
         }
 
         [HttpPut("{companyId}")]

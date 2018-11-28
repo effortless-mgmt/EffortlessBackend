@@ -24,14 +24,5 @@ namespace EffortlessApi.Core.Models
         public string Phone { get; set; }
         [JsonIgnore]
         public virtual ICollection<UserRole> UserRoles { get; set; }
-        [NotMapped]
-        public virtual IList<string> Privileges
-        {
-            get 
-            {
-                if (UserRoles == null) return null;
-                return UserRoles.Select(ur => ur.Role).SelectMany(r => r.PrivilegeNames).ToList();
-            }
-        }
     }
 }

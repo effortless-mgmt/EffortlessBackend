@@ -8,8 +8,8 @@ namespace EffortlessApi.Persistence.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<Company> builder)
         {
-            builder.HasOne<Company>(c => c.Parent).WithMany().HasForeignKey(c => c.ParentCompanyId);
-            builder.HasOne<Address>(c => c.Address).WithMany().HasForeignKey(c => c.AddressId);
+            // builder.HasOne<Company>(c => c.Parent).WithMany().HasForeignKey(c => c.ParentCompanyId);
+            // builder.HasOne<Address>(c => c.Address).WithMany().HasForeignKey(c => c.AddressId);
         }
     }
 }

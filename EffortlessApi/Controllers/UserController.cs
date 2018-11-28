@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using EffortlessApi.Core;
 using EffortlessApi.Core.Models;
 using EffortlessApi.Persistence;
+using EffortlessLibrary.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EffortlessApi.Controllers
@@ -13,8 +15,12 @@ namespace EffortlessApi.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        public UserController(EffortlessContext context) => _unitOfWork = new UnitOfWork(context);
-
+        private readonly IMapper _mapper;
+        public UserController(EffortlessContext context, IMapper mapper)
+        {
+            _unitOfWork = new UnitOfWork(context);
+            _mapper = mapper;
+        }
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -28,27 +34,31 @@ namespace EffortlessApi.Controllers
         [HttpGet("{username}", Name = "GetUser")]
         public async Task<IActionResult> GetByUsername(string userName)
         {
-            var user = await _unitOfWork.Users.GetByUsernameAsync(userName);
+            var userModel = await _unitOfWork.Users.GetByUsernameAsync(userName);
 
-            if (user == null)
+            if (userModel == null)
             {
                 return NotFound($"User {userName} could not be found.");
             }
 
-            return Ok(user);
+            var userDTO = _mapper.Map<UserDTO>(userModel);
+
+            return Ok(userDTO);
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync(User user)
+        public async Task<IActionResult> PostAsync(User userDTO)
         {
-            var existingUser = await _unitOfWork.Users.GetByUsernameAsync(user.UserName);
+            var userModel = _mapper.Map<User>(userDTO);
+            var existingUser = await _unitOfWork.Users.GetByUsernameAsync(userModel.UserName);
 
             if (existingUser != null) return Ok(existingUser);
+            if (userModel == null) return BadRequest();
 
-            await _unitOfWork.Users.AddAsync(user);
+            await _unitOfWork.Users.AddAsync(userModel);
             await _unitOfWork.CompleteAsync();
 
-            return CreatedAtRoute("GetUser", new { userName = user.UserName}, user);
+            return CreatedAtRoute("GetUser", new { userName = userModel.UserName }, userModel);
         }
 
         [HttpPost("{userName}/role/{roleId}")]
@@ -56,13 +66,13 @@ namespace EffortlessApi.Controllers
         {
             var user = await _unitOfWork.Users.GetByUsernameAsync(userName);
             if (user == null) return NotFound($"User {userName} does not exist.");
-            
+
             var role = await _unitOfWork.Roles.GetByIdWithUsersAsync(roleId);
             if (role == null) return NotFound($"Role with id {roleId} does not exist.");
 
             if (role.Users.Contains(user)) return BadRequest($"User {user.UserName} already has the role {role.Name}.");
 
-            user.UserRoles.Add(new UserRole{ Role = role, User = user });
+            user.UserRoles.Add(new UserRole { Role = role, User = user });
             await _unitOfWork.CompleteAsync();
 
             return CreatedAtRoute("GetUser", new { userName = user.UserName }, user);
@@ -122,7 +132,7 @@ namespace EffortlessApi.Controllers
             {
                 return NoContent();
             }
-            
+
             _unitOfWork.Users.Remove(user);
 
             await _unitOfWork.CompleteAsync();

@@ -12,10 +12,8 @@ namespace EffortlessApi.Core.Models
         [Required]
         public string Name { get; set; }
         [JsonIgnore]
-        public long ParentCompanyId { get; set; }
-        public virtual Company Parent { get; set; }
+        public long? ParentCompanyId { get; set; }
         [JsonIgnore]
-        public long AddressId { get; set; }
-        public virtual Address Address { get; set; }
+        public long? AddressId { get; set; }
     }
 }
