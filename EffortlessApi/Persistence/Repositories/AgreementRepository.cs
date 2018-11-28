@@ -16,11 +16,25 @@ namespace EffortlessApi.Persistence.Repositories
             get { return _context as EffortlessContext; }
         }
 
-        /// <summary>
-        /// Must not be implemented as agreements are final.
-        /// The system user must manually create new agreements when new agreements are made.
-        /// The below method is bound by an interface contract.
-        /// <summary>
-        public override Task UpdateAsync(Agreement newEntity) => throw new System.NotImplementedException();
+        public async Task UpdateAsync(long id, Agreement newAgreement)
+        {
+            var agreementToEdit = await GetByIdAsync(id);
+
+            agreementToEdit.Name = newAgreement.Name;
+            agreementToEdit.Version = newAgreement.Version;
+            agreementToEdit.UnitPrice = newAgreement.UnitPrice;
+            agreementToEdit.Salary = newAgreement.Salary;
+            agreementToEdit.NightSubsidy = newAgreement.NightSubsidy;
+            agreementToEdit.WeekendSubsidy = newAgreement.WeekendSubsidy;
+            agreementToEdit.HolidaySubsidy = newAgreement.HolidaySubsidy;
+            agreementToEdit.IsBreakPaid = newAgreement.IsBreakPaid;
+
+            _context.Set<Agreement>().Update(agreementToEdit);
+        }
+
+        public override async Task UpdateAsync(Agreement newAgreement)
+        {
+            await UpdateAsync(newAgreement.Id, newAgreement);
+        }
     }
 }
