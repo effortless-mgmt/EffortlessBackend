@@ -7,6 +7,7 @@ using EffortlessApi.Core.Models;
 using EffortlessApi.Persistence;
 using EffortlessLibrary.DTO;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace EffortlessApi.Controllers
 {
@@ -28,29 +29,33 @@ namespace EffortlessApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            var companies = await _unitOfWork.Companies.GetAllAsync();
-            var companyDTOs = _mapper.Map<List<CompanyDTO>>(companies);
+            var companyModels = await _unitOfWork.Companies.GetAllAsync();
+            if (companyModels == null) return NotFound();
 
-            // DOES NOT WORK WITHOUT AN ADDRESS.ID REFERENCE IN COMPANYDTO
-            foreach (CompanyDTO c in companyDTOs)
+            var companyDTOs = _mapper.Map<List<CompanyDTO>>(companyModels);
+            var companyModelList = companyModels.ToList();
+            Address addressModel;
+            AddressDTO addressDTO;
+
+            for (int i = 0; i < companyDTOs.Count; i++)
             {
-                c.Address = _mapper.Map<AddressDTO>(await _unitOfWork.Addresses.GetByIdAsync(c.Address.Id));
+                addressModel = await _unitOfWork.Addresses.GetByIdAsync(companyModelList[i].AddressId);
+                addressDTO = _mapper.Map<AddressDTO>(addressModel);
+                companyDTOs[i].Address = addressDTO;
             }
 
-            if (companies == null) return NotFound();
-
-            return Ok(companies);
+            return Ok(companyDTOs);
         }
         [HttpGet("{companyId}", Name = "GetCompany")]
         public async Task<IActionResult> GetById(long companyId)
         {
 
-            var company = await _unitOfWork.Companies.GetByIdAsync(companyId);
-            var companyDTO = _mapper.Map<CompanyDTO>(company);
+            var companyModel = await _unitOfWork.Companies.GetByIdAsync(companyId);
+            var companyDTO = _mapper.Map<CompanyDTO>(companyModel);
 
             // CAN'T SET ADDRESS WITHOUT AN ADDRESS.ID REFERENCE
-            var address = await _unitOfWork.Addresses.GetByIdAsync(company?.AddressId);
-            var companyAddressDTO = _mapper.Map<AddressDTO>(address);
+            var addressModel = await _unitOfWork.Addresses.GetByIdAsync(companyModel?.AddressId);
+            var companyAddressDTO = _mapper.Map<AddressDTO>(addressModel);
             companyDTO.Address = companyAddressDTO;
 
             if (companyDTO == null)
@@ -66,13 +71,14 @@ namespace EffortlessApi.Controllers
         {
             var companyModel = _mapper.Map<Company>(companyDTO);
             var addressModel = _mapper.Map<Address>(companyDTO.Address);
-            await _unitOfWork.Addresses.AddAsync(addressModel);
-            companyModel.AddressId = addressModel.Id;
+            if (addressModel != null)
+            {
+                await _unitOfWork.Addresses.AddAsync(addressModel);
+                await _unitOfWork.CompleteAsync();
+                // addressModel = await _unitOfWork.Addresses.GetByIdAsync(addressModel.Id);
+                companyModel.AddressId = addressModel.Id;
+            }
 
-            // if (companyDTO.Address == null)
-            //     companyModel.AddressId = companyDTO?.Address.Id;
-
-            // if (existingCompany != null) return Ok(existingCompany);
             if (companyModel == null) return BadRequest();
 
             await _unitOfWork.Companies.AddAsync(companyModel);
