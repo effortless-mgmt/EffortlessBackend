@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EffortlessApi", "Effortless
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EffortlessApi.Tests", "EffortlessApi.Tests\EffortlessApi.Tests.csproj", "{2574B22E-9570-4DD7-8872-0B8E504AB86A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EffortlessLibrary", "EffortlessLibrary\EffortlessLibrary.csproj", "{AFF158F2-8603-40F4-9B8D-D26ED14BA8C0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{2574B22E-9570-4DD7-8872-0B8E504AB86A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2574B22E-9570-4DD7-8872-0B8E504AB86A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2574B22E-9570-4DD7-8872-0B8E504AB86A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFF158F2-8603-40F4-9B8D-D26ED14BA8C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFF158F2-8603-40F4-9B8D-D26ED14BA8C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFF158F2-8603-40F4-9B8D-D26ED14BA8C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFF158F2-8603-40F4-9B8D-D26ED14BA8C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
