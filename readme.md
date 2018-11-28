@@ -78,3 +78,7 @@ networks:
     external:
       name: nginx-proxy
 ```
+
+## Setup automatic deployment with git
+
+<https://medium.com/@francoisromain/vps-deploy-with-git-fea605f1303b>
