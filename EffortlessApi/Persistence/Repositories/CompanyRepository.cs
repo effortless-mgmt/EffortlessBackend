@@ -20,6 +20,8 @@ namespace EffortlessApi.Persistence.Repositories
             var companyToEdit = await GetByIdAsync(companyId);
 
             companyToEdit.Name = newCompany.Name;
+            companyToEdit.ParentCompanyId = newCompany.ParentCompanyId;
+            companyToEdit.AddressId = newCompany.AddressId;
 
             _context.Set<Company>().Update(companyToEdit);
         }

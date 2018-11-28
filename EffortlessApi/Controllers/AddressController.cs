@@ -32,7 +32,7 @@ namespace EffortlessApi.Controllers
 
             var addressDTOs = _mapper.Map<List<AddressDTO>>(addressModels);
 
-            return Ok(addressDTOs);
+            return Ok(addressDTOs.OrderBy(a => a.Id));
         }
 
         [HttpGet("{id}", Name = "GetAddress")]

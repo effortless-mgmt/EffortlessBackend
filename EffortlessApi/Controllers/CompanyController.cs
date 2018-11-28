@@ -44,24 +44,18 @@ namespace EffortlessApi.Controllers
                 companyDTOs[i].Address = addressDTO;
             }
 
-            return Ok(companyDTOs);
+            return Ok(companyDTOs.OrderBy(c => c.Id));
         }
         [HttpGet("{companyId}", Name = "GetCompany")]
         public async Task<IActionResult> GetById(long companyId)
         {
-
             var companyModel = await _unitOfWork.Companies.GetByIdAsync(companyId);
-            var companyDTO = _mapper.Map<CompanyDTO>(companyModel);
+            if (companyModel == null) return NotFound($"Company {companyId} could not be found.");
 
-            // CAN'T SET ADDRESS WITHOUT AN ADDRESS.ID REFERENCE
             var addressModel = await _unitOfWork.Addresses.GetByIdAsync(companyModel?.AddressId);
+            var companyDTO = _mapper.Map<CompanyDTO>(companyModel);
             var companyAddressDTO = _mapper.Map<AddressDTO>(addressModel);
             companyDTO.Address = companyAddressDTO;
-
-            if (companyDTO == null)
-            {
-                return NotFound($"Company {companyId} could not be found.");
-            }
 
             return Ok(companyDTO);
         }
@@ -84,20 +78,25 @@ namespace EffortlessApi.Controllers
             await _unitOfWork.Companies.AddAsync(companyModel);
             await _unitOfWork.CompleteAsync();
 
-            return CreatedAtRoute("GetCompany", new { companyId = companyModel.Id }, companyModel);
+            return CreatedAtRoute("GetCompany", new { companyId = companyModel.Id }, companyDTO);
         }
 
         [HttpPut("{companyId}")]
-        public async Task<IActionResult> Put(long companyId, Company company)
+        public async Task<IActionResult> Put(long companyId, CompanyDTO companyDTO)
         {
             var existingCompany = await _unitOfWork.Companies.GetByIdAsync(companyId);
-
             if (existingCompany == null) return NotFound($"Company {companyId} could not be found.");
 
-            await _unitOfWork.Companies.UpdateAsync(companyId, company);
+            var companyModel = _mapper.Map<Company>(companyDTO);
+            await _unitOfWork.Companies.UpdateAsync(companyId, companyModel);
+
+            var companyAddressModel = _mapper.Map<Address>(companyDTO.Address);
+            // var address = await _unitOfWork.Addresses.GetByIdAsync(companyAddressModel.Id);
+
+            await _unitOfWork.Addresses.UpdateAsync(companyAddressModel.Id, companyAddressModel);
             await _unitOfWork.CompleteAsync();
 
-            return Ok(existingCompany);
+            return Ok(companyDTO);
         }
 
         [HttpDelete("{companyId}")]
