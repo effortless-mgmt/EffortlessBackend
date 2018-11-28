@@ -15,6 +15,12 @@ namespace EffortlessApi.Persistence.Repositories
         {
             get { return _context as EffortlessContext; }
         }
+
+        public async Task<Company> FindByPno(int pno)
+        {
+            return await _context.Set<Company>().FirstOrDefaultAsync(c => c.Pno == pno);
+        }
+
         public async Task UpdateAsync(long companyId, Company newCompany)
         {
             var companyToEdit = await GetByIdAsync(companyId);

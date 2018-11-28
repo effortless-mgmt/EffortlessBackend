@@ -29,13 +29,14 @@ namespace EffortlessApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
+            Address addressModel;
+            AddressDTO addressDTO;
+
             var companyModels = await _unitOfWork.Companies.GetAllAsync();
             if (companyModels == null) return NotFound();
 
             var companyDTOs = _mapper.Map<List<CompanyDTO>>(companyModels);
             var companyModelList = companyModels.ToList();
-            Address addressModel;
-            AddressDTO addressDTO;
 
             for (int i = 0; i < companyDTOs.Count; i++)
             {
@@ -46,6 +47,7 @@ namespace EffortlessApi.Controllers
 
             return Ok(companyDTOs.OrderBy(c => c.Id));
         }
+
         [HttpGet("{companyId}", Name = "GetCompany")]
         public async Task<IActionResult> GetById(long companyId)
         {
