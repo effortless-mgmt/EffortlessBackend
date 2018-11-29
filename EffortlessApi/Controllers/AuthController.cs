@@ -53,7 +53,7 @@ namespace EffortlessApi.Controllers
 
             var token = new JwtSecurityToken (
                 issuer: "http://localhost:5000",
-                audience: "http://localhost:5000",
+                // audience: "http://localhost:5000",
                 claims : identity.Claims,
                 expires : DateTime.Now.AddMinutes(5),
                 signingCredentials : signingCredentials
