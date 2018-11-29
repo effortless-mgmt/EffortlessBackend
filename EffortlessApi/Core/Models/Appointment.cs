@@ -20,8 +20,8 @@ namespace EffortlessApi.Core.Models
         public virtual User Owner { get; set; }
         [JsonIgnore]
         [Required]
-        public long TemporaryWorkPeriodId { get; set; }
-        public virtual TemporaryWorkPeriod TemporaryWorkPeriod { get; set;}
+        public long WorkPeriodId { get; set; }
+        public virtual WorkPeriod WorkPeriod { get; set; }
         public bool ApprovedByOwner { get; set; }
         public DateTime ApprovedByOwnerDate { get; set; }
         [JsonIgnore]

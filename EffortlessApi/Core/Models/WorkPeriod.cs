@@ -7,18 +7,18 @@ using Newtonsoft.Json;
 
 namespace EffortlessApi.Core.Models
 {
-    public class TemporaryWorkPeriod
+    public class WorkPeriod
     {
         public long Id { get; set; }
         [JsonIgnore]
-        public ICollection<UserTemporaryWorkPeriod> UserTemporaryWorkPeriods { get; set; }
+        public ICollection<UserWorkPeriod> UserWorkPeriods { get; set; }
         [NotMapped]
         public virtual IList<User> AssignedUsers
         {
             get
             {
-                if (UserTemporaryWorkPeriods == null) return null;
-                return UserTemporaryWorkPeriods.Select(ut => ut.User).ToList();
+                if (UserWorkPeriods == null) return null;
+                return UserWorkPeriods.Select(ut => ut.User).ToList();
             }
         }
 

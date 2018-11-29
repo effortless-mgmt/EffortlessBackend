@@ -76,7 +76,7 @@ namespace EffortlessApi.Controllers
         //     var existingAgreement = _unitOfWork.Agreements.GetByIdAsync(id);
         //     if (existingAgreement == null) return NotFound($"Agreement {id} could not be found.");
 
-        //     var temporaryWorkPeriods = _unitOfWork.
+        //     var WorkPeriods = _unitOfWork.
         // }
 
     }

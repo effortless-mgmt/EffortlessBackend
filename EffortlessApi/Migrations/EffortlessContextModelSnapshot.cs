@@ -102,7 +102,7 @@ namespace EffortlessApi.Migrations
 
                     b.Property<DateTime>("Stop");
 
-                    b.Property<long>("TemporaryWorkPeriodId");
+                    b.Property<long>("WorkPeriodId");
 
                     b.HasKey("Id");
 
@@ -112,7 +112,7 @@ namespace EffortlessApi.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.HasIndex("TemporaryWorkPeriodId");
+                    b.HasIndex("WorkPeriodId");
 
                     b.ToTable("Appointments");
                 });
@@ -201,24 +201,6 @@ namespace EffortlessApi.Migrations
                     b.ToTable("RolePrivileges");
                 });
 
-            modelBuilder.Entity("EffortlessApi.Core.Models.TemporaryWorkPeriod", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<long>("DepartmentId");
-
-                    b.Property<DateTime>("Start");
-
-                    b.Property<DateTime>("Stop");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DepartmentId");
-
-                    b.ToTable("TemporaryWorkPeriods");
-                });
-
             modelBuilder.Entity("EffortlessApi.Core.Models.User", b =>
                 {
                     b.Property<long>("Id")
@@ -268,21 +250,39 @@ namespace EffortlessApi.Migrations
                     b.ToTable("UserRole");
                 });
 
-            modelBuilder.Entity("EffortlessApi.Core.Models.UserTemporaryWorkPeriod", b =>
+            modelBuilder.Entity("EffortlessApi.Core.Models.UserWorkPeriod", b =>
                 {
                     b.Property<long>("UserId");
 
-                    b.Property<long>("TemporaryWorkPeriodId");
+                    b.Property<long>("WorkPeriodId");
 
-                    b.Property<long?>("TemporaryWorkPeriodId1");
+                    b.Property<long?>("WorkPeriodId1");
 
-                    b.HasKey("UserId", "TemporaryWorkPeriodId");
+                    b.HasKey("UserId", "WorkPeriodId");
 
-                    b.HasIndex("TemporaryWorkPeriodId");
+                    b.HasIndex("WorkPeriodId");
 
-                    b.HasIndex("TemporaryWorkPeriodId1");
+                    b.HasIndex("WorkPeriodId1");
 
-                    b.ToTable("UserTemporaryWorkPeriods");
+                    b.ToTable("UserWorkPeriods");
+                });
+
+            modelBuilder.Entity("EffortlessApi.Core.Models.WorkPeriod", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<long>("DepartmentId");
+
+                    b.Property<DateTime>("Start");
+
+                    b.Property<DateTime>("Stop");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.ToTable("WorkPeriods");
                 });
 
             modelBuilder.Entity("EffortlessApi.Core.Models.Appointment", b =>
@@ -302,9 +302,9 @@ namespace EffortlessApi.Migrations
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("EffortlessApi.Core.Models.TemporaryWorkPeriod", "TemporaryWorkPeriod")
+                    b.HasOne("EffortlessApi.Core.Models.WorkPeriod", "WorkPeriod")
                         .WithMany()
-                        .HasForeignKey("TemporaryWorkPeriodId")
+                        .HasForeignKey("WorkPeriodId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -334,14 +334,6 @@ namespace EffortlessApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("EffortlessApi.Core.Models.TemporaryWorkPeriod", b =>
-                {
-                    b.HasOne("EffortlessApi.Core.Models.Department", "Department")
-                        .WithMany()
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("EffortlessApi.Core.Models.UserRole", b =>
                 {
                     b.HasOne("EffortlessApi.Core.Models.Role", "Role")
@@ -355,21 +347,28 @@ namespace EffortlessApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("EffortlessApi.Core.Models.UserTemporaryWorkPeriod", b =>
+            modelBuilder.Entity("EffortlessApi.Core.Models.UserWorkPeriod", b =>
                 {
-                    b.HasOne("EffortlessApi.Core.Models.TemporaryWorkPeriod", "TemporaryWorkPeriod")
-                        .WithMany()
-                        .HasForeignKey("TemporaryWorkPeriodId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("EffortlessApi.Core.Models.TemporaryWorkPeriod")
-                        .WithMany("UserTemporaryWorkPeriods")
-                        .HasForeignKey("TemporaryWorkPeriodId1")
-                        .HasConstraintName("FK_UserTemporaryWorkPeriods_TemporaryWorkPeriods_TemporaryWor~1");
-
                     b.HasOne("EffortlessApi.Core.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("EffortlessApi.Core.Models.WorkPeriod", "WorkPeriod")
+                        .WithMany()
+                        .HasForeignKey("WorkPeriodId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("EffortlessApi.Core.Models.WorkPeriod")
+                        .WithMany("UserWorkPeriods")
+                        .HasForeignKey("WorkPeriodId1");
+                });
+
+            modelBuilder.Entity("EffortlessApi.Core.Models.WorkPeriod", b =>
+                {
+                    b.HasOne("EffortlessApi.Core.Models.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

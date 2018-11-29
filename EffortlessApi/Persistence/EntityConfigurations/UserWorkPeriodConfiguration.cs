@@ -4,19 +4,19 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EffortlessApi.Persistence.EntityConfigurations
 {
-    public class UserTemporaryWorkPeriodConfiguration : IEntityTypeConfiguration<UserTemporaryWorkPeriod>
+    public class UserWorkPeriodConfiguration : IEntityTypeConfiguration<UserWorkPeriod>
     {
-        public void Configure(EntityTypeBuilder<UserTemporaryWorkPeriod> builder)
+        public void Configure(EntityTypeBuilder<UserWorkPeriod> builder)
         {
-            builder.HasKey(ut => new { ut.UserId, ut.TemporaryWorkPeriodId });
+            builder.HasKey(ut => new { ut.UserId, ut.WorkPeriodId });
             builder
                 .HasOne<User>(ut => ut.User)
                 .WithMany()
                 .HasForeignKey(ut => ut.UserId);
             builder
-                .HasOne<TemporaryWorkPeriod>(ut => ut.TemporaryWorkPeriod)
+                .HasOne<WorkPeriod>(ut => ut.WorkPeriod)
                 .WithMany()
-                .HasForeignKey(ut => ut.TemporaryWorkPeriodId);
+                .HasForeignKey(ut => ut.WorkPeriodId);
         }
     }
 }

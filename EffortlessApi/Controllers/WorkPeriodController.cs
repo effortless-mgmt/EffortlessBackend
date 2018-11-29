@@ -6,16 +6,16 @@ namespace EffortlessApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TemporaryWorkPeriodController : ControllerBase
+    public class WorkPeriodController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public TemporaryWorkPeriodController(EffortlessContext context)
+        public WorkPeriodController(EffortlessContext context)
         {
             _unitOfWork = new UnitOfWork(context);
         }
 
-        
+
 
     }
 }
