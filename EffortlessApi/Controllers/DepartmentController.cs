@@ -27,7 +27,7 @@ namespace EffortlessApi.Controllers
         {
             Company companyModel;
             Address addressModel;
-            CompanyDTO companyDTO;
+            DepartmentCompanyDTO companyDTO;
             AddressDTO addressDTO;
 
             var departmentModels = await _unitOfWork.Department.GetAllAsync();
@@ -40,7 +40,7 @@ namespace EffortlessApi.Controllers
             {
                 companyModel = await _unitOfWork.Companies.GetByIdAsync(departmentModelsList[i].CompanyId);
                 addressModel = await _unitOfWork.Addresses.GetByIdAsync(departmentModelsList[i].AddressId);
-                companyDTO = _mapper.Map<CompanyDTO>(companyModel);
+                companyDTO = _mapper.Map<DepartmentCompanyDTO>(companyModel);
                 addressDTO = _mapper.Map<AddressDTO>(addressModel);
                 departmentDTOs[i].Company = companyDTO;
                 departmentDTOs[i].Address = addressDTO;
@@ -54,7 +54,7 @@ namespace EffortlessApi.Controllers
         {
             Company companyModel;
             Address addressModel;
-            CompanyDTO companyDTO;
+            DepartmentCompanyDTO companyDTO;
             AddressDTO addressDTO;
 
             var departmentModel = await _unitOfWork.Department.GetByIdAsync(id);
@@ -63,7 +63,7 @@ namespace EffortlessApi.Controllers
             var departmentDTO = _mapper.Map<DepartmentDTO>(departmentModel);
             companyModel = await _unitOfWork.Companies.GetByIdAsync(departmentModel.CompanyId);
             addressModel = await _unitOfWork.Addresses.GetByIdAsync(departmentModel.AddressId);
-            companyDTO = _mapper.Map<CompanyDTO>(companyModel);
+            companyDTO = _mapper.Map<DepartmentCompanyDTO>(companyModel);
             addressDTO = _mapper.Map<AddressDTO>(addressModel);
             departmentDTO.Company = companyDTO;
             departmentDTO.Address = addressDTO;
@@ -74,26 +74,42 @@ namespace EffortlessApi.Controllers
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] DepartmentDTO departmentDTO)
         {
+            Address addressModel;
             if (departmentDTO == null) return BadRequest();
 
             var companyModel = await _unitOfWork.Companies.FindByPno(departmentDTO.Company.Pno);
             if (companyModel == null) return BadRequest("You must create a company before creating a company department.");
 
             var departmentModel = _mapper.Map<Department>(departmentDTO);
-            var companyDTO = _mapper.Map<Company>(companyModel);
-            var addressDTO = departmentDTO.Address;
-            var addressModel = _mapper.Map<Address>(addressDTO);
+            var companyDTO = _mapper.Map<DepartmentCompanyDTO>(companyModel);
 
-            if (addressModel != null)
+            ///<text>
+            ///If department is created without an address, the address will be assigned to that of the parent company.
+            ///</text>
+            var addressDTO = departmentDTO.Address;
+            if (addressDTO == null)
             {
+                addressModel = await _unitOfWork.Addresses.GetByIdAsync(companyModel.AddressId);
+                addressDTO = _mapper.Map<AddressDTO>(addressModel);
+                departmentModel.AddressId = addressModel.Id;
+            }
+            else
+            {
+                addressModel = _mapper.Map<Address>(addressDTO);
                 await _unitOfWork.Addresses.AddAsync(addressModel);
                 await _unitOfWork.CompleteAsync();
                 departmentModel.AddressId = addressModel.Id;
-                departmentModel.CompanyId = companyModel.Id;
             }
+
+            departmentModel.CompanyId = companyModel.Id;
 
             await _unitOfWork.Department.AddAsync(departmentModel);
             await _unitOfWork.CompleteAsync();
+
+            departmentDTO.Id = departmentModel.Id;
+            departmentDTO.Address = addressDTO;
+            departmentDTO.Company = companyDTO;
+            departmentDTO.Address.Id = departmentModel.AddressId;
 
             return CreatedAtRoute("GetDepartment", new { id = departmentModel.Id }, departmentDTO);
         }

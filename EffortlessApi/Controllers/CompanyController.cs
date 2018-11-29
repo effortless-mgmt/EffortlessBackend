@@ -49,7 +49,7 @@ namespace EffortlessApi.Controllers
         }
 
         [HttpGet("{companyId}", Name = "GetCompany")]
-        public async Task<IActionResult> GetById(long companyId)
+        public async Task<IActionResult> GetByIdAsync(long companyId)
         {
             var companyModel = await _unitOfWork.Companies.GetByIdAsync(companyId);
             if (companyModel == null) return NotFound($"Company {companyId} could not be found.");
@@ -62,6 +62,23 @@ namespace EffortlessApi.Controllers
             return Ok(companyDTO);
         }
 
+        [HttpGet("{id}/departments")]
+        public async Task<IActionResult> GetDepartmentsAsync(long id)
+        {
+            List<DepartmentDTO> departmentDTOs = new List<DepartmentDTO>();
+            var companyModel = await _unitOfWork.Companies.GetByIdAsync(id);
+            var departmentModels = await _unitOfWork.Department.FindAsync(d => d.Company.Pno == companyModel.Pno);
+            if (departmentModels == null) return NotFound($"Company {id} does not have any departments.");
+
+            foreach (Department c in departmentModels)
+            {
+                var tempDepDTO = _mapper.Map<DepartmentDTO>(c);
+                tempDepDTO.Address = _mapper.Map<AddressDTO>(await _unitOfWork.Addresses.GetByIdAsync(c.AddressId));
+                departmentDTOs.Add(tempDepDTO);
+            }
+
+            return Ok(departmentDTOs);
+        }
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] CompanyDTO companyDTO)
         {
@@ -71,7 +88,6 @@ namespace EffortlessApi.Controllers
             {
                 await _unitOfWork.Addresses.AddAsync(addressModel);
                 await _unitOfWork.CompleteAsync();
-                // addressModel = await _unitOfWork.Addresses.GetByIdAsync(addressModel.Id);
                 companyModel.AddressId = addressModel.Id;
             }
 
@@ -79,6 +95,9 @@ namespace EffortlessApi.Controllers
 
             await _unitOfWork.Companies.AddAsync(companyModel);
             await _unitOfWork.CompleteAsync();
+
+            companyDTO.Id = companyModel.Id;
+            companyDTO.Address.Id = (long)companyModel.AddressId;
 
             return CreatedAtRoute("GetCompany", new { companyId = companyModel.Id }, companyDTO);
         }

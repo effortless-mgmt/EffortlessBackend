@@ -15,6 +15,8 @@ namespace EffortlessApi.Mapper
             CreateMap<AddressDTO, Address>();
             CreateMap<Company, CompanyDTO>();
             CreateMap<CompanyDTO, Company>();
+            CreateMap<Company, DepartmentCompanyDTO>();
+            CreateMap<DepartmentCompanyDTO, Company>();
 
         }
     }
