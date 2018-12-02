@@ -15,7 +15,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Serialization;
 
-namespace EffortlessApi{
+namespace EffortlessApi
+{
     public class Startup
     {
         public Startup (IConfiguration configuration)
@@ -34,12 +35,13 @@ namespace EffortlessApi{
             var dbPass = Configuration["DB_PASS"] ?? "root";
 
             var authSigningKey = Configuration["AUTH_SIGNING_KEY"] ?? "fNGxeQqjhXhRduHA";
+            var authIssuer     = Configuration["AUTH_ISSUER"] ?? "localhost:5001";
 
             var connectionString = $"User ID={dbUser}; Password={dbPass}; Server={dbHost}; port={dbPort}; Database=EffortlessApi;Integrated Security=true; Pooling=true;";
 
             services.AddEntityFrameworkNpgsql().AddDbContext<EffortlessContext>(opt => opt.UseNpgsql(connectionString));
             services.ConfigureCors();
-            services.ConfigureAuthorization(authSigningKey);
+            services.ConfigureAuthorization(authSigningKey, authIssuer);
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1).AddJsonOptions(o => 
             {
                 o.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
