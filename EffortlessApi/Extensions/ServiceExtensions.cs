@@ -23,6 +23,8 @@ namespace EffortlessApi.Extensions
 
         public static void ConfigureAuthorization(this IServiceCollection services, string secret, string issuer)
         {
+            var jwtSettings = new JwtSettings(secret, issuer);
+            services.AddScoped<IJwtSettings>(provider => jwtSettings);
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
@@ -35,10 +37,9 @@ namespace EffortlessApi.Extensions
 
                     ValidIssuer = issuer,
                     // ValidAudience = "http://localhost:5000",
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SigningKey))
                 };
             });
-            services.AddScoped<IJwtSettings>(provider => new JwtSettings(secret, issuer));
         }
     }
 }

@@ -83,7 +83,7 @@ namespace EffortlessApi.Controllers
             return Ok(new { User = fetchedUser, Token = token });
         }
 
-        [HttpGet, Authorize(Roles = "admin"), Route("config")]
+        [HttpGet("config"), Authorize(Roles = "admin")]
         public IActionResult GetSettings()
         {
             return Ok($"Signing Key: {_jwtSettings.SigningKey}, Issuer: {_jwtSettings.Issuer}");

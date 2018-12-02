@@ -15,11 +15,8 @@ namespace EffortlessApi.Core
                 var hmac = new HMACSHA256();
                 signingKey = Convert.ToBase64String(hmac.Key);
             }
-            else
-            {
-                SigningKey = signingKey;
-            }
 
+            SigningKey = signingKey;
             Issuer = issuer;
         }
     }
