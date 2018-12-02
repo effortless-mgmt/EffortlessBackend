@@ -8,22 +8,22 @@ using System.Threading.Tasks;
 using EffortlessApi.Core;
 using EffortlessApi.Core.Models;
 using EffortlessApi.Persistence;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace EffortlessApi.Controllers 
 {
-    [Route ("api/[controller]")]
+    [Route("api/[controller]")]
     public class AuthController : Controller 
     {
-        // private readonly EffortlessContext _context;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IJwtSettings _jwtSettings;
 
-        public AuthController(EffortlessContext context) 
+        public AuthController(EffortlessContext context, IJwtSettings jwtSettings) 
         {
             _unitOfWork = new UnitOfWork(context);
+            _jwtSettings = jwtSettings;
         }
 
         private async Task<ClaimsIdentity> GetClaimsIdentityAsync(User user) 
@@ -48,12 +48,12 @@ namespace EffortlessApi.Controllers
 
         private string GetJwtToken(ClaimsIdentity identity) 
         {
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes ("fNGxeQqjhXhRduHA"));
+            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SigningKey));
             var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
-            var token = new JwtSecurityToken (
-                issuer: "http://localhost:5000",
-                audience: "http://localhost:5000",
+            var token = new JwtSecurityToken(
+                issuer: _jwtSettings.Issuer,
+                // audience: "http://localhost:5000",
                 claims : identity.Claims,
                 expires : DateTime.Now.AddMinutes(5),
                 signingCredentials : signingCredentials
@@ -63,27 +63,30 @@ namespace EffortlessApi.Controllers
         }
 
         [HttpPost, Route("login")]
-        public async Task<IActionResult> LoginAsync ([FromBody] User user) 
+        public async Task<IActionResult> LoginAsync([FromBody] User user) 
         {
             if (user == null || user.UserName == null || user.Password == null) 
             {
                 return BadRequest("Invalid client request.");
             }
 
-            // var fetchedUser = await _context.Users.FirstOrDefault(u => u.UserName == user.UserName);
-            // var fetchedUser = _context.Users.FirstOrDefault (u => u.UserName == user.UserName);
             var fetchedUser = await _unitOfWork.Users.GetByUsernameAsync(user.UserName);
 
             if (fetchedUser == null || user.Password != fetchedUser.Password) 
             {
-                return Forbid ("Username or password is incorrect.");
+                return Forbid("Username or password is incorrect.");
             }
 
             var identity = await GetClaimsIdentityAsync(fetchedUser);
             var token = GetJwtToken(identity);
 
             return Ok(new { User = fetchedUser, Token = token });
+        }
 
+        [HttpGet("config"), Authorize(Roles = "admin")]
+        public IActionResult GetSettings()
+        {
+            return Ok($"Signing Key: {_jwtSettings.SigningKey}, Issuer: {_jwtSettings.Issuer}");
         }
     }
 }
