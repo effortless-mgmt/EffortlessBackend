@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using EffortlessApi.Core;
 using EffortlessApi.Core.Models;
 using EffortlessApi.Persistence;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -17,10 +18,12 @@ namespace EffortlessApi.Controllers
     public class AuthController : Controller 
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IJwtSettings _jwtSettings;
 
-        public AuthController(EffortlessContext context) 
+        public AuthController(EffortlessContext context, IJwtSettings jwtSettings) 
         {
             _unitOfWork = new UnitOfWork(context);
+            _jwtSettings = jwtSettings;
         }
 
         private async Task<ClaimsIdentity> GetClaimsIdentityAsync(User user) 
@@ -45,11 +48,11 @@ namespace EffortlessApi.Controllers
 
         private string GetJwtToken(ClaimsIdentity identity) 
         {
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("fNGxeQqjhXhRduHA"));
+            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SigningKey));
             var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: "http://localhost:5000",
+                issuer: _jwtSettings.Issuer,
                 // audience: "http://localhost:5000",
                 claims : identity.Claims,
                 expires : DateTime.Now.AddMinutes(5),
@@ -78,6 +81,12 @@ namespace EffortlessApi.Controllers
             var token = GetJwtToken(identity);
 
             return Ok(new { User = fetchedUser, Token = token });
+        }
+
+        [HttpGet, Authorize(Roles = "admin"), Route("config")]
+        public IActionResult GetSettings()
+        {
+            return Ok($"Signing Key: {_jwtSettings.SigningKey}, Issuer: {_jwtSettings.Issuer}");
         }
     }
 }

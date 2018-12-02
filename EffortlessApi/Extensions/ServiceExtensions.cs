@@ -1,4 +1,5 @@
 using System.Text;
+using EffortlessApi.Core;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -37,6 +38,7 @@ namespace EffortlessApi.Extensions
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))
                 };
             });
+            services.AddScoped<IJwtSettings>(provider => new JwtSettings(secret, issuer));
         }
     }
 }

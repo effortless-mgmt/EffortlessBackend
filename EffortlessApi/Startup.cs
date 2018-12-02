@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EffortlessApi.Core;
 using EffortlessApi.Extensions;
 using EffortlessApi.Persistence;
 using Microsoft.AspNetCore.Builder;
@@ -35,15 +36,14 @@ namespace EffortlessApi
             var dbPass = Configuration["DB_PASS"] ?? "root";
 
             var authSigningKey = Configuration["AUTH_SIGNING_KEY"] ?? "fNGxeQqjhXhRduHA";
-            var authIssuer     = Configuration["AUTH_ISSUER"] ?? "localhost:5001";
+            var authIssuer     = Configuration["AUTH_ISSUER"] ?? null;
 
             var connectionString = $"User ID={dbUser}; Password={dbPass}; Server={dbHost}; port={dbPort}; Database=EffortlessApi;Integrated Security=true; Pooling=true;";
 
             services.AddEntityFrameworkNpgsql().AddDbContext<EffortlessContext>(opt => opt.UseNpgsql(connectionString));
             services.ConfigureCors();
             services.ConfigureAuthorization(authSigningKey, authIssuer);
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1).AddJsonOptions(o => 
-            {
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1).AddJsonOptions(o => {
                 o.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 o.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
