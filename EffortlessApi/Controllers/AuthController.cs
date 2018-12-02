@@ -11,14 +11,11 @@ using EffortlessApi.Persistence;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace EffortlessApi.Controllers 
 {
-    [Route ("api/[controller]")]
+    [Route("api/[controller]")]
     public class AuthController : Controller 
     {
-        // private readonly EffortlessContext _context;
         private readonly IUnitOfWork _unitOfWork;
 
         public AuthController(EffortlessContext context) 
@@ -48,10 +45,10 @@ namespace EffortlessApi.Controllers
 
         private string GetJwtToken(ClaimsIdentity identity) 
         {
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes ("fNGxeQqjhXhRduHA"));
+            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("fNGxeQqjhXhRduHA"));
             var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
-            var token = new JwtSecurityToken (
+            var token = new JwtSecurityToken(
                 issuer: "http://localhost:5000",
                 // audience: "http://localhost:5000",
                 claims : identity.Claims,
@@ -63,27 +60,24 @@ namespace EffortlessApi.Controllers
         }
 
         [HttpPost, Route("login")]
-        public async Task<IActionResult> LoginAsync ([FromBody] User user) 
+        public async Task<IActionResult> LoginAsync([FromBody] User user) 
         {
             if (user == null || user.UserName == null || user.Password == null) 
             {
                 return BadRequest("Invalid client request.");
             }
 
-            // var fetchedUser = await _context.Users.FirstOrDefault(u => u.UserName == user.UserName);
-            // var fetchedUser = _context.Users.FirstOrDefault (u => u.UserName == user.UserName);
             var fetchedUser = await _unitOfWork.Users.GetByUsernameAsync(user.UserName);
 
             if (fetchedUser == null || user.Password != fetchedUser.Password) 
             {
-                return Forbid ("Username or password is incorrect.");
+                return Forbid("Username or password is incorrect.");
             }
 
             var identity = await GetClaimsIdentityAsync(fetchedUser);
             var token = GetJwtToken(identity);
 
             return Ok(new { User = fetchedUser, Token = token });
-
         }
     }
 }
