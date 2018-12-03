@@ -67,7 +67,8 @@ namespace EffortlessApi.Controllers
         {
             List<DepartmentDTO> departmentDTOs = new List<DepartmentDTO>();
             var companyModel = await _unitOfWork.Companies.GetByIdAsync(id);
-            var departmentModels = await _unitOfWork.Department.FindAsync(d => d.Company.Pno == companyModel.Pno);
+            var departmentModels = await _unitOfWork.Departments.FindAsync(d => d.CompanyId == companyModel.Id);
+
             if (departmentModels == null) return NotFound($"Company {id} does not have any departments.");
 
             foreach (Department c in departmentModels)

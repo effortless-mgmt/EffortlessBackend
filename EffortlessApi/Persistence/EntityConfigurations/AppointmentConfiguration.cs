@@ -8,8 +8,8 @@ namespace EffortlessApi.Persistence.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<Appointment> builder)
         {
-            builder.HasOne<User>(a => a.ApprovedBy).WithMany().HasForeignKey(a => a.ApprovedByUserId);
-            builder.HasOne<User>(a => a.CreatedBy).WithMany().HasForeignKey(a => a.CreatedByUserId);
+            // builder.HasOne<User>(a => a.ApprovedBy).WithMany().HasForeignKey(a => a.ApprovedByUserId);
+            // builder.HasOne<User>(a => a.CreatedBy).WithMany().HasForeignKey(a => a.CreatedByUserId);
         }
     }
 }

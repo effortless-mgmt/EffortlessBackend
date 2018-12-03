@@ -15,10 +15,12 @@ namespace EffortlessApi.Persistence
             Users = new UserRepository(_context);
             Addresses = new AddressRepository(_context);
             Agreements = new AgreementRepository(_context);
-            Department = new DepartmentRepository(_context);
+            Appointments = new AppointmentRepository(_context);
+            Departments = new DepartmentRepository(_context);
             Companies = new CompanyRepository(_context);
             Privileges = new PrivilegeRepository(_context);
             Roles = new RoleRepository(_context);
+            WorkPeriods = new WorkPeriodRepository(_context);
         }
 
         public UnitOfWork(IUserRepository users, IAddressRepository addresses, IAgreementRepository agreements)
@@ -31,12 +33,14 @@ namespace EffortlessApi.Persistence
 
         public IUserRepository Users { get; private set; }
         public IAddressRepository Addresses { get; private set; }
+        public IAppointmentRepository Appointments { get; private set; }
         public IAgreementRepository Agreements { get; private set; }
-        public IDepartmentRepository Department { get; private set; }
+        public IDepartmentRepository Departments { get; private set; }
         public ICompanyRepository Companies { get; private set; }
         public IPrivilegeRepository Privileges { get; private set; }
 
         public IRoleRepository Roles { get; private set; }
+        public IWorkPeriodRepository WorkPeriods { get; set; }
 
         public async Task<int> CompleteAsync()
         {

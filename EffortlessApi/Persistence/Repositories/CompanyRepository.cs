@@ -16,9 +16,9 @@ namespace EffortlessApi.Persistence.Repositories
             get { return _context as EffortlessContext; }
         }
 
-        public async Task<Company> FindByPno(int pno)
+        public async Task<Company> FindByVat(int vat)
         {
-            return await _context.Set<Company>().FirstOrDefaultAsync(c => c.Pno == pno);
+            return await _context.Set<Company>().FirstOrDefaultAsync(c => c.Vat == vat);
         }
 
         public async Task UpdateAsync(long companyId, Company newCompany)

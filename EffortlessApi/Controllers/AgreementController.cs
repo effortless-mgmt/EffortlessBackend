@@ -17,8 +17,8 @@ namespace EffortlessApi.Controllers
 
         public AgreementController(EffortlessContext context, IMapper mapper)
         {
-            _mapper = mapper;
             _unitOfWork = new UnitOfWork(context);
+            _mapper = mapper;
         }
 
         [HttpGet]

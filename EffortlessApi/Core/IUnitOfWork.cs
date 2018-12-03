@@ -9,10 +9,12 @@ namespace EffortlessApi.Core
         IUserRepository Users { get; }
         IAddressRepository Addresses { get; }
         IAgreementRepository Agreements { get; }
-        IDepartmentRepository Department { get; }
+        IAppointmentRepository Appointments { get; }
+        IDepartmentRepository Departments { get; }
         ICompanyRepository Companies { get; }
         IPrivilegeRepository Privileges { get; }
         IRoleRepository Roles { get; }
+        IWorkPeriodRepository WorkPeriods { get; }
         Task<int> CompleteAsync();
     }
 }
