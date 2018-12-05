@@ -15,13 +15,7 @@ namespace EffortlessLibrary.DTO
         public AddressDTO Address { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        // public virtual IList<string> Privileges
-        // {
-        //     get 
-        //     {
-        //         if (UserRoles == null) return null;
-        //         return UserRoles.Select(ur => ur.Role).SelectMany(r => r.PrivilegeNames).ToList();
-        //     }
-        // }
+        [JsonIgnore]
+        public virtual ICollection<UserRoleDTO> UserRoles { get; set; }
     }
 }
