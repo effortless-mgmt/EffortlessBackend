@@ -60,7 +60,7 @@ namespace EffortlessApi.Controllers
             await _unitOfWork.Privileges.AddAsync(privilegeModel);
             await _unitOfWork.CompleteAsync();
 
-            return CreatedAtRoute("GetPrivilege", new { privilegeId = privilegeModel.Id }, privilegeModel);
+            return CreatedAtRoute("GetPrivilege", new { privilegeId = privilegeDTO.Id }, privilegeDTO);
         }
 
         [HttpPut("{privilegeId}")]
@@ -75,7 +75,7 @@ namespace EffortlessApi.Controllers
             await _unitOfWork.Privileges.UpdateAsync(privilegeId, PrivilegeModel);
             await _unitOfWork.CompleteAsync();
 
-            return Ok(existingPrivilege);
+            return Ok(privilegeDTO);
         }
 
         [HttpDelete("{privilegeId}")]
