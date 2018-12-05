@@ -12,6 +12,5 @@ namespace EffortlessLibrary.DTO
         public DepartmentDTO Department { get; set; }
         public DateTime Start { get; set; }
         public DateTime LastAppointment { get; set; }
-
     }
 }

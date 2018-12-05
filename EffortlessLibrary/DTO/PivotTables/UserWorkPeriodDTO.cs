@@ -1,10 +1,6 @@
-<<<<<<< HEAD:EffortlessLibrary/DTO/UserWorkPeriodDTO.cs
 using Newtonsoft.Json;
 
 namespace EffortlessLibrary.DTO
-=======
-namespace EffortlessLibrary.DTO.PivotTables
->>>>>>> feature/DTO_Roles:EffortlessLibrary/DTO/PivotTables/UserWorkPeriodDTO.cs
 {
     public class UserWorkPeriodDTO
     {

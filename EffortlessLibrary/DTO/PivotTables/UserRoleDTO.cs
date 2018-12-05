@@ -1,7 +1,6 @@
-using EffortlessLibrary.DTO.Role;
 using Newtonsoft.Json;
 
-namespace EffortlessLibrary.DTO.PivotTables
+namespace EffortlessLibrary.DTO
 {
     public class UserRoleDTO
     {

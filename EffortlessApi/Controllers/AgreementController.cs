@@ -26,7 +26,7 @@ namespace EffortlessApi.Controllers
         public async Task<IActionResult> GetAllAsync()
         {
             var agreementModels = await _unitOfWork.Agreements.GetAllAsync();
-            if (agreementModels == null) return NotFound();
+            if (agreementModels == null) return NotFound("Could not find any agreements.");
 
             var agreementDTOs = _mapper.Map<List<AgreementDTO>>(agreementModels);
 
@@ -52,22 +52,25 @@ namespace EffortlessApi.Controllers
             var agreementModel = _mapper.Map<Agreement>(agreementDTO);
             await _unitOfWork.Agreements.AddAsync(agreementModel);
             await _unitOfWork.CompleteAsync();
+            agreementDTO = _mapper.Map<AgreementDTO>(agreementModel);
 
-            return CreatedAtRoute("GetAgreement", new { id = agreementModel.Id }, agreementModel);
+            return CreatedAtRoute("GetAgreement", new { id = agreementDTO.Id }, agreementDTO);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(long id, AgreementDTO agreementDTO)
         {
-            var existingAgreement = _unitOfWork.Agreements.GetByIdAsync(id);
-            if (existingAgreement == null) return NotFound($"Agreement {id} could not be found.");
+            var existing = await _unitOfWork.Agreements.GetByIdAsync(id);
+            if (existing == null) return NotFound($"Agreement {id} could not be found.");
 
-            var workPeriods = _unitOfWork.WorkPeriods.FindAsync(w => w.AgreementId == id);
-            if (workPeriods != null) return BadRequest("Can not change agreement as one or more work periods depend on it. Please create a new one.");
+            var workPeriods = await _unitOfWork.WorkPeriods.FindAsync(w => w.AgreementId == id);
+            if (workPeriods.ToList().Count != 0) return BadRequest("Can not change agreement as one or more work periods depend on it. Please create a new one.");
 
             var agreementModel = _mapper.Map<Agreement>(agreementDTO);
             await _unitOfWork.Agreements.UpdateAsync(id, agreementModel);
             await _unitOfWork.CompleteAsync();
+
+            agreementDTO = _mapper.Map<AgreementDTO>(existing);
 
             return Ok(agreementDTO);
         }
