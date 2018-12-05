@@ -45,7 +45,7 @@ namespace EffortlessApi.Controllers
             return Ok(workPeriodDTOs);
         }
 
-        [HttpGet("id", Name = "GetWorkPeriod")]
+        [HttpGet("{id}", Name = "GetWorkPeriod")]
         public async Task<IActionResult> GetById(long id)
         {
             var workPeriodModel = await _unitOfWork.WorkPeriods.GetByIdAsync(id);
@@ -53,13 +53,23 @@ namespace EffortlessApi.Controllers
 
             var workPeriodDTO = _mapper.Map<WorkPeriodOutDTO>(workPeriodModel);
             workPeriodDTO.Agreement = _mapper.Map<AgreementDTO>(await _unitOfWork.Agreements.GetByIdAsync(workPeriodModel.AgreementId));
-            workPeriodDTO.Department = _mapper.Map<DepartmentDTO>(await _unitOfWork.Agreements.GetByIdAsync(workPeriodModel.DepartmentId));
+            workPeriodDTO.Appointments = _mapper.Map<List<AppointmentWpDTO>>(await _unitOfWork.Appointments.FindAsync(a => a.WorkPeriodId == id));
+            workPeriodDTO.Department = _mapper.Map<DepartmentDTO>(await _unitOfWork.Departments.GetByIdAsync(workPeriodModel.DepartmentId));
             workPeriodDTO.Department.Address = _mapper.Map<AddressDTO>(await _unitOfWork.Addresses.GetByIdAsync(workPeriodModel.Department.AddressId));
             workPeriodDTO.Department.Company = _mapper.Map<CompanySimpleDTO>(await _unitOfWork.Companies.GetByIdAsync(workPeriodModel.Department.CompanyId));
-            // workPeriodDTO.Appointments = _mapper.Map<List<AppointmentWpDTO>>(await _unitOfWork.Appoint);
+            workPeriodDTO.UserWorkPeriods = _mapper.Map<List<UserWorkPeriodDTO>>(await _unitOfWork.UserWorkPeriods.FindAsync(u => u.WorkPeriodId == id));
+
+            foreach (AppointmentWpDTO a in workPeriodDTO.Appointments)
+            {
+                a.Owner = _mapper.Map<UserStrippedDTO>(await _unitOfWork.Users.GetByIdAsync(a.OwnerId));
+            }
+
+            foreach (UserWorkPeriodDTO u in workPeriodDTO.UserWorkPeriods)
+            {
+                u.User = _mapper.Map<UserStrippedDTO>(await _unitOfWork.Users.GetByIdAsync(u.UserId));
+            }
 
             return Ok(workPeriodDTO);
-
         }
 
         [HttpPost]
@@ -73,6 +83,7 @@ namespace EffortlessApi.Controllers
             if (ModelState.IsValid)
             {
                 var workPeriodModel = _mapper.Map<WorkPeriod>(workPeriodInDTO);
+                workPeriodModel.Active = true;
                 await _unitOfWork.WorkPeriods.AddAsync(workPeriodModel);
                 await _unitOfWork.CompleteAsync();
 
@@ -106,6 +117,39 @@ namespace EffortlessApi.Controllers
             {
                 return BadRequest("Please fill all the required fields.");
             }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAsync(long id, WorkPeriodInDTO newWorkPeriodDTO)
+        {
+            var oldWorkPeriodModel = await _unitOfWork.WorkPeriods.GetByIdAsync(id);
+            if (oldWorkPeriodModel == null) return NotFound($"Work period {id} could not be found.");
+            if (oldWorkPeriodModel.DepartmentId != newWorkPeriodDTO.DepartmentId) return BadRequest($"Please create a new work period for department {newWorkPeriodDTO.DepartmentId}. This instance belongs to {oldWorkPeriodModel.DepartmentId}.");
+
+            newWorkPeriodDTO.Id = id;
+            var newWorkPeriodModel = _mapper.Map<WorkPeriod>(newWorkPeriodDTO);
+            await _unitOfWork.WorkPeriods.UpdateAsync(id, newWorkPeriodModel);
+            await _unitOfWork.CompleteAsync();
+
+            return Ok(newWorkPeriodDTO);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAsync(long id)
+        {
+            var workPeriodModel = await _unitOfWork.WorkPeriods.GetByIdAsync(id);
+            if (workPeriodModel == null) return NoContent();
+
+            var workPeriodAppointmentModels = await _unitOfWork.Appointments.FindAsync(a => a.WorkPeriodId == id);
+            foreach (Appointment a in workPeriodAppointmentModels)
+            {
+                if (a.OwnerId != 0) return BadRequest($"Can not delete work period {id} as it seems to contain active appointments.");
+            }
+
+            _unitOfWork.WorkPeriods.Remove(workPeriodModel);
+            await _unitOfWork.CompleteAsync();
+
+            return NoContent();
         }
     }
 }

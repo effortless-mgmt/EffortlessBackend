@@ -9,10 +9,12 @@ namespace EffortlessLibrary.DTO
     {
         public long Id { get; set; }
         public string Name { get; set; }
+        [JsonIgnore]
+        public long AgreementId { get; set; }
         public AgreementDTO Agreement { get; set; }
         [JsonIgnore]
         public ICollection<UserWorkPeriodDTO> UserWorkPeriods { get; set; }
-        public IList<UserDTO> AssignedUsers
+        public IList<UserStrippedDTO> AssignedUsers
         {
             get
             {
@@ -20,9 +22,8 @@ namespace EffortlessLibrary.DTO
                 return UserWorkPeriods.Select(ut => ut.User).ToList();
             }
         }
-
         public DepartmentDTO Department { get; set; }
-        public ICollection<AppointmentSimpleDTO> Appointments { get; set; }
+        public IList<AppointmentWpDTO> Appointments { get; set; }
         public DateTime Start { get; set; }
         public DateTime LastAppointmentDate
         {

@@ -102,7 +102,9 @@ namespace EffortlessApi.Controllers
             if (!ModelState.IsValid || appointmentDTO == null) return BadRequest("Please fill out the required fields.");
 
             var appointmentModel = _mapper.Map<Appointment>(appointmentDTO);
+            var userPeriodModel = _mapper.Map<UserWorkPeriod>(new UserWorkPeriodDTO(appointmentDTO.OwnerId, appointmentDTO.WorkPeriodId));
             await _unitOfWork.Appointments.AddAsync(appointmentModel);
+            await _unitOfWork.UserWorkPeriods.AddAsync(userPeriodModel);
             await _unitOfWork.CompleteAsync();
 
             return CreatedAtRoute("GetAppointment", new { id = appointmentModel.Id }, appointmentDTO);

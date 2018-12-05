@@ -21,6 +21,7 @@ namespace EffortlessApi.Persistence
             Privileges = new PrivilegeRepository(_context);
             Roles = new RoleRepository(_context);
             WorkPeriods = new WorkPeriodRepository(_context);
+            UserWorkPeriods = new UserWorkPeriodRepository(_context);
         }
 
         public UnitOfWork(IUserRepository users, IAddressRepository addresses, IAgreementRepository agreements)
@@ -40,6 +41,7 @@ namespace EffortlessApi.Persistence
         public IPrivilegeRepository Privileges { get; private set; }
 
         public IRoleRepository Roles { get; private set; }
+        public IUserWorkPeriodRepository UserWorkPeriods { get; private set; }
         public IWorkPeriodRepository WorkPeriods { get; set; }
 
         public async Task<int> CompleteAsync()

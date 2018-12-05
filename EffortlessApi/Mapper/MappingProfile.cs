@@ -22,10 +22,10 @@ namespace EffortlessApi.Mapper
             CreateMap<AppointmentDTO, Appointment>();
             CreateMap<AppointmentInDTO, Appointment>();
             CreateMap<Appointment, AppointmentInDTO>();
-            CreateMap<Appointment, AppointmentSimpleDTO>();
-            CreateMap<AppointmentSimpleDTO, Appointment>();
             CreateMap<Appointment, AppointmentStrippedDTO>();
             CreateMap<AppointmentStrippedDTO, Appointment>();
+            CreateMap<Appointment, AppointmentWpDTO>();
+            CreateMap<AppointmentWpDTO, Appointment>();
 
             //Company
             CreateMap<Company, CompanyDTO>();
@@ -44,6 +44,10 @@ namespace EffortlessApi.Mapper
             CreateMap<UserDTO, User>();
             CreateMap<User, UserStrippedDTO>();
             CreateMap<UserStrippedDTO, User>();
+
+            //UserWorkPeriod
+            CreateMap<UserWorkPeriod, UserWorkPeriodDTO>();
+            CreateMap<UserWorkPeriodDTO, UserWorkPeriod>();
 
             //WorkPeriod
             CreateMap<WorkPeriodInDTO, WorkPeriod>();

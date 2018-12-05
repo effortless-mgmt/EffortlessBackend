@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 
 namespace EffortlessLibrary.DTO
 {
@@ -8,11 +9,10 @@ namespace EffortlessLibrary.DTO
         public DateTime Start { get; set; }
         public DateTime Stop { get; set; }
         public long Break { get; set; }
-        public TimeSpan BreakTimeSpan => new TimeSpan(Break);
-        public UserDTO Owner { get; set; }
+        [JsonIgnore]
+        public long OwnerId { get; set; }
+        public UserStrippedDTO Owner { get; set; }
+        [JsonIgnore]
         public long WorkPeriodId { get; set; }
-        public UserDTO CreatedBy { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public decimal Earnings { get; set; }
     }
 }
