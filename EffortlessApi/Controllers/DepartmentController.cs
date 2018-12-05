@@ -26,21 +26,19 @@ namespace EffortlessApi.Controllers
         public async Task<IActionResult> GetAllAsync()
         {
             AddressDTO addressDTO;
-            DepartmentDTO departmentDTO;
             CompanySimpleDTO companyDTO;
-            List<DepartmentDTO> departmentDTOs = new List<DepartmentDTO>();
 
             var departmentModels = await _unitOfWork.Departments.GetAllAsync();
             if (departmentModels == null) return NotFound();
 
-            foreach (Department d in departmentModels)
+            var departmentDTOs = _mapper.Map<List<DepartmentDTO>>(departmentModels);
+
+            foreach (DepartmentDTO d in departmentDTOs)
             {
-                departmentDTO = _mapper.Map<DepartmentDTO>(d);
                 companyDTO = _mapper.Map<CompanySimpleDTO>(await _unitOfWork.Companies.GetByIdAsync(d.CompanyId));
                 addressDTO = _mapper.Map<AddressDTO>(await _unitOfWork.Addresses.GetByIdAsync(d.AddressId));
-                departmentDTO.Company = companyDTO;
-                departmentDTO.Address = addressDTO;
-                departmentDTOs.Add(departmentDTO);
+                d.Company = companyDTO;
+                d.Address = addressDTO;
             }
 
             return Ok(departmentDTOs);

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using EffortlessApi.Core;
@@ -33,33 +34,26 @@ namespace EffortlessApi.Controllers
             UserStrippedDTO userDTO;
             List<AppointmentStrippedDTO> appointmentDTOs = new List<AppointmentStrippedDTO>();
 
-            try
+            var appointmentModels = await _unitOfWork.Appointments.GetAllAsync();
+            if (appointmentModels == null) return NotFound($"No appointments could be found");
+
+            foreach (Appointment a in appointmentModels)
             {
-                var appointmentModels = await _unitOfWork.Appointments.GetAllAsync();
+                appointmentDTO = _mapper.Map<AppointmentStrippedDTO>(await _unitOfWork.Appointments.GetByIdAsync(a.Id));
+                workPeriodDTO = _mapper.Map<WorkPeriodStrippedDTO>(await _unitOfWork.WorkPeriods.GetByIdAsync(a.WorkPeriodId));
+                departmentDTO = _mapper.Map<DepartmentStrippedDTO>(await _unitOfWork.Departments.GetByIdAsync(workPeriodDTO.DepartmentId));
+                userDTO = _mapper.Map<UserStrippedDTO>(await _unitOfWork.Users.GetByIdAsync(appointmentDTO.OwnerId));
 
-                foreach (Appointment a in appointmentModels)
-                {
-                    appointmentDTO = _mapper.Map<AppointmentStrippedDTO>(await _unitOfWork.Appointments.GetByIdAsync(a.Id));
-                    workPeriodDTO = _mapper.Map<WorkPeriodStrippedDTO>(await _unitOfWork.WorkPeriods.GetByIdAsync(a.WorkPeriodId));
-                    departmentDTO = _mapper.Map<DepartmentStrippedDTO>(await _unitOfWork.Departments.GetByIdAsync(workPeriodDTO.DepartmentId));
-                    userDTO = _mapper.Map<UserStrippedDTO>(await _unitOfWork.Users.GetByIdAsync(appointmentDTO.OwnerId));
+                if (departmentDTO == null || workPeriodDTO == null) return BadRequest("Trying to fetch faulty appointments. One or more appointments are not linked to a workperiod and/or workperiod is not linked to a department.");
 
-                    if (departmentDTO == null || workPeriodDTO == null) return BadRequest("Trying to fetch faulty appointments. One or more appointments are not linked to a workperiod and/or workperiod is not linked to a department.");
+                appointmentDTO.workPeriod = workPeriodDTO;
+                appointmentDTO.workPeriod.Department = departmentDTO;
+                appointmentDTO.Owner = userDTO;
 
-                    appointmentDTO.workPeriod = workPeriodDTO;
-                    appointmentDTO.workPeriod.Department = departmentDTO;
-                    appointmentDTO.Owner = userDTO;
-
-                    appointmentDTOs.Add(appointmentDTO);
-                }
-
-                return Ok(appointmentDTOs);
+                appointmentDTOs.Add(appointmentDTO);
             }
-            catch (NullReferenceException e)
-            {
-                return NotFound($"No appointments could be found. \n \nStacktrace: {e.StackTrace}");
-            }
-            // if (appointmentModels == null) return NotFound("No appointments could be found.");
+
+            return Ok(appointmentDTOs.OrderBy(a => a.Id));
         }
 
         [HttpGet("{id}", Name = "GetAppointment")]

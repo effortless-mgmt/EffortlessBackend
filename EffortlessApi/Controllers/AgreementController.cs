@@ -30,7 +30,7 @@ namespace EffortlessApi.Controllers
 
             var agreementDTOs = _mapper.Map<List<AgreementDTO>>(agreementModels);
 
-            return Ok(agreementDTOs);
+            return Ok(agreementDTOs.OrderBy(a => a.Id));
         }
 
         [HttpGet("{id}", Name = "GetAgreement")]

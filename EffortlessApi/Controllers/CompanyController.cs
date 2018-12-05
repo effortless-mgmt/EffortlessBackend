@@ -36,23 +36,22 @@ namespace EffortlessApi.Controllers
             if (companyModels == null) return NotFound();
 
             var companyDTOs = _mapper.Map<List<CompanyDTO>>(companyModels);
-            var companyModelList = companyModels.ToList();
 
-            for (int i = 0; i < companyDTOs.Count; i++)
+            foreach (CompanyDTO c in companyDTOs)
             {
-                addressModel = await _unitOfWork.Addresses.GetByIdAsync(companyModelList[i].AddressId);
+                addressModel = await _unitOfWork.Addresses.GetByIdAsync(c.AddressId);
                 addressDTO = _mapper.Map<AddressDTO>(addressModel);
-                companyDTOs[i].Address = addressDTO;
+                c.Address = addressDTO;
             }
 
             return Ok(companyDTOs.OrderBy(c => c.Id));
         }
 
-        [HttpGet("{companyId}", Name = "GetCompany")]
-        public async Task<IActionResult> GetByIdAsync(long companyId)
+        [HttpGet("{id}", Name = "GetCompany")]
+        public async Task<IActionResult> GetByIdAsync(long id)
         {
-            var companyModel = await _unitOfWork.Companies.GetByIdAsync(companyId);
-            if (companyModel == null) return NotFound($"Company {companyId} could not be found.");
+            var companyModel = await _unitOfWork.Companies.GetByIdAsync(id);
+            if (companyModel == null) return NotFound($"Company {id} could not be found.");
 
             var addressModel = await _unitOfWork.Addresses.GetByIdAsync(companyModel?.AddressId);
             var companyDTO = _mapper.Map<CompanyDTO>(companyModel);
@@ -65,25 +64,27 @@ namespace EffortlessApi.Controllers
         [HttpGet("{id}/departments")]
         public async Task<IActionResult> GetDepartmentsAsync(long id)
         {
-            List<DepartmentDTO> departmentDTOs = new List<DepartmentDTO>();
             var companyModel = await _unitOfWork.Companies.GetByIdAsync(id);
             var departmentModels = await _unitOfWork.Departments.FindAsync(d => d.CompanyId == companyModel.Id);
 
             if (departmentModels == null) return NotFound($"Company {id} does not have any departments.");
 
-            foreach (Department c in departmentModels)
+            var departmentDTOs = _mapper.Map<List<DepartmentDTO>>(departmentModels);
+
+            foreach (DepartmentDTO c in departmentDTOs)
             {
-                var tempDepDTO = _mapper.Map<DepartmentDTO>(c);
-                tempDepDTO.Address = _mapper.Map<AddressDTO>(await _unitOfWork.Addresses.GetByIdAsync(c.AddressId));
-                departmentDTOs.Add(tempDepDTO);
+                c.Address = _mapper.Map<AddressDTO>(await _unitOfWork.Addresses.GetByIdAsync(c.AddressId));
             }
 
-            return Ok(departmentDTOs);
+            return Ok(departmentDTOs.OrderBy(d => d.Id));
         }
+
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] CompanyDTO companyDTO)
+        public async Task<IActionResult> CreateAsync([FromBody] CompanyDTO companyDTO)
         {
             var companyModel = _mapper.Map<Company>(companyDTO);
+            if (companyModel == null) return BadRequest();
+
             var addressModel = _mapper.Map<Address>(companyDTO.Address);
             if (addressModel != null)
             {
@@ -92,50 +93,47 @@ namespace EffortlessApi.Controllers
                 companyModel.AddressId = addressModel.Id;
             }
 
-            if (companyModel == null) return BadRequest();
-
             await _unitOfWork.Companies.AddAsync(companyModel);
             await _unitOfWork.CompleteAsync();
 
-            companyDTO.Id = companyModel.Id;
-            companyDTO.Address.Id = (long)companyModel.AddressId;
+            companyDTO = _mapper.Map<CompanyDTO>(companyModel);
 
-            return CreatedAtRoute("GetCompany", new { companyId = companyModel.Id }, companyDTO);
+            return CreatedAtRoute("GetCompany", new { id = companyDTO.Id }, companyDTO);
         }
 
-        [HttpPut("{companyId}")]
-        public async Task<IActionResult> Put(long companyId, CompanyDTO companyDTO)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAsync(long id, CompanyDTO companyDTO)
         {
-            var existingCompany = await _unitOfWork.Companies.GetByIdAsync(companyId);
-            if (existingCompany == null) return NotFound($"Company {companyId} could not be found.");
+            var existing = await _unitOfWork.Companies.GetByIdAsync(id);
+            if (existing == null) return NotFound($"Company {id} could not be found.");
 
             var companyModel = _mapper.Map<Company>(companyDTO);
-            await _unitOfWork.Companies.UpdateAsync(companyId, companyModel);
 
             var companyAddressModel = _mapper.Map<Address>(companyDTO.Address);
-            // var address = await _unitOfWork.Addresses.GetByIdAsync(companyAddressModel.Id);
 
-            await _unitOfWork.Addresses.UpdateAsync(companyAddressModel.Id, companyAddressModel);
-            await _unitOfWork.CompleteAsync();
+            if (companyAddressModel != null)
+            {
+                await _unitOfWork.Addresses.AddAsync(companyAddressModel);
+                await _unitOfWork.CompleteAsync();
+            }
+
+            await _unitOfWork.Companies.UpdateAsync(id, companyModel);
+            companyDTO = _mapper.Map<CompanyDTO>(existing);
 
             return Ok(companyDTO);
         }
 
-        [HttpDelete("{companyId}")]
-        public async Task<IActionResult> Delete(long companyId)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(long id)
         {
-            var company = await _unitOfWork.Companies.GetByIdAsync(companyId);
+            var company = await _unitOfWork.Companies.GetByIdAsync(id);
 
-            if (company == null)
-            {
-                return NoContent();
-            }
+            if (company == null) return NoContent();
 
             _unitOfWork.Companies.Remove(company);
-
             await _unitOfWork.CompleteAsync();
 
-            return Ok(company);
+            return NoContent();
         }
     }
 }
