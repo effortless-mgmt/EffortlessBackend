@@ -8,6 +8,7 @@ using EffortlessApi.Persistence;
 using EffortlessLibrary.DTO;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using EffortlessLibrary.DTO.Address;
 
 namespace EffortlessApi.Controllers
 {

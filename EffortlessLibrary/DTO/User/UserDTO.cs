@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using EffortlessLibrary.DTO.Address;
 using Newtonsoft.Json;
 
 namespace EffortlessLibrary.DTO

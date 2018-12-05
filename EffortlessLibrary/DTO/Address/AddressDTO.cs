@@ -1,4 +1,4 @@
-namespace EffortlessLibrary.DTO
+namespace EffortlessLibrary.DTO.Address
 {
     public class AddressDTO
     {

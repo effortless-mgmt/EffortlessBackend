@@ -6,6 +6,8 @@ using EffortlessApi.Core;
 using EffortlessApi.Core.Models;
 using EffortlessApi.Persistence;
 using EffortlessLibrary.DTO;
+using EffortlessLibrary.DTO.Address;
+using EffortlessLibrary.DTO.PivotTables;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EffortlessApi.Controllers

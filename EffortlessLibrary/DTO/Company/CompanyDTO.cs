@@ -1,3 +1,5 @@
+using EffortlessLibrary.DTO.Address;
+
 namespace EffortlessLibrary.DTO
 {
     public class CompanyDTO

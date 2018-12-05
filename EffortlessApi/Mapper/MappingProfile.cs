@@ -2,6 +2,9 @@ using System;
 using AutoMapper;
 using EffortlessApi.Core.Models;
 using EffortlessLibrary.DTO;
+using EffortlessLibrary.DTO.Address;
+using EffortlessLibrary.DTO.Privilege;
+using EffortlessLibrary.DTO.Role;
 
 namespace EffortlessApi.Mapper
 {
@@ -49,6 +52,16 @@ namespace EffortlessApi.Mapper
             CreateMap<WorkPeriodInDTO, WorkPeriod>();
             CreateMap<WorkPeriod, WorkPeriodOutDTO>();
             CreateMap<WorkPeriodOutDTO, WorkPeriod>();
+
+            //Role
+            CreateMap<Role, RoleDTO>();
+            CreateMap<RoleDTO, Role>();
+            CreateMap<Role, RoleSimpleDTO>();
+            CreateMap<RoleSimpleDTO, Role>();
+
+            //Privilege
+            CreateMap<Privilege, PrivilegeDTO>();
+            CreateMap<PrivilegeDTO, Privilege>();
         }
     }
 }

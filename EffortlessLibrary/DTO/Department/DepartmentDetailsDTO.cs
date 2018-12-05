@@ -1,3 +1,4 @@
+using EffortlessLibrary.DTO.Address;
 using Newtonsoft.Json;
 
 namespace EffortlessLibrary.DTO.Department

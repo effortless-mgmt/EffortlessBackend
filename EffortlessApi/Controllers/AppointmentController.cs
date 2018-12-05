@@ -6,6 +6,7 @@ using EffortlessApi.Core;
 using EffortlessApi.Core.Models;
 using EffortlessApi.Persistence;
 using EffortlessLibrary.DTO;
+using EffortlessLibrary.DTO.Address;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EffortlessApi.Controllers

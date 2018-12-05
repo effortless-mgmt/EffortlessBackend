@@ -1,4 +1,4 @@
-namespace EffortlessLibrary.DTO
+namespace EffortlessLibrary.DTO.PivotTables
 {
     public class UserWorkPeriodDTO
     {

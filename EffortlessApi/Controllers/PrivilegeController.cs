@@ -1,7 +1,11 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using EffortlessApi.Core;
 using EffortlessApi.Core.Models;
 using EffortlessApi.Persistence;
+using EffortlessLibrary.DTO.Privilege;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EffortlessApi.Controllers
@@ -12,59 +16,70 @@ namespace EffortlessApi.Controllers
     {
 
         private readonly IUnitOfWork _unitOfWork;
-        public PrivilegeController(EffortlessContext context) => _unitOfWork = new UnitOfWork(context);
+        private readonly IMapper _mapper;
+        public PrivilegeController(EffortlessContext context, IMapper mapper)
+        {
+            _unitOfWork = new UnitOfWork(context);
+            _mapper = mapper;
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            var privileges = await _unitOfWork.Privileges.GetAllAsync();
+            var privilegeModels = await _unitOfWork.Privileges.GetAllAsync();
 
-            if (privileges == null) return NotFound();
+            if (privilegeModels == null) return NotFound();
 
-            return Ok(privileges);
+            var privilegeDTOs = _mapper.Map<List<PrivilegeDTO>>(privilegeModels);
+
+            return Ok(privilegeDTOs.OrderBy(p => p.Id));
         }
 
         [HttpGet("{privilegeId}", Name = "GetPrivilege")]
         public async Task<IActionResult> GetByIdAsync(long privilegeId)
         {
-            var privilege = await _unitOfWork.Privileges.GetByIdAsync(privilegeId);
+            var privilegeModel = await _unitOfWork.Privileges.GetByIdAsync(privilegeId);
 
-            if (privilege == null)
+            if (privilegeModel == null)
             {
                 return NotFound($"Privilege {privilegeId} could not be found.");
             }
 
-            return Ok(privilege);
+            var privilegeDTO = _mapper.Map<PrivilegeDTO>(privilegeModel);
+
+            return Ok(privilegeDTO);
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync(Privilege privilege)
+        public async Task<IActionResult> CreateAsync([FromBody] PrivilegeDTO privilegeDTO)
         {
-            var existingPrivilege = await _unitOfWork.Privileges.GetByIdAsync(privilege.Id);
+            if (privilegeDTO == null) return BadRequest();
 
-            if (existingPrivilege != null) return Ok(privilege);
+            var privilegeModel = _mapper.Map<Privilege>(privilegeDTO);
 
-            await _unitOfWork.Privileges.AddAsync(privilege);
+            await _unitOfWork.Privileges.AddAsync(privilegeModel);
             await _unitOfWork.CompleteAsync();
 
-            return CreatedAtRoute("GetPrivilege", new { privilegeId = privilege.Id }, privilege);
+            return CreatedAtRoute("GetPrivilege", new { privilegeId = privilegeModel.Id }, privilegeModel);
         }
 
         [HttpPut("{privilegeId}")]
-        public async Task<IActionResult> Put(long privilegeId, Privilege privilege)
+        public async Task<IActionResult> UpdateAsync(long privilegeId, [FromBody] PrivilegeDTO privilegeDTO)
         {
+
             var existingPrivilege = await _unitOfWork.Privileges.GetByIdAsync(privilegeId);
 
-            if (existingPrivilege == null) return NotFound($"Privilege {privilege.Id} could not be found.");
+            if (existingPrivilege == null) return NotFound($"Privilege {privilegeId} could not be found.");
 
-            await _unitOfWork.Privileges.UpdateAsync(privilegeId, privilege);
+            var PrivilegeModel = _mapper.Map<Privilege>(privilegeDTO);
+            await _unitOfWork.Privileges.UpdateAsync(privilegeId, PrivilegeModel);
             await _unitOfWork.CompleteAsync();
 
             return Ok(existingPrivilege);
         }
 
         [HttpDelete("{privilegeId}")]
-        public async Task<IActionResult> Delete(long privilegeId)
+        public async Task<IActionResult> DeleteAsync(long privilegeId)
         {
             var privilege = await _unitOfWork.Privileges.GetByIdAsync(privilegeId);
 
@@ -77,7 +92,7 @@ namespace EffortlessApi.Controllers
 
             await _unitOfWork.CompleteAsync();
 
-            return Ok(privilege);
+            return NoContent();
         }
     }
 }
