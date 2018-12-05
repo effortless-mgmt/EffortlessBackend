@@ -54,12 +54,11 @@ namespace EffortlessApi.Controllers
                 return BadRequest();
             }
 
-            Debug.WriteLine("Converting to model");
-            //TODO Check if address already exists
             var addressModel = _mapper.Map<Address>(addressDTO);
-
             await _unitOfWork.Addresses.AddAsync(addressModel);
             await _unitOfWork.CompleteAsync();
+
+            addressDTO = _mapper.Map<AddressDTO>(addressModel);
 
             return CreatedAtRoute("GetAddress", new { id = addressDTO.Id }, addressDTO);
         }
@@ -73,9 +72,10 @@ namespace EffortlessApi.Controllers
             if (existing == null) { return NotFound($"Address Id {id} could not be found."); }
 
             var addressModel = _mapper.Map<Address>(addressDTO);
-
             await _unitOfWork.Addresses.UpdateAsync(id, addressModel);
             await _unitOfWork.CompleteAsync();
+
+            addressDTO = _mapper.Map<AddressDTO>(existing);
 
             return Ok(addressDTO);
         }

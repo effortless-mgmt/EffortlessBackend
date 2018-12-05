@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using EffortlessApi.Persistence;
 using AutoMapper;
 using EffortlessLibrary.DTO;
-using EffortlessLibrary.DTO.Role;
 
 namespace EffortlessApi.Controllers
 {
