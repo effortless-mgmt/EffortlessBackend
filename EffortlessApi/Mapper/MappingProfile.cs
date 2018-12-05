@@ -53,6 +53,16 @@ namespace EffortlessApi.Mapper
             CreateMap<WorkPeriodInDTO, WorkPeriod>();
             CreateMap<WorkPeriod, WorkPeriodOutDTO>();
             CreateMap<WorkPeriodOutDTO, WorkPeriod>();
+
+            //Role
+            CreateMap<Role, RoleDTO>();
+            CreateMap<RoleDTO, Role>();
+            CreateMap<Role, RoleSimpleDTO>();
+            CreateMap<RoleSimpleDTO, Role>();
+
+            //Privilege
+            CreateMap<Privilege, PrivilegeDTO>();
+            CreateMap<PrivilegeDTO, Privilege>();
         }
     }
 }

@@ -1,4 +1,4 @@
-namespace EffortlessLibrary.DTO.Company
+namespace EffortlessLibrary.DTO
 {
     public class CompanyDetailsDTO
     {

@@ -61,7 +61,7 @@ namespace EffortlessApi.Controllers
             await _unitOfWork.Addresses.AddAsync(addressModel);
             await _unitOfWork.CompleteAsync();
 
-            return CreatedAtRoute("GetAddress", new { id = addressModel.Id }, addressModel);
+            return CreatedAtRoute("GetAddress", new { id = addressDTO.Id }, addressDTO);
         }
 
         [HttpPut("{id}")]
@@ -77,7 +77,7 @@ namespace EffortlessApi.Controllers
             await _unitOfWork.Addresses.UpdateAsync(id, addressModel);
             await _unitOfWork.CompleteAsync();
 
-            return Ok(existing);
+            return Ok(addressDTO);
         }
 
         [HttpDelete("{id}")]
