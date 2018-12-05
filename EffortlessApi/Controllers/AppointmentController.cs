@@ -102,28 +102,37 @@ namespace EffortlessApi.Controllers
             if (!ModelState.IsValid || appointmentDTO == null) return BadRequest("Please fill out the required fields.");
 
             var appointmentModel = _mapper.Map<Appointment>(appointmentDTO);
-            var userPeriodModel = _mapper.Map<UserWorkPeriod>(new UserWorkPeriodDTO(appointmentDTO.OwnerId, appointmentDTO.WorkPeriodId));
+            var existingUserWorkPeriod = await _unitOfWork.UserWorkPeriods.FindAsync(u => u.UserId == appointmentDTO.OwnerId && u.WorkPeriodId == appointmentDTO.WorkPeriodId);
+
+            if (existingUserWorkPeriod == null)
+            {
+                var userPeriodModel = _mapper.Map<UserWorkPeriod>(new UserWorkPeriodDTO(appointmentDTO.OwnerId, appointmentDTO.WorkPeriodId));
+                await _unitOfWork.UserWorkPeriods.AddAsync(userPeriodModel);
+            }
+
             await _unitOfWork.Appointments.AddAsync(appointmentModel);
-            await _unitOfWork.UserWorkPeriods.AddAsync(userPeriodModel);
             await _unitOfWork.CompleteAsync();
 
-            return CreatedAtRoute("GetAppointment", new { id = appointmentModel.Id }, appointmentDTO);
+            appointmentDTO = _mapper.Map<AppointmentInDTO>(appointmentModel);
+
+            return CreatedAtRoute("GetAppointment", new { id = appointmentDTO.Id }, appointmentDTO);
         }
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(long id, AppointmentInDTO newAppointmentDTO)
+        public async Task<IActionResult> UpdateAsync(long id, AppointmentInDTO appointmentDTO)
         {
-            if (newAppointmentDTO == null) return BadRequest();
+            if (appointmentDTO == null) return BadRequest();
 
-            var oldAppointmentModel = await _unitOfWork.Appointments.GetByIdAsync(id);
-            if (oldAppointmentModel == null) return NotFound($"Appointment {id} could not be found");
+            var existing = await _unitOfWork.Appointments.GetByIdAsync(id);
+            if (existing == null) return NotFound($"Appointment {id} could not be found");
 
-            var newAppointmentModel = _mapper.Map<Appointment>(newAppointmentDTO);
+            var newAppointmentModel = _mapper.Map<Appointment>(appointmentDTO);
             await _unitOfWork.Appointments.UpdateAsync(id, newAppointmentModel);
             await _unitOfWork.CompleteAsync();
 
-            var oldAppointmentDTO = _mapper.Map<AppointmentInDTO>(oldAppointmentModel);
+            appointmentDTO = _mapper.Map<AppointmentInDTO>(existing);
 
-            return Ok(oldAppointmentDTO);
+            return Ok(appointmentDTO);
         }
 
         [HttpDelete("{id}")]
