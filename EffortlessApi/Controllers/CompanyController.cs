@@ -107,17 +107,18 @@ namespace EffortlessApi.Controllers
             var existing = await _unitOfWork.Companies.GetByIdAsync(id);
             if (existing == null) return NotFound($"Company {id} could not be found.");
 
-            var companyModel = _mapper.Map<Company>(companyDTO);
-
-            var companyAddressModel = _mapper.Map<Address>(companyDTO.Address);
-
-            if (companyAddressModel != null)
+            if (companyDTO.Address != null)
             {
+                var companyAddressModel = _mapper.Map<Address>(companyDTO.Address);
                 await _unitOfWork.Addresses.AddAsync(companyAddressModel);
                 await _unitOfWork.CompleteAsync();
+
+                companyDTO.AddressId = companyAddressModel.Id;
             }
 
+            var companyModel = _mapper.Map<Company>(companyDTO);
             await _unitOfWork.Companies.UpdateAsync(id, companyModel);
+            await _unitOfWork.CompleteAsync();
             companyDTO = _mapper.Map<CompanyDTO>(existing);
 
             return Ok(companyDTO);
