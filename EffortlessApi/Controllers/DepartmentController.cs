@@ -63,7 +63,7 @@ namespace EffortlessApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] DepartmentDTO departmentDTO)
+        public async Task<IActionResult> CreateAsync([FromBody] DepartmentDTO departmentDTO)
         {
             Address addressModel;
 
@@ -107,7 +107,7 @@ namespace EffortlessApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(long id, DepartmentDTO departmentDTO)
+        public async Task<IActionResult> UpdateAsync(long id, DepartmentDTO departmentDTO)
         {
             var existing = await _unitOfWork.Departments.GetByIdAsync(id);
             if (existing == null) return NotFound($"department {id} could not be found.");
