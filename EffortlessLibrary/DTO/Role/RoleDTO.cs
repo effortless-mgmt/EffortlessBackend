@@ -9,11 +9,10 @@ namespace EffortlessLibrary.DTO
         public long Id { get; set; }
         public string Name { get; set; }
         [JsonIgnore]
-        public virtual ICollection<RolePrivilegeDTO> RolePrivileges { get; set; }
+        public ICollection<RolePrivilegeDTO> RolePrivileges { get; set; }
         [JsonIgnore]
-        public virtual ICollection<UserRoleDTO> UserRoles { get; set; }
-
-        public virtual IList<UserDTO> Users
+        public ICollection<UserRoleDTO> UserRoles { get; set; }
+        public IList<UserDTO> Users
         {
             get
             {
@@ -22,7 +21,7 @@ namespace EffortlessLibrary.DTO
             }
         }
         [JsonIgnore]
-        public virtual IList<PrivilegeDTO> Privileges
+        public IList<PrivilegeDTO> Privileges
         {
             get
             {

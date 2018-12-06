@@ -29,6 +29,7 @@ namespace EffortlessApi.Controllers
         {
             var roleModels = await _unitOfWork.Roles.GetAllAsync();
             if (roleModels == null) return NotFound();
+
             var roleDTOs = _mapper.Map<List<RoleSimpleDTO>>(roleModels);
             return Ok(roleDTOs.OrderBy(r => r.Id));
         }
@@ -37,23 +38,21 @@ namespace EffortlessApi.Controllers
         public async Task<IActionResult> GetById(long id)
         {
             var roleModel = await _unitOfWork.Roles.GetByIdAsync(id);
+            if (roleModel == null) return NotFound($"Role with id {id} could not be found.");
+
+            var roleDTO = _mapper.Map<RoleDTO>(roleModel);
+
+            return Ok(roleDTO);
+        }
+
+        [HttpGet("{id}/user")]
+        public async Task<IActionResult> GetUsersByRoleId(long id)
+        {
+            var roleModel = await _unitOfWork.Roles.GetByIdWithUsersAsync(id);
 
             if (roleModel == null)
             {
                 return NotFound($"Role with id {id} could not be found.");
-            }
-            var roleDTO = _mapper.Map<RoleDTO>(roleModel);
-            return Ok(roleDTO);
-        }
-
-        [HttpGet("{roleId}/user")]
-        public async Task<IActionResult> GetUsersByRoleId(long roleId)
-        {
-            var roleModel = await _unitOfWork.Roles.GetByIdWithUsersAsync(roleId);
-
-            if (roleModel == null)
-            {
-                return NotFound($"Role with id {roleId} could not be found.");
             }
             var roleDTO = _mapper.Map<RoleDTO>(roleModel);
 
@@ -77,18 +76,83 @@ namespace EffortlessApi.Controllers
             return CreatedAtRoute("GetRole", new { id = roleDTO.Id }, roleDTO);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(long id, [FromBody] Role newRole)
+        [HttpPost("{id}/privilege/{privilegeId}")]
+        public async Task<IActionResult> CreateRolePrivilegeAsync(long id, long privilegeId)
         {
-            var existingRole = await _unitOfWork.Roles.GetByIdAsync(id);
+            var rolePrivilegeModel = await _unitOfWork.RolePrivileges.GetByIdAsync(id, privilegeId);
+            if (rolePrivilegeModel != null) return Ok(_mapper.Map<RolePrivilegeDTO>(rolePrivilegeModel));
 
-            if (existingRole == null) return NotFound($"Role with id {id} does not exist.");
-            var RoleModel = _mapper.Map<Role>(newRole);
-
-            await _unitOfWork.Roles.UpdateAsync(id, RoleModel);
+            rolePrivilegeModel = _mapper.Map<RolePrivilege>(new RolePrivilegeDTO(id, privilegeId));
+            await _unitOfWork.RolePrivileges.AddAsync(rolePrivilegeModel);
             await _unitOfWork.CompleteAsync();
-            //What should it return?
-            return Ok(newRole);
+
+            var rolePrivilegeDTO = _mapper.Map<RolePrivilegeDTO>(rolePrivilegeModel);
+
+            return CreatedAtRoute("GetRole", new { id = rolePrivilegeDTO.RoleId }, rolePrivilegeDTO);
+        }
+
+        [HttpPut("{id}/privilege/{privilegeId}")]
+        public async Task<IActionResult> UpdateRolePrivilegeAsync(long id, long privilegeId, RolePrivilegeDTO newRolePrivilegeDTO)
+        {
+            var existing = await _unitOfWork.RolePrivileges.GetByIdAsync(id, privilegeId);
+            if (existing == null) return NotFound($"Privilege {privilegeId} for role {id} does not exist.");
+            if (newRolePrivilegeDTO == null) return BadRequest();
+
+            var newRolePrivilegeModel = await _unitOfWork.RolePrivileges.GetByIdAsync(newRolePrivilegeDTO.RoleId, newRolePrivilegeDTO.PrivilegeId);
+            if (newRolePrivilegeModel != null) return Ok(newRolePrivilegeDTO);
+
+            newRolePrivilegeModel = _mapper.Map<RolePrivilege>(newRolePrivilegeDTO);
+            await _unitOfWork.RolePrivileges.UpdateAsync(existing.RoleId, existing.PrivilegeId, newRolePrivilegeModel);
+            await _unitOfWork.CompleteAsync();
+
+            newRolePrivilegeDTO = _mapper.Map<RolePrivilegeDTO>(existing);
+
+            return Ok(newRolePrivilegeDTO);
+        }
+
+        [HttpDelete("{id}/privilege/{privilegeId}")]
+        public async Task<IActionResult> DeleteRolePrivilegeAsync(long id, long privilegeId)
+        {
+            var rolePrivilegeModel = await _unitOfWork.RolePrivileges.GetByIdAsync(id, privilegeId);
+            if (rolePrivilegeModel == null) return NoContent();
+
+            _unitOfWork.RolePrivileges.Remove(rolePrivilegeModel);
+            await _unitOfWork.CompleteAsync();
+
+            return NoContent();
+        }
+
+        [HttpGet("{id}/privilege/{privilegeId}")]
+        public async Task<IActionResult> GetRolePrivilege(long id, long privilegeId)
+        {
+            var rolePrivilegeModel = await _unitOfWork.RolePrivileges.GetByIdAsync(id, privilegeId);
+            if (rolePrivilegeModel == null) return NotFound($"Role {id} with privilege {privilegeId} does not exist.");
+
+            var rolePrivilegeDTO = _mapper.Map<RolePrivilegeDTO>(rolePrivilegeModel);
+            var roleDTO = _mapper.Map<RoleDTO>(await _unitOfWork.Roles.GetByIdAsync(rolePrivilegeDTO.RoleId));
+            var privilegeDTO = _mapper.Map<PrivilegeDTO>(await _unitOfWork.Privileges.GetByIdAsync(rolePrivilegeDTO.PrivilegeId));
+
+            rolePrivilegeDTO.Role = roleDTO;
+            rolePrivilegeDTO.Privilege = privilegeDTO;
+
+            return Ok(rolePrivilegeDTO);
+        }
+
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAsync(long id, [FromBody] RoleDTO newRoleDTO)
+        {
+            var existing = await _unitOfWork.Roles.GetByIdAsync(id);
+            if (existing == null) return NotFound($"Role with id {id} does not exist.");
+            if (newRoleDTO == null) return BadRequest();
+
+            var roleModel = _mapper.Map<Role>(newRoleDTO);
+            await _unitOfWork.Roles.UpdateAsync(id, roleModel);
+            await _unitOfWork.CompleteAsync();
+
+            newRoleDTO = _mapper.Map<RoleDTO>(existing);
+
+            return Ok(newRoleDTO);
         }
 
         [HttpDelete("{id}")]

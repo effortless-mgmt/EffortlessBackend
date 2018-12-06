@@ -14,7 +14,6 @@ namespace EffortlessApi.Controllers
     [ApiController]
     public class PrivilegeController : ControllerBase
     {
-
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         public PrivilegeController(EffortlessContext context, IMapper mapper)

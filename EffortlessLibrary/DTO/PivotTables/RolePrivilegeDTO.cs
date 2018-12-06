@@ -4,6 +4,12 @@ namespace EffortlessLibrary.DTO
 {
     public class RolePrivilegeDTO
     {
+        public RolePrivilegeDTO(long roleId, long privilegeId)
+        {
+            RoleId = roleId;
+            PrivilegeId = privilegeId;
+        }
+
         [JsonIgnore]
         public long RoleId { get; set; }
         [JsonIgnore]

@@ -20,15 +20,10 @@ namespace EffortlessApi.Persistence
             Companies = new CompanyRepository(_context);
             Privileges = new PrivilegeRepository(_context);
             Roles = new RoleRepository(_context);
+            RolePrivileges = new RolePrivilegeRepository(_context);
             WorkPeriods = new WorkPeriodRepository(_context);
+            UserRoles = new UserRoleRepository(_context);
             UserWorkPeriods = new UserWorkPeriodRepository(_context);
-        }
-
-        public UnitOfWork(IUserRepository users, IAddressRepository addresses, IAgreementRepository agreements)
-        {
-            this.Users = users;
-            this.Addresses = addresses;
-            this.Agreements = agreements;
 
         }
 
@@ -39,8 +34,9 @@ namespace EffortlessApi.Persistence
         public IDepartmentRepository Departments { get; private set; }
         public ICompanyRepository Companies { get; private set; }
         public IPrivilegeRepository Privileges { get; private set; }
-
         public IRoleRepository Roles { get; private set; }
+        public IRolePrivilegeRepository RolePrivileges { get; private set; }
+        public IUserRoleRepository UserRoles { get; private set; }
         public IUserWorkPeriodRepository UserWorkPeriods { get; private set; }
         public IWorkPeriodRepository WorkPeriods { get; set; }
 

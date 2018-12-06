@@ -9,6 +9,7 @@ namespace EffortlessApi.Mapper
     {
         public MappingProfile()
         {
+
             //Address
             CreateMap<Address, AddressDTO>();
             CreateMap<AddressDTO, Address>();
@@ -39,6 +40,20 @@ namespace EffortlessApi.Mapper
             CreateMap<Department, DepartmentStrippedDTO>();
             CreateMap<DepartmentStrippedDTO, Department>();
 
+            //Privilege
+            CreateMap<Privilege, PrivilegeDTO>();
+            CreateMap<PrivilegeDTO, Privilege>();
+
+            //Role
+            CreateMap<Role, RoleDTO>();
+            CreateMap<RoleDTO, Role>();
+            CreateMap<Role, RoleSimpleDTO>();
+            CreateMap<RoleSimpleDTO, Role>();
+
+            //RolePrivilege
+            CreateMap<RolePrivilege, RolePrivilegeDTO>();
+            CreateMap<RolePrivilegeDTO, RolePrivilege>();
+
             //User
             CreateMap<User, UserDTO>();
             CreateMap<UserDTO, User>();
@@ -46,6 +61,10 @@ namespace EffortlessApi.Mapper
             CreateMap<UserSimpleDTO, User>();
             CreateMap<User, UserStrippedDTO>();
             CreateMap<UserStrippedDTO, User>();
+
+            //UserRole
+            CreateMap<UserRole, UserRoleDTO>();
+            CreateMap<UserRoleDTO, UserRole>();
 
             //UserWorkPeriod
             CreateMap<UserWorkPeriod, UserWorkPeriodDTO>();
@@ -55,16 +74,6 @@ namespace EffortlessApi.Mapper
             CreateMap<WorkPeriodInDTO, WorkPeriod>();
             CreateMap<WorkPeriod, WorkPeriodOutDTO>();
             CreateMap<WorkPeriodOutDTO, WorkPeriod>();
-
-            //Role
-            CreateMap<Role, RoleDTO>();
-            CreateMap<RoleDTO, Role>();
-            CreateMap<Role, RoleSimpleDTO>();
-            CreateMap<RoleSimpleDTO, Role>();
-
-            //Privilege
-            CreateMap<Privilege, PrivilegeDTO>();
-            CreateMap<PrivilegeDTO, Privilege>();
         }
     }
 }
