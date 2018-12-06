@@ -106,17 +106,30 @@ namespace EffortlessApi.Controllers
             return CreatedAtRoute("GetDepartment", new { id = departmentModel.Id }, departmentDTO);
         }
 
-        [HttpPut("{departmentId}")]
-        public async Task<IActionResult> Put(long departmentId, Department department)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(long id, DepartmentDTO departmentDTO)
         {
-            var existingdepartment = await _unitOfWork.Departments.GetByIdAsync(departmentId);
+            var existing = await _unitOfWork.Departments.GetByIdAsync(id);
+            if (existing == null) return NotFound($"department {id} could not be found.");
 
-            if (existingdepartment == null) return NotFound($"department {departmentId} could not be found.");
+            if (departmentDTO.Address != null)
+            {
+                var departmentAddressModel = _mapper.Map<Address>(departmentDTO.Address);
+                await _unitOfWork.Addresses.AddAsync(departmentAddressModel);
+                await _unitOfWork.CompleteAsync();
 
-            await _unitOfWork.Departments.UpdateAsync(departmentId, department);
+                departmentDTO.AddressId = departmentAddressModel.Id;
+            }
+
+            var companyModel = await _unitOfWork.Companies.GetByIdAsync(existing.CompanyId);
+            var departmentModel = _mapper.Map<Department>(departmentDTO);
+            await _unitOfWork.Departments.UpdateAsync(id, departmentModel);
             await _unitOfWork.CompleteAsync();
 
-            return Ok(existingdepartment);
+            var addressModel = await _unitOfWork.Addresses.GetByIdAsync(existing.Id);
+            departmentDTO = _mapper.Map<DepartmentDTO>(existing);
+
+            return Ok(departmentDTO);
         }
 
         [HttpDelete("{departmentId}")]
@@ -133,7 +146,7 @@ namespace EffortlessApi.Controllers
 
             await _unitOfWork.CompleteAsync();
 
-            return Ok(department);
+            return NoContent();
         }
     }
 }
