@@ -85,8 +85,6 @@ namespace EffortlessApi.Controllers
 
             var userRoleModel = _mapper.Map<UserRole>(new UserRoleDTO(userModel.Id, roleId));
             await _unitOfWork.UserRoles.AddAsync(userRoleModel);
-
-            // userModel.UserRoles.Add(new UserRole { Role = role, User = userModel });
             await _unitOfWork.CompleteAsync();
 
             var userRoleDTO = _mapper.Map<UserRoleDTO>(userRoleModel);
@@ -103,22 +101,13 @@ namespace EffortlessApi.Controllers
             var role = await _unitOfWork.Roles.GetByIdAsync(roleId);
             if (role == null) return NotFound($"Role with id {roleId} does not exist.");
 
-            var userDTO = _mapper.Map<UserDTO>(userModel);
+            var userRole = await _unitOfWork.UserRoles.GetByIdAsync(userModel.Id, roleId);
+            if (userRole == null) return NoContent();
 
-            if (userModel.UserRoles.Select(ur => ur.Role).ToList().Contains(role))
-            {
-                var userRole = userModel.UserRoles.FirstOrDefault(ur => ur.RoleId == roleId);
-                userModel.UserRoles.Remove(userRole);
+            _unitOfWork.UserRoles.Remove(userRole);
+            await _unitOfWork.CompleteAsync();
 
-                await _unitOfWork.CompleteAsync();
-
-                userDTO = _mapper.Map<UserDTO>(userModel);
-
-
-                return Ok(userDTO);
-            }
-
-            return Ok(userDTO);
+            return NoContent();
         }
 
         [HttpGet("{userName}/role")]
@@ -130,6 +119,7 @@ namespace EffortlessApi.Controllers
 
             var userRoles = userDTO.UserRoles.Select(ur => ur.Role);
             var RoleDTOs = _mapper.Map<List<RoleSimpleDTO>>(userRoles);
+
             return Ok(RoleDTOs);
         }
 
@@ -140,6 +130,16 @@ namespace EffortlessApi.Controllers
 
             if (existing == null) return NotFound($"User {userName} could not be found.");
 
+            if (userDTO.Address != null)
+            {
+                var userAddressModel = _mapper.Map<Address>(userDTO.Address);
+                await _unitOfWork.Addresses.AddAsync(userAddressModel);
+                await _unitOfWork.CompleteAsync();
+
+                userDTO.AddressId = userAddressModel.Id;
+            }
+
+            var addressModel = _mapper.Map<Address>(await _unitOfWork.Addresses.GetByIdAsync(userDTO.AddressId));
             var userModel = _mapper.Map<User>(userDTO);
             await _unitOfWork.Users.UpdateAsync(userName, userModel);
             await _unitOfWork.CompleteAsync();
@@ -153,14 +153,9 @@ namespace EffortlessApi.Controllers
         public async Task<IActionResult> DeleteAsync(string userName)
         {
             var user = await _unitOfWork.Users.GetByUsernameAsync(userName);
-
-            if (user == null)
-            {
-                return NoContent();
-            }
+            if (user == null) return NoContent();
 
             _unitOfWork.Users.Remove(user);
-
             await _unitOfWork.CompleteAsync();
 
             return NoContent();

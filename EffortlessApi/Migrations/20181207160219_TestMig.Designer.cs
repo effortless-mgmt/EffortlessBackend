@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EffortlessApi.Migrations
 {
     [DbContext(typeof(EffortlessContext))]
-    [Migration("20181207003924_TestMig")]
+    [Migration("20181207160219_TestMig")]
     partial class TestMig
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

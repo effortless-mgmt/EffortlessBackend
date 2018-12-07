@@ -66,6 +66,8 @@ namespace EffortlessApi.Controllers
             await _unitOfWork.Roles.AddAsync(roleModel);
             await _unitOfWork.CompleteAsync();
 
+            roleDTO = _mapper.Map<RoleDTO>(roleModel);
+
             return CreatedAtRoute("GetRole", new { id = roleDTO.Id }, roleDTO);
         }
 

@@ -9,7 +9,7 @@ namespace EffortlessApi.Persistence.Repositories
     {
         public UserRepository(DbContext context) : base(context) { }
 
-        public EffortlessContext EffortlessContext 
+        public EffortlessContext EffortlessContext
         {
             get { return _context as EffortlessContext; }
         }
@@ -17,6 +17,7 @@ namespace EffortlessApi.Persistence.Repositories
         public async Task<User> GetByUsernameAsync(string userName)
         {
             return await _context.Set<User>()
+                .Include(u => u.Address)
                 .Include(u => u.UserRoles)
                 .ThenInclude(userRole => userRole.Role)
                 .ThenInclude(role => role.RolePrivileges)
@@ -28,18 +29,19 @@ namespace EffortlessApi.Persistence.Repositories
         {
             var userToEdit = await GetByUsernameAsync(userName);
 
-            userToEdit.UserName = newUser.UserName;
-            userToEdit.FirstName = newUser.FirstName;
-            userToEdit.LastName = newUser.LastName;
-            userToEdit.Email = newUser.Email;
-            userToEdit.Password = newUser.Password;
+            userToEdit.FirstName = newUser.FirstName ?? userToEdit.FirstName;
+            userToEdit.LastName = newUser.LastName ?? userToEdit.LastName;
+            userToEdit.LastName = newUser.LastName ?? userToEdit.LastName;
+            userToEdit.Password = newUser.Password ?? userToEdit.Password;
+            userToEdit.Email = newUser.Email ?? userToEdit.Email;
+            userToEdit.Phone = newUser.Phone ?? userToEdit.Phone;
 
             _context.Set<User>().Update(userToEdit);
         }
 
-        public override async Task UpdateAsync(User newEntity)
+        public override async Task UpdateAsync(User newUser)
         {
-            await UpdateAsync(newEntity.UserName, newEntity);
+            await UpdateAsync(newUser.UserName, newUser);
         }
     }
 }
