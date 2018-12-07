@@ -2,7 +2,7 @@
 
 namespace EffortlessApi.Migrations
 {
-    public partial class RefactorWorkPeriod : Migration
+    public partial class TestMig : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -14,6 +14,14 @@ namespace EffortlessApi.Migrations
                 name: "FK_Appointments_Users_CreatedByUserId",
                 table: "Appointments");
 
+            migrationBuilder.DropForeignKey(
+                name: "FK_UserRole_Roles_RoleId",
+                table: "UserRole");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_UserRole_Users_UserId",
+                table: "UserRole");
+
             migrationBuilder.DropIndex(
                 name: "IX_Appointments_ApprovedByUserId",
                 table: "Appointments");
@@ -22,10 +30,23 @@ namespace EffortlessApi.Migrations
                 name: "IX_Appointments_CreatedByUserId",
                 table: "Appointments");
 
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_UserRole",
+                table: "UserRole");
+
+            migrationBuilder.RenameTable(
+                name: "UserRole",
+                newName: "UserRoles");
+
             migrationBuilder.RenameColumn(
                 name: "Stop",
                 table: "WorkPeriods",
                 newName: "LastAppointment");
+
+            migrationBuilder.RenameIndex(
+                name: "IX_UserRole_RoleId",
+                table: "UserRoles",
+                newName: "IX_UserRoles_RoleId");
 
             migrationBuilder.AddColumn<bool>(
                 name: "Active",
@@ -44,6 +65,12 @@ namespace EffortlessApi.Migrations
                 table: "WorkPeriods",
                 nullable: true);
 
+            migrationBuilder.AlterColumn<string>(
+                name: "Email",
+                table: "Users",
+                nullable: true,
+                oldClrType: typeof(string));
+
             migrationBuilder.AddColumn<long>(
                 name: "WorkPeriodId",
                 table: "Users",
@@ -59,10 +86,20 @@ namespace EffortlessApi.Migrations
                 table: "Appointments",
                 nullable: true);
 
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_UserRoles",
+                table: "UserRoles",
+                columns: new[] { "UserId", "RoleId" });
+
             migrationBuilder.CreateIndex(
                 name: "IX_WorkPeriods_AgreementId",
                 table: "WorkPeriods",
                 column: "AgreementId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_AddressId",
+                table: "Users",
+                column: "AddressId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_WorkPeriodId",
@@ -122,6 +159,30 @@ namespace EffortlessApi.Migrations
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
+                name: "FK_UserRoles_Roles_RoleId",
+                table: "UserRoles",
+                column: "RoleId",
+                principalTable: "Roles",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_UserRoles_Users_UserId",
+                table: "UserRoles",
+                column: "UserId",
+                principalTable: "Users",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Users_Addresses_AddressId",
+                table: "Users",
+                column: "AddressId",
+                principalTable: "Addresses",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
                 name: "FK_Users_WorkPeriods_WorkPeriodId",
                 table: "Users",
                 column: "WorkPeriodId",
@@ -157,6 +218,18 @@ namespace EffortlessApi.Migrations
                 table: "Companies");
 
             migrationBuilder.DropForeignKey(
+                name: "FK_UserRoles_Roles_RoleId",
+                table: "UserRoles");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_UserRoles_Users_UserId",
+                table: "UserRoles");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Users_Addresses_AddressId",
+                table: "Users");
+
+            migrationBuilder.DropForeignKey(
                 name: "FK_Users_WorkPeriods_WorkPeriodId",
                 table: "Users");
 
@@ -167,6 +240,10 @@ namespace EffortlessApi.Migrations
             migrationBuilder.DropIndex(
                 name: "IX_WorkPeriods_AgreementId",
                 table: "WorkPeriods");
+
+            migrationBuilder.DropIndex(
+                name: "IX_Users_AddressId",
+                table: "Users");
 
             migrationBuilder.DropIndex(
                 name: "IX_Users_WorkPeriodId",
@@ -187,6 +264,10 @@ namespace EffortlessApi.Migrations
             migrationBuilder.DropIndex(
                 name: "IX_Appointments_CreatedById",
                 table: "Appointments");
+
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_UserRoles",
+                table: "UserRoles");
 
             migrationBuilder.DropColumn(
                 name: "Active",
@@ -212,10 +293,31 @@ namespace EffortlessApi.Migrations
                 name: "CreatedById",
                 table: "Appointments");
 
+            migrationBuilder.RenameTable(
+                name: "UserRoles",
+                newName: "UserRole");
+
             migrationBuilder.RenameColumn(
                 name: "LastAppointment",
                 table: "WorkPeriods",
                 newName: "Stop");
+
+            migrationBuilder.RenameIndex(
+                name: "IX_UserRoles_RoleId",
+                table: "UserRole",
+                newName: "IX_UserRole_RoleId");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Email",
+                table: "Users",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldNullable: true);
+
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_UserRole",
+                table: "UserRole",
+                columns: new[] { "UserId", "RoleId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Appointments_ApprovedByUserId",
@@ -239,6 +341,22 @@ namespace EffortlessApi.Migrations
                 name: "FK_Appointments_Users_CreatedByUserId",
                 table: "Appointments",
                 column: "CreatedByUserId",
+                principalTable: "Users",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_UserRole_Roles_RoleId",
+                table: "UserRole",
+                column: "RoleId",
+                principalTable: "Roles",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_UserRole_Users_UserId",
+                table: "UserRole",
+                column: "UserId",
                 principalTable: "Users",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);

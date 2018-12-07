@@ -216,8 +216,7 @@ namespace EffortlessApi.Migrations
 
                     b.Property<long>("AddressId");
 
-                    b.Property<string>("Email")
-                        .IsRequired();
+                    b.Property<string>("Email");
 
                     b.Property<string>("FirstName")
                         .IsRequired();
@@ -237,6 +236,8 @@ namespace EffortlessApi.Migrations
                     b.Property<long?>("WorkPeriodId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AddressId");
 
                     b.HasIndex("Email")
                         .IsUnique();
@@ -259,7 +260,7 @@ namespace EffortlessApi.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("UserRole");
+                    b.ToTable("UserRoles");
                 });
 
             modelBuilder.Entity("EffortlessApi.Core.Models.UserWorkPeriod", b =>
@@ -365,6 +366,11 @@ namespace EffortlessApi.Migrations
 
             modelBuilder.Entity("EffortlessApi.Core.Models.User", b =>
                 {
+                    b.HasOne("EffortlessApi.Core.Models.Address", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("EffortlessApi.Core.Models.WorkPeriod")
                         .WithMany("AssignedUsers")
                         .HasForeignKey("WorkPeriodId");

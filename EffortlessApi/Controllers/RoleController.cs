@@ -49,30 +49,23 @@ namespace EffortlessApi.Controllers
         public async Task<IActionResult> GetUsersByRoleId(long id)
         {
             var roleModel = await _unitOfWork.Roles.GetByIdWithUsersAsync(id);
+            if (roleModel == null) return NotFound($"Role with id {id} could not be found.");
 
-            if (roleModel == null)
-            {
-                return NotFound($"Role with id {id} could not be found.");
-            }
             var roleDTO = _mapper.Map<RoleDTO>(roleModel);
 
-            return Ok(roleDTO.Users);
+            return Ok(roleDTO.Users.OrderBy(u => u.UserName));
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] RoleDTO roleDTO)
         {
-            if (roleDTO == null)
-            {
-                return BadRequest();
-            }
+            if (roleDTO == null) return BadRequest();
 
             var roleModel = _mapper.Map<Role>(roleDTO);
 
-
             await _unitOfWork.Roles.AddAsync(roleModel);
             await _unitOfWork.CompleteAsync();
-            //What should it return?
+
             return CreatedAtRoute("GetRole", new { id = roleDTO.Id }, roleDTO);
         }
 

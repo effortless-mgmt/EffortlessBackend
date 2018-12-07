@@ -132,10 +132,10 @@ namespace EffortlessApi.Controllers
             return Ok(departmentDTO);
         }
 
-        [HttpDelete("{departmentId}")]
-        public async Task<IActionResult> Delete(long departmentId)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(long id)
         {
-            var department = await _unitOfWork.Departments.GetByIdAsync(departmentId);
+            var department = await _unitOfWork.Departments.GetByIdAsync(id);
 
             if (department == null)
             {

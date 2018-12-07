@@ -16,33 +16,40 @@ namespace EffortlessApi.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+
         public UserController(EffortlessContext context, IMapper mapper)
         {
             _unitOfWork = new UnitOfWork(context);
             _mapper = mapper;
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            var users = await _unitOfWork.Users.GetAllAsync();
+            var usersModels = await _unitOfWork.Users.GetAllAsync();
+            if (usersModels == null) return NotFound();
 
-            if (users == null) return NotFound();
+            var userDTOs = _mapper.Map<List<UserSimpleDTO>>(usersModels);
 
-            var userDTOs = _mapper.Map<List<UserDTO>>(users);
+            foreach (UserSimpleDTO u in userDTOs)
+            {
+                if (u.AddressId != 0)
+                    u.Address = _mapper.Map<AddressSimpleDTO>(await _unitOfWork.Addresses.GetByIdAsync(u.AddressId));
+            }
 
-            return Ok(userDTOs.OrderBy(u => u.Id));
+            return Ok(userDTOs.OrderBy(u => u.UserName));
         }
 
         [HttpGet("{username}", Name = "GetUser")]
         public async Task<IActionResult> GetByUsername(string userName)
         {
             var userModel = await _unitOfWork.Users.GetByUsernameAsync(userName);
+            if (userModel == null) return NotFound($"User {userName} could not be found.");
 
-            if (userModel == null)
-            {
-                return NotFound($"User {userName} could not be found.");
-            }
             var userDTO = _mapper.Map<UserDTO>(userModel);
+            var addressDTO = _mapper.Map<AddressDTO>(await _unitOfWork.Addresses.GetByIdAsync(userDTO.AddressId));
+
+            userDTO.Address = addressDTO;
 
             return Ok(userDTO);
         }
@@ -50,13 +57,12 @@ namespace EffortlessApi.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync(UserDTO userDTO)
         {
-            if (userDTO == null)
-            {
-                return BadRequest("UserDTO is null");
-            }
-            var userModel = _mapper.Map<User>(userDTO);
-            var existingUser = await _unitOfWork.Users.GetByUsernameAsync(userModel.UserName);
+            if (userDTO == null) return BadRequest("UserDTO is null");
 
+            var existingUser = await _unitOfWork.Users.GetByUsernameAsync(userDTO.UserName);
+            if (existingUser != null) return Conflict($"Username \"{userDTO.UserName}\" is already taken.");
+
+            var userModel = _mapper.Map<User>(userDTO);
             await _unitOfWork.Users.AddAsync(userModel);
             await _unitOfWork.CompleteAsync();
 
@@ -66,7 +72,7 @@ namespace EffortlessApi.Controllers
         }
 
         [HttpPost("{userName}/role/{roleId}")]
-        public async Task<IActionResult> PostRoleToUserAsync(string userName, long roleId)
+        public async Task<IActionResult> CreateUserRoleAsync(string userName, long roleId)
         {
             var userModel = await _unitOfWork.Users.GetByUsernameAsync(userName);
             if (userModel == null) return NotFound($"User {userName} does not exist.");
@@ -74,18 +80,22 @@ namespace EffortlessApi.Controllers
             var role = await _unitOfWork.Roles.GetByIdWithUsersAsync(roleId);
             if (role == null) return NotFound($"Role with id {roleId} does not exist.");
 
-            if (role.Users.Contains(userModel)) return BadRequest($"User {userModel.UserName} already has the role {role.Name}.");
+            var existingUserRole = await _unitOfWork.UserRoles.GetByIdAsync(userModel.Id, roleId);
+            if (existingUserRole != null) return Ok(_mapper.Map<UserRoleDTO>(existingUserRole));
 
-            userModel.UserRoles.Add(new UserRole { Role = role, User = userModel });
+            var userRoleModel = _mapper.Map<UserRole>(new UserRoleDTO(userModel.Id, roleId));
+            await _unitOfWork.UserRoles.AddAsync(userRoleModel);
+
+            // userModel.UserRoles.Add(new UserRole { Role = role, User = userModel });
             await _unitOfWork.CompleteAsync();
 
-            var userDTO = _mapper.Map<UserDTO>(userModel);
+            var userRoleDTO = _mapper.Map<UserRoleDTO>(userRoleModel);
 
-            return CreatedAtRoute("GetUser", new { userName = userDTO.UserName }, userDTO);
+            return CreatedAtRoute("GetUser", new { userName = userRoleDTO.User.UserName }, userRoleDTO);
         }
 
         [HttpDelete("{userName}/role/{roleId}")]
-        public async Task<IActionResult> DeleteRoleFromUserAsync(string userName, long roleId)
+        public async Task<IActionResult> DeleteUserRoleAsync(string userName, long roleId)
         {
             var userModel = await _unitOfWork.Users.GetByUsernameAsync(userName);
             if (userModel == null) return NotFound($"User {userName} does not exist.");

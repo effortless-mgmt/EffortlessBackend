@@ -18,7 +18,7 @@ namespace EffortlessApi.Persistence
         public DbSet<RolePrivilege> RolePrivileges { get; set; }
         public DbSet<WorkPeriod> WorkPeriods { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<UserRole> UserRole { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<UserWorkPeriod> UserWorkPeriods { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

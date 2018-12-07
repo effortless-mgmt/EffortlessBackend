@@ -13,6 +13,10 @@ namespace EffortlessApi.Persistence.Repositories
 
         public async Task<UserRole> GetByIdAsync(long userId, long roleId)
         {
+            //         return await _context.Set<Role>()
+            // .Include(r => r.RolePrivileges)
+            // .ThenInclude(rp => rp.Privilege)
+            // .SingleOrDefaultAsync(r => r.Id == id);
             return await _context.Set<UserRole>().FirstOrDefaultAsync(ur => ur.UserId == userId && ur.RoleId == roleId);
         }
 

@@ -37,10 +37,7 @@ namespace EffortlessApi.Controllers
         public async Task<IActionResult> GetByIdAsync(long id)
         {
             var privilegeModel = await _unitOfWork.Privileges.GetByIdAsync(id);
-            if (privilegeModel == null)
-            {
-                return NotFound($"Privilege {id} could not be found.");
-            }
+            if (privilegeModel == null) return NotFound($"Privilege {id} could not be found.");
 
             var privilegeDTO = _mapper.Map<PrivilegeDTO>(privilegeModel);
 

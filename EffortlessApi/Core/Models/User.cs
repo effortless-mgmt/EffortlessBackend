@@ -23,7 +23,6 @@ namespace EffortlessApi.Core.Models
         public string Email { get; set; }
         [Required]
         public string Phone { get; set; }
-        [JsonIgnore]
         public virtual ICollection<UserRole> UserRoles { get; set; }
     }
 }

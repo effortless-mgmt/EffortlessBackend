@@ -9,15 +9,24 @@ namespace EffortlessLibrary.DTO
         public long Id { get; set; }
         public string Name { get; set; }
         [JsonIgnore]
-        public ICollection<RolePrivilegeDTO> RolePrivileges { get; set; }
+        public virtual ICollection<RolePrivilegeDTO> RolePrivileges { get; set; }
         [JsonIgnore]
-        public ICollection<UserRoleDTO> UserRoles { get; set; }
+        public virtual ICollection<UserRoleDTO> UserRoles { get; set; }
+        [JsonIgnore]
         public IList<UserDTO> Users
         {
             get
             {
                 if (UserRoles == null) return null;
                 return UserRoles.Select(ur => ur.User).ToList();
+            }
+        }
+        public IList<string> UserNames
+        {
+            get
+            {
+                if (Users == null) return null;
+                return Users.Select(u => u.UserName).ToList();
             }
         }
         [JsonIgnore]
