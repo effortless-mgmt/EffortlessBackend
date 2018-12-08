@@ -1,6 +1,10 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using EffortlessApi.Core.Models;
 using EffortlessApi.Persistence;
+using EffortlessLibrary.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EffortlessApi.Controllers
@@ -10,51 +14,77 @@ namespace EffortlessApi.Controllers
     public class AgreementController : ControllerBase
     {
         private readonly UnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public AgreementController(EffortlessContext context)
+        public AgreementController(EffortlessContext context, IMapper mapper)
         {
             _unitOfWork = new UnitOfWork(context);
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            var agreements = await _unitOfWork.Agreements.GetAllAsync();
+            var agreementModels = await _unitOfWork.Agreements.GetAllAsync();
+            if (agreementModels == null) return NotFound("Could not find any agreements.");
 
-            if (agreements == null) return NotFound();
+            var agreementDTOs = _mapper.Map<List<AgreementDTO>>(agreementModels);
 
-            return Ok(agreements);
+            return Ok(agreementDTOs.OrderBy(a => a.Id));
         }
 
         [HttpGet("{id}", Name = "GetAgreement")]
         public async Task<IActionResult> GetByIdAsync(long id)
         {
-            var agreement = await _unitOfWork.Agreements.GetByIdAsync(id);
+            var agreementModel = await _unitOfWork.Agreements.GetByIdAsync(id);
+            if (agreementModel == null) return NotFound($"Agreement with id {id} could not be found.");
 
-            if (agreement == null) return NotFound($"Agreement with id {id} could not be found.");
+            var agreementDTO = _mapper.Map<AgreementDTO>(agreementModel);
 
-            return Ok(agreement);
+            return Ok(agreementDTO);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] Agreement agreement)
+        public async Task<IActionResult> CreateAsync([FromBody] AgreementDTO agreementDTO)
         {
-            if (agreement == null) return BadRequest();
+            if (agreementDTO == null) return BadRequest();
 
-            await _unitOfWork.Agreements.AddAsync(agreement);
+            var agreementModel = _mapper.Map<Agreement>(agreementDTO);
+            await _unitOfWork.Agreements.AddAsync(agreementModel);
+            await _unitOfWork.CompleteAsync();
+            agreementDTO = _mapper.Map<AgreementDTO>(agreementModel);
+
+            return CreatedAtRoute("GetAgreement", new { id = agreementDTO.Id }, agreementDTO);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAsync(long id, AgreementDTO agreementDTO)
+        {
+            var existing = await _unitOfWork.Agreements.GetByIdAsync(id);
+            if (existing == null) return NotFound($"Agreement {id} could not be found.");
+
+            var workPeriods = await _unitOfWork.WorkPeriods.FindAsync(w => w.AgreementId == id);
+            if (workPeriods.ToList().Count != 0) return BadRequest("Can not change agreement as one or more work periods depend on it. Please create a new one.");
+
+            var agreementModel = _mapper.Map<Agreement>(agreementDTO);
+            await _unitOfWork.Agreements.UpdateAsync(id, agreementModel);
             await _unitOfWork.CompleteAsync();
 
-            return CreatedAtRoute("GetAgreement", new { id = agreement.Id }, agreement);
+            agreementDTO = _mapper.Map<AgreementDTO>(existing);
+
+            return Ok(agreementDTO);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(long id)
         {
-            var agreement = await _unitOfWork.Agreements.GetByIdAsync(id);
+            var agreementModel = await _unitOfWork.Agreements.GetByIdAsync(id);
+            if (agreementModel == null) return NoContent();
 
-            if (agreement == null) return NoContent();
+            var workPeriods = await _unitOfWork.WorkPeriods.FindAsync(w => w.AgreementId == id);
+            if (workPeriods.ToList().Count != 0) return BadRequest("Can not delete agreement as one or more work periods depend on it.");
 
-            _unitOfWork.Agreements.Remove(agreement);
+            _unitOfWork.Agreements.Remove(agreementModel);
             await _unitOfWork.CompleteAsync();
 
             return NoContent();

@@ -6,6 +6,6 @@ namespace EffortlessApi.Core.Repositories
     public interface ICompanyRepository : IRepository<Company>
     {
         Task UpdateAsync(long companyId, Company newCompany);
-
+        Task<Company> FindByVat(int vat);
     }
 }

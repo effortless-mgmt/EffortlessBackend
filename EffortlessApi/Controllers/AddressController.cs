@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using EffortlessApi.Core;
 using EffortlessApi.Core.Models;
 using EffortlessApi.Persistence;
+using EffortlessLibrary.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EffortlessApi.Controllers
@@ -14,59 +17,67 @@ namespace EffortlessApi.Controllers
     public class AddressController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-
-        public AddressController(EffortlessContext context)
+        private readonly IMapper _mapper;
+        public AddressController(EffortlessContext context, IMapper mapper)
         {
             _unitOfWork = new UnitOfWork(context);
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            var addresses = await _unitOfWork.Addresses.GetAllAsync();
+            var addressModels = await _unitOfWork.Addresses.GetAllAsync();
+            if (addressModels == null) return NotFound();
 
-            if (addresses == null) return NotFound();
+            var addressDTOs = _mapper.Map<List<AddressDTO>>(addressModels);
 
-            return Ok(addresses);
+            return Ok(addressDTOs.OrderBy(a => a.Id));
         }
 
         [HttpGet("{id}", Name = "GetAddress")]
         public async Task<IActionResult> GetByIdAsync(long id)
         {
-            var address = await _unitOfWork.Addresses.GetByIdAsync(id);
+            var addressModel = await _unitOfWork.Addresses.GetByIdAsync(id);
+            if (addressModel == null) return NotFound($"Address with id {id} could not be found.");
 
-            if (address == null) return NotFound($"Address with id {id} could not be found.");
+            var addressDTO = _mapper.Map<AddressDTO>(addressModel);
 
-            return Ok(address);
+            return Ok(addressDTO);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] Address address)
+        public async Task<IActionResult> CreateAsync([FromBody] AddressDTO addressDTO)
         {
-            if (address == null)
+            if (addressDTO == null)
             {
                 return BadRequest();
             }
 
-            //TODO Check if address already exists
-
-            await _unitOfWork.Addresses.AddAsync(address);
+            var addressModel = _mapper.Map<Address>(addressDTO);
+            await _unitOfWork.Addresses.AddAsync(addressModel);
             await _unitOfWork.CompleteAsync();
 
-            return CreatedAtRoute("GetAddress", new { id = address.Id }, address);
+            addressDTO = _mapper.Map<AddressDTO>(addressModel);
+
+            return CreatedAtRoute("GetAddress", new { id = addressDTO.Id }, addressDTO);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(int id, [FromBody] Address address)
+        public async Task<IActionResult> UpdateAsync(int id, [FromBody] AddressDTO addressDTO)
         {
+
             var existing = await _unitOfWork.Addresses.GetByIdAsync(id);
 
             if (existing == null) { return NotFound($"Address Id {id} could not be found."); }
 
-            await _unitOfWork.Addresses.UpdateAsync(existing.Id, address);
+            var addressModel = _mapper.Map<Address>(addressDTO);
+            await _unitOfWork.Addresses.UpdateAsync(id, addressModel);
             await _unitOfWork.CompleteAsync();
 
-            return Ok(existing);
+            addressDTO = _mapper.Map<AddressDTO>(existing);
+
+            return Ok(addressDTO);
         }
 
         [HttpDelete("{id}")]

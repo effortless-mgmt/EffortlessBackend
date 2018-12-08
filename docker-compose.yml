@@ -4,7 +4,8 @@ version: '3'
 services:
   restapi:
     build:
-      context: ./EffortlessApi
+      # context: ./EffortlessApi
+      context: ./
       dockerfile: Dockerfile
     depends_on:
       - db

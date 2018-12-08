@@ -16,6 +16,12 @@ namespace EffortlessApi.Persistence.Repositories
             get { return _context as EffortlessContext; }
         }
 
+        public Task<Address> GetByIdAsync(long? id)
+        {
+            return id == null ? null : _context.Set<Address>().FindAsync(id);
+        }
+
+
         public async Task UpdateAsync(long id, Address newAddress)
         {
             var addressToEdit = await GetByIdAsync(id);

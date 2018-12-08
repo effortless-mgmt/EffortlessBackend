@@ -1,7 +1,11 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using EffortlessApi.Core;
 using EffortlessApi.Core.Models;
 using EffortlessApi.Persistence;
+using EffortlessLibrary.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EffortlessApi.Controllers
@@ -12,71 +16,121 @@ namespace EffortlessApi.Controllers
     public class DepartmentController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        public DepartmentController(EffortlessContext context) => _unitOfWork = new UnitOfWork(context);
+        private readonly IMapper _mapper;
+        public DepartmentController(EffortlessContext context, IMapper mapper)
+        {
+            _unitOfWork = new UnitOfWork(context);
+            _mapper = mapper;
+        }
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            var departments = await _unitOfWork.Department.GetAllAsync();
+            AddressDTO addressDTO;
+            CompanySimpleDTO companyDTO;
 
-            if (departments == null) return NotFound();
+            var departmentModels = await _unitOfWork.Departments.GetAllAsync();
+            if (departmentModels == null) return NotFound();
 
-            return Ok(departments);
-        }
+            var departmentDTOs = _mapper.Map<List<DepartmentDTO>>(departmentModels);
 
-        [HttpGet("{departmentId}", Name = "Getdepartment")]
-        public async Task<IActionResult> GetById(long departmentId)
-        {
-            var department = await _unitOfWork.Department.GetByIdAsync(departmentId);
-
-            if (department == null)
+            foreach (DepartmentDTO d in departmentDTOs)
             {
-                return NotFound($"department {departmentId} could not be found.");
+                companyDTO = _mapper.Map<CompanySimpleDTO>(await _unitOfWork.Companies.GetByIdAsync(d.CompanyId));
+                addressDTO = _mapper.Map<AddressDTO>(await _unitOfWork.Addresses.GetByIdAsync(d.AddressId));
+                d.Company = companyDTO;
+                d.Address = addressDTO;
             }
 
-            return Ok(department);
+            return Ok(departmentDTOs);
+        }
+
+        [HttpGet("{id}", Name = "GetDepartment")]
+        public async Task<IActionResult> GetById(long id)
+        {
+            var departmentModel = await _unitOfWork.Departments.GetByIdAsync(id);
+            if (departmentModel == null) return NotFound($"Department {id} could not be found.");
+
+            var departmentDTO = _mapper.Map<DepartmentDTO>(departmentModel);
+
+            return Ok(departmentDTO);
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync(Department department)
+        public async Task<IActionResult> CreateAsync([FromBody] DepartmentDTO departmentDTO)
         {
-            var existingdepartment = await _unitOfWork.Department.GetByIdAsync(department.Id);
+            Address addressModel;
 
-            if (existingdepartment != null) return Ok(department);
+            if (departmentDTO == null) return BadRequest();
 
-            await _unitOfWork.Department.AddAsync(department);
-            await _unitOfWork.CompleteAsync();
+            var companyModel = await _unitOfWork.Companies.FindByVat(departmentDTO.Company.Vat);
+            if (companyModel == null) return BadRequest("You must create a company before creating a company department.");
 
-            return CreatedAtRoute("Getdepartment", new { departmentId = department.Id }, department);
-        }
+            var departmentModel = _mapper.Map<Department>(departmentDTO);
+            var companyDTO = _mapper.Map<CompanySimpleDTO>(companyModel);
+            departmentModel.CompanyId = companyModel.Id;
 
-        [HttpPut("{departmentId}")]
-        public async Task<IActionResult> Put(long departmentId, Department department)
-        {
-            var existingdepartment = await _unitOfWork.Department.GetByIdAsync(departmentId);
-
-            if (existingdepartment == null) return NotFound($"department {departmentId} could not be found.");
-
-            await _unitOfWork.Department.UpdateAsync(departmentId, department);
-            await _unitOfWork.CompleteAsync();
-
-            return Ok(existingdepartment);
-        }
-
-        [HttpDelete("{departmentId}")]
-        public async Task<IActionResult> Delete(long departmentId)
-        {
-            var department = await _unitOfWork.Department.GetByIdAsync(departmentId);
-
-            if (department == null)
+            ///<text>
+            ///If department is created without an address, the address will be assigned to that of the parent company.
+            ///</text>
+            var addressDTO = departmentDTO.Address;
+            if (addressDTO == null)
             {
-                return NoContent();
+                addressModel = await _unitOfWork.Addresses.GetByIdAsync(companyModel.AddressId);
+                addressDTO = _mapper.Map<AddressDTO>(addressModel);
+                departmentModel.AddressId = addressModel.Id;
+            }
+            else
+            {
+                addressModel = _mapper.Map<Address>(addressDTO);
+                await _unitOfWork.Addresses.AddAsync(addressModel);
+                await _unitOfWork.CompleteAsync();
             }
 
-            _unitOfWork.Department.Remove(department);
-
+            await _unitOfWork.Departments.AddAsync(departmentModel);
             await _unitOfWork.CompleteAsync();
 
-            return Ok(department);
+            departmentDTO = _mapper.Map<DepartmentDTO>(departmentModel);
+
+            return CreatedAtRoute("GetDepartment", new { id = departmentDTO.Id }, departmentDTO);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAsync(long id, DepartmentDTO departmentDTO)
+        {
+            var existing = await _unitOfWork.Departments.GetByIdAsync(id);
+            if (existing == null) return NotFound($"department {id} could not be found.");
+
+            if (departmentDTO.Address != null)
+            {
+                var departmentAddressModel = _mapper.Map<Address>(departmentDTO.Address);
+                await _unitOfWork.Addresses.AddAsync(departmentAddressModel);
+                await _unitOfWork.CompleteAsync();
+
+                departmentDTO.AddressId = departmentAddressModel.Id;
+            }
+
+            var companyModel = await _unitOfWork.Companies.GetByIdAsync(existing.CompanyId);
+            var departmentModel = _mapper.Map<Department>(departmentDTO);
+            await _unitOfWork.Departments.UpdateAsync(id, departmentModel);
+            await _unitOfWork.CompleteAsync();
+
+            var addressModel = await _unitOfWork.Addresses.GetByIdAsync(existing.Id);
+            departmentDTO = _mapper.Map<DepartmentDTO>(existing);
+
+            return Ok(departmentDTO);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(long id)
+        {
+            var department = await _unitOfWork.Departments.GetByIdAsync(id);
+
+            if (department == null) return NoContent();
+
+            _unitOfWork.Departments.Remove(department);
+            await _unitOfWork.CompleteAsync();
+
+            return NoContent();
         }
     }
 }

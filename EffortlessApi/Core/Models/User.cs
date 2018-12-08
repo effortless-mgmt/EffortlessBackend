@@ -17,21 +17,11 @@ namespace EffortlessApi.Core.Models
         public string FirstName { get; set; }
         [Required]
         public string LastName { get; set; }
-        public long AddressId { get; set; }
-        [Required]
+        public long? AddressId { get; set; }
+        public Address Address { get; set; }
         public string Email { get; set; }
         [Required]
         public string Phone { get; set; }
-        [JsonIgnore]
         public virtual ICollection<UserRole> UserRoles { get; set; }
-        [NotMapped]
-        public virtual IList<string> Privileges
-        {
-            get 
-            {
-                if (UserRoles == null) return null;
-                return UserRoles.Select(ur => ur.Role).SelectMany(r => r.PrivilegeNames).ToList();
-            }
-        }
     }
 }

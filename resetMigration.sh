@@ -27,7 +27,7 @@ read -p "Reset migration $migration (Y/n)? " -n 1 -r
 echo;
 if [[ $REPLY =~ ^[Yy]$ ]] || [[ -z $REPLY ]]; then
     echo "Reseting database to $migration."
-    dotnet ef database update $migration 1
+    dotnet ef database update $migration
     echo "Removing last migration."
     dotnet ef migrations remove
     echo "Done"

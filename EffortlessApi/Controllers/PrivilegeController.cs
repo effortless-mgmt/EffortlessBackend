@@ -1,7 +1,11 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using EffortlessApi.Core;
 using EffortlessApi.Core.Models;
 using EffortlessApi.Persistence;
+using EffortlessLibrary.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EffortlessApi.Controllers
@@ -10,74 +14,75 @@ namespace EffortlessApi.Controllers
     [ApiController]
     public class PrivilegeController : ControllerBase
     {
-
         private readonly IUnitOfWork _unitOfWork;
-        public PrivilegeController(EffortlessContext context) => _unitOfWork = new UnitOfWork(context);
+        private readonly IMapper _mapper;
+        public PrivilegeController(EffortlessContext context, IMapper mapper)
+        {
+            _unitOfWork = new UnitOfWork(context);
+            _mapper = mapper;
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            var privileges = await _unitOfWork.Privileges.GetAllAsync();
+            var privilegeModels = await _unitOfWork.Privileges.GetAllAsync();
+            if (privilegeModels == null) return NotFound();
 
-            if (privileges == null) return NotFound();
+            var privilegeDTOs = _mapper.Map<List<PrivilegeDTO>>(privilegeModels);
 
-            return Ok(privileges);
+            return Ok(privilegeDTOs.OrderBy(p => p.Id));
         }
 
-        [HttpGet("{privilegeId}", Name = "GetPrivilege")]
-        public async Task<IActionResult> GetByIdAsync(long privilegeId)
+        [HttpGet("{id}", Name = "GetPrivilege")]
+        public async Task<IActionResult> GetByIdAsync(long id)
         {
-            var privilege = await _unitOfWork.Privileges.GetByIdAsync(privilegeId);
+            var privilegeModel = await _unitOfWork.Privileges.GetByIdAsync(id);
+            if (privilegeModel == null) return NotFound($"Privilege {id} could not be found.");
 
-            if (privilege == null)
-            {
-                return NotFound($"Privilege {privilegeId} could not be found.");
-            }
+            var privilegeDTO = _mapper.Map<PrivilegeDTO>(privilegeModel);
 
-            return Ok(privilege);
+            return Ok(privilegeDTO);
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync(Privilege privilege)
+        public async Task<IActionResult> CreateAsync([FromBody] PrivilegeDTO privilegeDTO)
         {
-            var existingPrivilege = await _unitOfWork.Privileges.GetByIdAsync(privilege.Id);
+            if (privilegeDTO == null) return BadRequest();
 
-            if (existingPrivilege != null) return Ok(privilege);
-
-            await _unitOfWork.Privileges.AddAsync(privilege);
+            var privilegeModel = _mapper.Map<Privilege>(privilegeDTO);
+            await _unitOfWork.Privileges.AddAsync(privilegeModel);
             await _unitOfWork.CompleteAsync();
 
-            return CreatedAtRoute("GetPrivilege", new { privilegeId = privilege.Id }, privilege);
+            privilegeDTO = _mapper.Map<PrivilegeDTO>(privilegeModel);
+
+            return CreatedAtRoute("GetPrivilege", new { id = privilegeDTO.Id }, privilegeDTO);
         }
 
-        [HttpPut("{privilegeId}")]
-        public async Task<IActionResult> Put(long privilegeId, Privilege privilege)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAsync(long id, [FromBody] PrivilegeDTO privilegeDTO)
         {
-            var existingPrivilege = await _unitOfWork.Privileges.GetByIdAsync(privilegeId);
+            var existing = await _unitOfWork.Privileges.GetByIdAsync(id);
+            if (existing == null) return NotFound($"Privilege {id} could not be found.");
 
-            if (existingPrivilege == null) return NotFound($"Privilege {privilege.Id} could not be found.");
-
-            await _unitOfWork.Privileges.UpdateAsync(privilegeId, privilege);
+            var PrivilegeModel = _mapper.Map<Privilege>(privilegeDTO);
+            await _unitOfWork.Privileges.UpdateAsync(id, PrivilegeModel);
             await _unitOfWork.CompleteAsync();
 
-            return Ok(existingPrivilege);
+            privilegeDTO = _mapper.Map<PrivilegeDTO>(existing);
+
+            return Ok(privilegeDTO);
         }
 
-        [HttpDelete("{privilegeId}")]
-        public async Task<IActionResult> Delete(long privilegeId)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAsync(long id)
         {
-            var privilege = await _unitOfWork.Privileges.GetByIdAsync(privilegeId);
-
-            if (privilege == null)
-            {
-                return NotFound($"Privilege {privilegeId} could not be found.");
-            }
+            var privilege = await _unitOfWork.Privileges.GetByIdAsync(id);
+            if (privilege == null) return NoContent();
 
             _unitOfWork.Privileges.Remove(privilege);
-
             await _unitOfWork.CompleteAsync();
 
-            return Ok(privilege);
+            return NoContent();
         }
     }
 }

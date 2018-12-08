@@ -12,20 +12,27 @@ namespace EffortlessApi.Core.Models
         public long Id { get; set; }
         [Required]
         public string Name { get; set; }
-        [JsonIgnore]
         public virtual ICollection<RolePrivilege> RolePrivileges { get; set; }
-        [JsonIgnore]
         public virtual ICollection<UserRole> UserRoles { get; set; }
         [NotMapped]
-        public virtual IList<User> Users 
-        { 
+        public virtual IList<User> Users
+        {
             get
             {
                 if (UserRoles == null) return null;
                 return UserRoles.Select(ur => ur.User).ToList();
             }
         }
-        [JsonIgnore]
+        [NotMapped]
+        public IList<string> UserNames
+        {
+            get
+            {
+                if (Users == null) return null;
+                return Users.Select(u => u.UserName).ToList();
+            }
+        }
+
         [NotMapped]
         public virtual IList<Privilege> Privileges
         {

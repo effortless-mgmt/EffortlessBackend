@@ -15,13 +15,23 @@ namespace EffortlessApi.Persistence.Repositories
             get { return _context as EffortlessContext; }
         }
 
-        public async Task UpdateAsync(long departmentId, Department newDepartment)
+        public async override Task<Department> GetByIdAsync(long id)
         {
-            var departmentToEdit = await GetByIdAsync(departmentId);
+            return await _context.Set<Department>()
+                .Include(d => d.Address)
+                .Include(d => d.Company)
+                .FirstOrDefaultAsync(d => d.Id == id);
+        }
+        public async Task UpdateAsync(long id, Department newDepartment)
+        {
+            var departmentToEdit = await GetByIdAsync(id);
 
             departmentToEdit.Name = newDepartment.Name;
-            departmentToEdit.AddressId = newDepartment.AddressId;
-            departmentToEdit.CompanyId = newDepartment.CompanyId;
+
+            if (newDepartment.AddressId != 0)
+            {
+                departmentToEdit.AddressId = newDepartment.AddressId;
+            }
 
             _context.Set<Department>().Update(departmentToEdit);
         }

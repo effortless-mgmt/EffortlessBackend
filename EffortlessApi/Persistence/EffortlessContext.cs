@@ -16,10 +16,10 @@ namespace EffortlessApi.Persistence
         public DbSet<Privilege> Privileges { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<RolePrivilege> RolePrivileges { get; set; }
-        public DbSet<TemporaryWorkPeriod> TemporaryWorkPeriods { get; set; }
+        public DbSet<WorkPeriod> WorkPeriods { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<UserRole> UserRole { get; set; }
-        public DbSet<UserTemporaryWorkPeriod> UserTemporaryWorkPeriods { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
+        public DbSet<UserWorkPeriod> UserWorkPeriods { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -28,10 +28,10 @@ namespace EffortlessApi.Persistence
             modelBuilder.ApplyConfiguration(new DepartmentConfiguration());
             modelBuilder.ApplyConfiguration(new PrivilegeConfiguration());
             modelBuilder.ApplyConfiguration(new RolePrivilegeConfiguration());
-            modelBuilder.ApplyConfiguration(new TemporaryWorkPeriodConfiguration());
+            modelBuilder.ApplyConfiguration(new WorkPeriodConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
-            modelBuilder.ApplyConfiguration(new UserTemporaryWorkPeriodConfiguration());
+            modelBuilder.ApplyConfiguration(new UserWorkPeriodConfiguration());
         }
     }
 }

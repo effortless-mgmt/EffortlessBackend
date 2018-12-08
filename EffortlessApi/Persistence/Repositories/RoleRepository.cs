@@ -21,6 +21,8 @@ namespace EffortlessApi.Persistence.Repositories
             return await _context.Set<Role>()
                 .Include(r => r.RolePrivileges)
                 .ThenInclude(rp => rp.Privilege)
+                .Include(r => r.UserRoles)
+                .ThenInclude(ur => ur.User)
                 .SingleOrDefaultAsync(r => r.Id == id);
         }
 

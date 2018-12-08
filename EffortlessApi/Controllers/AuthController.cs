@@ -12,23 +12,23 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
-namespace EffortlessApi.Controllers 
+namespace EffortlessApi.Controllers
 {
     [Route("api/[controller]")]
-    public class AuthController : Controller 
+    public class AuthController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IJwtSettings _jwtSettings;
 
-        public AuthController(EffortlessContext context, IJwtSettings jwtSettings) 
+        public AuthController(EffortlessContext context, IJwtSettings jwtSettings)
         {
             _unitOfWork = new UnitOfWork(context);
             _jwtSettings = jwtSettings;
         }
 
-        private async Task<ClaimsIdentity> GetClaimsIdentityAsync(User user) 
+        private async Task<ClaimsIdentity> GetClaimsIdentityAsync(User user)
         {
-            var claims = new List<Claim> 
+            var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.Email, user.Email)
@@ -46,7 +46,7 @@ namespace EffortlessApi.Controllers
             return claimsIdentity;
         }
 
-        private string GetJwtToken(ClaimsIdentity identity) 
+        private string GetJwtToken(ClaimsIdentity identity)
         {
             var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SigningKey));
             var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
@@ -54,25 +54,25 @@ namespace EffortlessApi.Controllers
             var token = new JwtSecurityToken(
                 issuer: _jwtSettings.Issuer,
                 // audience: "http://localhost:5000",
-                claims : identity.Claims,
-                expires : DateTime.Now.AddMinutes(5),
-                signingCredentials : signingCredentials
+                claims: identity.Claims,
+                expires: DateTime.Now.AddMinutes(5),
+                signingCredentials: signingCredentials
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
         [HttpPost, Route("login")]
-        public async Task<IActionResult> LoginAsync([FromBody] User user) 
+        public async Task<IActionResult> LoginAsync([FromBody] User user)
         {
-            if (user == null || user.UserName == null || user.Password == null) 
+            if (user == null || user.UserName == null || user.Password == null)
             {
                 return BadRequest("Invalid client request.");
             }
 
             var fetchedUser = await _unitOfWork.Users.GetByUsernameAsync(user.UserName);
 
-            if (fetchedUser == null || user.Password != fetchedUser.Password) 
+            if (fetchedUser == null || user.Password != fetchedUser.Password)
             {
                 return Forbid("Username or password is incorrect.");
             }

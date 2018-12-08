@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
 
 namespace EffortlessApi.Core.Models
 {
@@ -9,11 +8,9 @@ namespace EffortlessApi.Core.Models
         [Required]
         public string Name { get; set; }
         [Required]
-        [JsonIgnore]
         public long CompanyId { get; set; }
         public virtual Company Company { get; set; }
         [Required]
-        [JsonIgnore]
         public long AddressId { get; set; }
         public virtual Address Address { get; set; }
     }

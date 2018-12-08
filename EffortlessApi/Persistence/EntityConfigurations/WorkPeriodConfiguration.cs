@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EffortlessApi.Persistence.EntityConfigurations
 {
-    public class TemporaryWorkPeriodConfiguration : IEntityTypeConfiguration<TemporaryWorkPeriod>
+    public class WorkPeriodConfiguration : IEntityTypeConfiguration<WorkPeriod>
     {
-        public void Configure(EntityTypeBuilder<TemporaryWorkPeriod> builder)
+        public void Configure(EntityTypeBuilder<WorkPeriod> builder)
         {
             builder
                 .HasMany<Appointment>()
-                .WithOne(a => a.TemporaryWorkPeriod)
-                .HasForeignKey(a => a.TemporaryWorkPeriodId);
+                .WithOne(a => a.WorkPeriod)
+                .HasForeignKey(a => a.WorkPeriodId);
 
             builder
                 .HasOne<Department>(tw => tw.Department)

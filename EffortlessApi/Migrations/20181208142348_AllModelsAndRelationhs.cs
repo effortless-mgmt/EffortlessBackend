@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace EffortlessApi.Migrations
 {
-    public partial class AllCurrentMigrations : Migration
+    public partial class AllModelsAndRelationhs : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -26,6 +26,26 @@ namespace EffortlessApi.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Addresses", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Agreements",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    Name = table.Column<string>(nullable: false),
+                    Version = table.Column<string>(nullable: true),
+                    UnitPrice = table.Column<decimal>(nullable: false),
+                    Salary = table.Column<decimal>(nullable: false),
+                    NightSubsidy = table.Column<decimal>(nullable: false),
+                    WeekendSubsidy = table.Column<decimal>(nullable: false),
+                    HolidaySubsidy = table.Column<decimal>(nullable: false),
+                    IsBreakPaid = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Agreements", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -55,24 +75,6 @@ namespace EffortlessApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TemporaryWorkPeriods",
-                columns: table => new
-                {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    JobId = table.Column<long>(nullable: false),
-                    Start = table.Column<DateTime>(nullable: false),
-                    Stop = table.Column<DateTime>(nullable: false),
-                    UnitPrice = table.Column<float>(nullable: false),
-                    Salary = table.Column<float>(nullable: false),
-                    BreakIsPaid = table.Column<bool>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TemporaryWorkPeriods", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Companies",
                 columns: table => new
                 {
@@ -81,8 +83,8 @@ namespace EffortlessApi.Migrations
                     Vat = table.Column<int>(nullable: false),
                     Pno = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: false),
-                    ParentCompanyId = table.Column<long>(nullable: false),
-                    AddressId = table.Column<long>(nullable: false)
+                    ParentCompanyId = table.Column<long>(nullable: true),
+                    AddressId = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -92,13 +94,13 @@ namespace EffortlessApi.Migrations
                         column: x => x.AddressId,
                         principalTable: "Addresses",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Companies_Companies_ParentCompanyId",
                         column: x => x.ParentCompanyId,
                         principalTable: "Companies",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -123,32 +125,6 @@ namespace EffortlessApi.Migrations
                         principalTable: "Roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Users",
-                columns: table => new
-                {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    UserName = table.Column<string>(nullable: false),
-                    Password = table.Column<string>(nullable: false),
-                    FirstName = table.Column<string>(nullable: false),
-                    LastName = table.Column<string>(nullable: false),
-                    AddressId = table.Column<long>(nullable: false),
-                    Email = table.Column<string>(nullable: false),
-                    Phone = table.Column<string>(nullable: false),
-                    TemporaryWorkPeriodId = table.Column<long>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Users_TemporaryWorkPeriods_TemporaryWorkPeriodId",
-                        column: x => x.TemporaryWorkPeriodId,
-                        principalTable: "TemporaryWorkPeriods",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -179,6 +155,75 @@ namespace EffortlessApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "WorkPeriods",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    Name = table.Column<string>(nullable: true),
+                    DepartmentId = table.Column<long>(nullable: false),
+                    AgreementId = table.Column<long>(nullable: false),
+                    Start = table.Column<DateTime>(nullable: false),
+                    LastAppointment = table.Column<DateTime>(nullable: false),
+                    Active = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WorkPeriods", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_WorkPeriods_Agreements_AgreementId",
+                        column: x => x.AgreementId,
+                        principalTable: "Agreements",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_WorkPeriods_Departments_DepartmentId",
+                        column: x => x.DepartmentId,
+                        principalTable: "Departments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    UserName = table.Column<string>(nullable: false),
+                    Password = table.Column<string>(nullable: false),
+                    FirstName = table.Column<string>(nullable: false),
+                    LastName = table.Column<string>(nullable: false),
+                    AddressId = table.Column<long>(nullable: true),
+                    AddressId1 = table.Column<long>(nullable: true),
+                    Email = table.Column<string>(nullable: true),
+                    Phone = table.Column<string>(nullable: false),
+                    WorkPeriodId = table.Column<long>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_Addresses_AddressId",
+                        column: x => x.AddressId,
+                        principalTable: "Addresses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Users_Addresses_AddressId1",
+                        column: x => x.AddressId1,
+                        principalTable: "Addresses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Users_WorkPeriods_WorkPeriodId",
+                        column: x => x.WorkPeriodId,
+                        principalTable: "WorkPeriods",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Appointments",
                 columns: table => new
                 {
@@ -188,30 +233,33 @@ namespace EffortlessApi.Migrations
                     Stop = table.Column<DateTime>(nullable: false),
                     Break = table.Column<long>(nullable: false),
                     OwnerId = table.Column<long>(nullable: false),
-                    TemporaryWorkPeriodId = table.Column<long>(nullable: false),
+                    WorkPeriodId = table.Column<long>(nullable: false),
                     ApprovedByOwner = table.Column<bool>(nullable: false),
                     ApprovedByOwnerDate = table.Column<DateTime>(nullable: false),
                     ApprovedByUserId = table.Column<long>(nullable: false),
+                    ApprovedById = table.Column<long>(nullable: true),
                     ApprovedDate = table.Column<DateTime>(nullable: false),
                     CreatedByUserId = table.Column<long>(nullable: false),
+                    CreatedById = table.Column<long>(nullable: true),
                     CreatedDate = table.Column<DateTime>(nullable: false),
-                    Earnings = table.Column<decimal>(nullable: false)
+                    Earnings = table.Column<decimal>(nullable: false),
+                    WorkPeriodId1 = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Appointments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Appointments_Users_ApprovedByUserId",
-                        column: x => x.ApprovedByUserId,
+                        name: "FK_Appointments_Users_ApprovedById",
+                        column: x => x.ApprovedById,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Appointments_Users_CreatedByUserId",
-                        column: x => x.CreatedByUserId,
+                        name: "FK_Appointments_Users_CreatedById",
+                        column: x => x.CreatedById,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Appointments_Users_OwnerId",
                         column: x => x.OwnerId,
@@ -219,15 +267,21 @@ namespace EffortlessApi.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Appointments_TemporaryWorkPeriods_TemporaryWorkPeriodId",
-                        column: x => x.TemporaryWorkPeriodId,
-                        principalTable: "TemporaryWorkPeriods",
+                        name: "FK_Appointments_WorkPeriods_WorkPeriodId",
+                        column: x => x.WorkPeriodId,
+                        principalTable: "WorkPeriods",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Appointments_WorkPeriods_WorkPeriodId1",
+                        column: x => x.WorkPeriodId1,
+                        principalTable: "WorkPeriods",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserRole",
+                name: "UserRoles",
                 columns: table => new
                 {
                     UserId = table.Column<long>(nullable: false),
@@ -235,15 +289,15 @@ namespace EffortlessApi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserRole", x => new { x.UserId, x.RoleId });
+                    table.PrimaryKey("PK_UserRoles", x => new { x.UserId, x.RoleId });
                     table.ForeignKey(
-                        name: "FK_UserRole_Roles_RoleId",
+                        name: "FK_UserRoles_Roles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "Roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserRole_Users_UserId",
+                        name: "FK_UserRoles_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -251,45 +305,45 @@ namespace EffortlessApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserTemporaryWorkPeriods",
+                name: "UserWorkPeriods",
                 columns: table => new
                 {
                     UserId = table.Column<long>(nullable: false),
-                    TemporaryWorkPeriodId = table.Column<long>(nullable: false),
-                    TemporaryWorkPeriodId1 = table.Column<long>(nullable: true)
+                    WorkPeriodId = table.Column<long>(nullable: false),
+                    WorkPeriodId1 = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserTemporaryWorkPeriods", x => new { x.UserId, x.TemporaryWorkPeriodId });
+                    table.PrimaryKey("PK_UserWorkPeriods", x => new { x.UserId, x.WorkPeriodId });
                     table.ForeignKey(
-                        name: "FK_UserTemporaryWorkPeriods_TemporaryWorkPeriods_TemporaryWork~",
-                        column: x => x.TemporaryWorkPeriodId,
-                        principalTable: "TemporaryWorkPeriods",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserTemporaryWorkPeriods_TemporaryWorkPeriods_TemporaryWor~1",
-                        column: x => x.TemporaryWorkPeriodId1,
-                        principalTable: "TemporaryWorkPeriods",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_UserTemporaryWorkPeriods_Users_UserId",
+                        name: "FK_UserWorkPeriods_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserWorkPeriods_WorkPeriods_WorkPeriodId",
+                        column: x => x.WorkPeriodId,
+                        principalTable: "WorkPeriods",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserWorkPeriods_WorkPeriods_WorkPeriodId1",
+                        column: x => x.WorkPeriodId1,
+                        principalTable: "WorkPeriods",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Appointments_ApprovedByUserId",
+                name: "IX_Appointments_ApprovedById",
                 table: "Appointments",
-                column: "ApprovedByUserId");
+                column: "ApprovedById");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Appointments_CreatedByUserId",
+                name: "IX_Appointments_CreatedById",
                 table: "Appointments",
-                column: "CreatedByUserId");
+                column: "CreatedById");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Appointments_OwnerId",
@@ -297,9 +351,14 @@ namespace EffortlessApi.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Appointments_TemporaryWorkPeriodId",
+                name: "IX_Appointments_WorkPeriodId",
                 table: "Appointments",
-                column: "TemporaryWorkPeriodId");
+                column: "WorkPeriodId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Appointments_WorkPeriodId1",
+                table: "Appointments",
+                column: "WorkPeriodId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Companies_AddressId",
@@ -333,9 +392,19 @@ namespace EffortlessApi.Migrations
                 column: "PrivilegeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserRole_RoleId",
-                table: "UserRole",
+                name: "IX_UserRoles_RoleId",
+                table: "UserRoles",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_AddressId",
+                table: "Users",
+                column: "AddressId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_AddressId1",
+                table: "Users",
+                column: "AddressId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
@@ -344,25 +413,35 @@ namespace EffortlessApi.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_TemporaryWorkPeriodId",
-                table: "Users",
-                column: "TemporaryWorkPeriodId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Users_UserName",
                 table: "Users",
                 column: "UserName",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserTemporaryWorkPeriods_TemporaryWorkPeriodId",
-                table: "UserTemporaryWorkPeriods",
-                column: "TemporaryWorkPeriodId");
+                name: "IX_Users_WorkPeriodId",
+                table: "Users",
+                column: "WorkPeriodId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserTemporaryWorkPeriods_TemporaryWorkPeriodId1",
-                table: "UserTemporaryWorkPeriods",
-                column: "TemporaryWorkPeriodId1");
+                name: "IX_UserWorkPeriods_WorkPeriodId",
+                table: "UserWorkPeriods",
+                column: "WorkPeriodId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserWorkPeriods_WorkPeriodId1",
+                table: "UserWorkPeriods",
+                column: "WorkPeriodId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WorkPeriods_AgreementId",
+                table: "WorkPeriods",
+                column: "AgreementId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WorkPeriods_DepartmentId",
+                table: "WorkPeriods",
+                column: "DepartmentId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -371,19 +450,13 @@ namespace EffortlessApi.Migrations
                 name: "Appointments");
 
             migrationBuilder.DropTable(
-                name: "Departments");
-
-            migrationBuilder.DropTable(
                 name: "RolePrivileges");
 
             migrationBuilder.DropTable(
-                name: "UserRole");
+                name: "UserRoles");
 
             migrationBuilder.DropTable(
-                name: "UserTemporaryWorkPeriods");
-
-            migrationBuilder.DropTable(
-                name: "Companies");
+                name: "UserWorkPeriods");
 
             migrationBuilder.DropTable(
                 name: "Privileges");
@@ -395,10 +468,19 @@ namespace EffortlessApi.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Addresses");
+                name: "WorkPeriods");
 
             migrationBuilder.DropTable(
-                name: "TemporaryWorkPeriods");
+                name: "Agreements");
+
+            migrationBuilder.DropTable(
+                name: "Departments");
+
+            migrationBuilder.DropTable(
+                name: "Companies");
+
+            migrationBuilder.DropTable(
+                name: "Addresses");
         }
     }
 }

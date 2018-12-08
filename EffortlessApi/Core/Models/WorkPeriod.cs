@@ -7,28 +7,30 @@ using Newtonsoft.Json;
 
 namespace EffortlessApi.Core.Models
 {
-    public class TemporaryWorkPeriod
+    public class WorkPeriod
     {
         public long Id { get; set; }
-        [JsonIgnore]
-        public ICollection<UserTemporaryWorkPeriod> UserTemporaryWorkPeriods { get; set; }
-        [NotMapped]
+        public string Name { get; set; }
+        public virtual ICollection<UserWorkPeriod> UserWorkPeriods { get; set; }
         public virtual IList<User> AssignedUsers
         {
             get
             {
-                if (UserTemporaryWorkPeriods == null) return null;
-                return UserTemporaryWorkPeriods.Select(ut => ut.User).ToList();
+                if (UserWorkPeriods == null) return null;
+                return UserWorkPeriods.Select(ut => ut.User).ToList();
             }
         }
 
         [Required]
         public long DepartmentId { get; set; }
         public virtual Department Department { get; set; }
+        public virtual Agreement Agreement { get; set; }
+        public long AgreementId { get; set; }
 
+        public virtual IList<Appointment> Appointments { get; set; }
         [Required]
         public DateTime Start { get; set; }
-        [Required]
-        public DateTime Stop { get; set; }
+        public DateTime LastAppointment { get; set; }
+        public bool Active { get; set; }
     }
 }
