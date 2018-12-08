@@ -98,7 +98,7 @@ namespace EffortlessApi.Controllers
             var appointmentModel = _mapper.Map<Appointment>(appointmentDTO);
             var existingUserWorkPeriod = await _unitOfWork.UserWorkPeriods.FindAsync(u => u.UserId == appointmentDTO.OwnerId && u.WorkPeriodId == appointmentDTO.WorkPeriodId);
 
-            if (existingUserWorkPeriod == null)
+            if (existingUserWorkPeriod.Count() == 0)
             {
                 var userPeriodModel = _mapper.Map<UserWorkPeriod>(new UserWorkPeriodDTO(appointmentDTO.OwnerId, appointmentDTO.WorkPeriodId));
                 await _unitOfWork.UserWorkPeriods.AddAsync(userPeriodModel);

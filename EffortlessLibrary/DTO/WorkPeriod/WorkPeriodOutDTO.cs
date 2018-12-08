@@ -22,6 +22,8 @@ namespace EffortlessLibrary.DTO
                 return UserWorkPeriods.Select(ut => ut.User).ToList();
             }
         }
+        [JsonIgnore]
+        public long DepartmentId { get; set; }
         public DepartmentDTO Department { get; set; }
         public IList<AppointmentWpDTO> Appointments { get; set; }
         public DateTime Start { get; set; }
@@ -29,7 +31,7 @@ namespace EffortlessLibrary.DTO
         {
             get
             {
-                if (Appointments == null) return Start;
+                if (Appointments.Count == 0) return Start;
                 var lastAppointment = Appointments.OrderBy(a => a.Stop).ToList()[Appointments.Count - 1];
                 return lastAppointment.Stop;
             }

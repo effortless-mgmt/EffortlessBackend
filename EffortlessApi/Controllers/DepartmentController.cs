@@ -47,17 +47,10 @@ namespace EffortlessApi.Controllers
         [HttpGet("{id}", Name = "GetDepartment")]
         public async Task<IActionResult> GetById(long id)
         {
-            CompanySimpleDTO companyDTO;
-            AddressDTO addressDTO;
-
             var departmentModel = await _unitOfWork.Departments.GetByIdAsync(id);
             if (departmentModel == null) return NotFound($"Department {id} could not be found.");
 
             var departmentDTO = _mapper.Map<DepartmentDTO>(departmentModel);
-            companyDTO = _mapper.Map<CompanySimpleDTO>(await _unitOfWork.Companies.GetByIdAsync(departmentModel.CompanyId));
-            addressDTO = _mapper.Map<AddressDTO>(await _unitOfWork.Addresses.GetByIdAsync(departmentModel.AddressId));
-            departmentDTO.Company = companyDTO;
-            departmentDTO.Address = addressDTO;
 
             return Ok(departmentDTO);
         }
@@ -74,6 +67,7 @@ namespace EffortlessApi.Controllers
 
             var departmentModel = _mapper.Map<Department>(departmentDTO);
             var companyDTO = _mapper.Map<CompanySimpleDTO>(companyModel);
+            departmentModel.CompanyId = companyModel.Id;
 
             ///<text>
             ///If department is created without an address, the address will be assigned to that of the parent company.
@@ -90,20 +84,14 @@ namespace EffortlessApi.Controllers
                 addressModel = _mapper.Map<Address>(addressDTO);
                 await _unitOfWork.Addresses.AddAsync(addressModel);
                 await _unitOfWork.CompleteAsync();
-                departmentModel.AddressId = addressModel.Id;
             }
-
-            departmentModel.CompanyId = companyModel.Id;
 
             await _unitOfWork.Departments.AddAsync(departmentModel);
             await _unitOfWork.CompleteAsync();
 
-            departmentDTO.Id = departmentModel.Id;
-            departmentDTO.Address = addressDTO;
-            departmentDTO.Company = companyDTO;
-            departmentDTO.Address.Id = departmentModel.AddressId;
+            departmentDTO = _mapper.Map<DepartmentDTO>(departmentModel);
 
-            return CreatedAtRoute("GetDepartment", new { id = departmentModel.Id }, departmentDTO);
+            return CreatedAtRoute("GetDepartment", new { id = departmentDTO.Id }, departmentDTO);
         }
 
         [HttpPut("{id}")]
@@ -137,13 +125,9 @@ namespace EffortlessApi.Controllers
         {
             var department = await _unitOfWork.Departments.GetByIdAsync(id);
 
-            if (department == null)
-            {
-                return NoContent();
-            }
+            if (department == null) return NoContent();
 
             _unitOfWork.Departments.Remove(department);
-
             await _unitOfWork.CompleteAsync();
 
             return NoContent();

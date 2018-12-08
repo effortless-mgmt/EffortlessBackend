@@ -71,6 +71,43 @@ namespace EffortlessApi.Controllers
             return CreatedAtRoute("GetUser", new { userName = userDTO.UserName }, userDTO);
         }
 
+        [HttpPut("{userName}")]
+        public async Task<IActionResult> UpdateAsync(string userName, UserDTO userDTO)
+        {
+            var existing = await _unitOfWork.Users.GetByUsernameAsync(userName);
+            if (existing == null) return NotFound($"User {userName} could not be found.");
+
+            if (userDTO.Address != null)
+            {
+                var userAddressModel = _mapper.Map<Address>(userDTO.Address);
+                await _unitOfWork.Addresses.AddAsync(userAddressModel);
+                await _unitOfWork.CompleteAsync();
+
+                userDTO.AddressId = userAddressModel.Id;
+            }
+
+            var addressModel = _mapper.Map<Address>(await _unitOfWork.Addresses.GetByIdAsync(userDTO.AddressId));
+            var userModel = _mapper.Map<User>(userDTO);
+            await _unitOfWork.Users.UpdateAsync(userName, userModel);
+            await _unitOfWork.CompleteAsync();
+
+            userDTO = _mapper.Map<UserDTO>(existing);
+
+            return Ok(userDTO);
+        }
+
+        [HttpDelete("{userName}")]
+        public async Task<IActionResult> DeleteAsync(string userName)
+        {
+            var user = await _unitOfWork.Users.GetByUsernameAsync(userName);
+            if (user == null) return NoContent();
+
+            _unitOfWork.Users.Remove(user);
+            await _unitOfWork.CompleteAsync();
+
+            return NoContent();
+        }
+
         [HttpPost("{userName}/role/{roleId}")]
         public async Task<IActionResult> CreateUserRoleAsync(string userName, long roleId)
         {
@@ -115,50 +152,33 @@ namespace EffortlessApi.Controllers
         {
             var userModel = await _unitOfWork.Users.GetByUsernameAsync(userName);
             if (userModel == null) return NotFound($"User {userName} does not exist.");
-            var userDTO = _mapper.Map<UserDTO>(userModel);
 
+            var userDTO = _mapper.Map<UserDTO>(userModel);
             var userRoles = userDTO.UserRoles.Select(ur => ur.Role);
             var RoleDTOs = _mapper.Map<List<RoleSimpleDTO>>(userRoles);
 
             return Ok(RoleDTOs);
         }
 
-        [HttpPut("{userName}")]
-        public async Task<IActionResult> UpdateAsync(string userName, UserDTO userDTO)
+        [HttpGet("workperiod")]
+        public async Task<IActionResult> GetUserWorkPeriods()
         {
-            var existing = await _unitOfWork.Users.GetByUsernameAsync(userName);
+            var userWorkPeriodDTOs = _mapper.Map<List<UserWorkPeriod>>(await _unitOfWork.UserWorkPeriods.GetAllAsync());
+            if (userWorkPeriodDTOs == null) return NotFound();
 
-            if (existing == null) return NotFound($"User {userName} could not be found.");
-
-            if (userDTO.Address != null)
-            {
-                var userAddressModel = _mapper.Map<Address>(userDTO.Address);
-                await _unitOfWork.Addresses.AddAsync(userAddressModel);
-                await _unitOfWork.CompleteAsync();
-
-                userDTO.AddressId = userAddressModel.Id;
-            }
-
-            var addressModel = _mapper.Map<Address>(await _unitOfWork.Addresses.GetByIdAsync(userDTO.AddressId));
-            var userModel = _mapper.Map<User>(userDTO);
-            await _unitOfWork.Users.UpdateAsync(userName, userModel);
-            await _unitOfWork.CompleteAsync();
-
-            userDTO = _mapper.Map<UserDTO>(existing);
-
-            return Ok(userDTO);
+            return Ok(userWorkPeriodDTOs);
         }
 
-        [HttpDelete("{userName}")]
-        public async Task<IActionResult> DeleteAsync(string userName)
+        [HttpGet("{userName}/workperiod")]
+        public async Task<IActionResult> GetUserWorkPeriods(string userName)
         {
-            var user = await _unitOfWork.Users.GetByUsernameAsync(userName);
-            if (user == null) return NoContent();
+            var userModel = await _unitOfWork.Users.GetByUsernameAsync(userName);
+            if (userModel == null) return NotFound($"User {userName} does not exist.");
 
-            _unitOfWork.Users.Remove(user);
-            await _unitOfWork.CompleteAsync();
+            var userRoleDTOs = _mapper.Map<List<UserWorkPeriod>>(await _unitOfWork.UserWorkPeriods.GetAllAsync());
 
-            return NoContent();
+            return Ok(userRoleDTOs);
         }
+
     }
 }

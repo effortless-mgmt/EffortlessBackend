@@ -15,6 +15,17 @@ namespace EffortlessApi.Persistence.Repositories
             get { return _context as EffortlessContext; }
         }
 
+        public override async Task<WorkPeriod> GetByIdAsync(long id)
+        {
+            return await _context.Set<WorkPeriod>()
+                .Include(wp => wp.UserWorkPeriods)
+                .Include(wp => wp.Department).ThenInclude(d => d.Address)
+                .Include(wp => wp.Department.Company)
+                .Include(wp => wp.Agreement)
+                .Include(wp => wp.Appointments).ThenInclude(a => a.Owner)
+                .FirstOrDefaultAsync(wp => wp.Id == id);
+        }
+
         public async Task UpdateAsync(long id, WorkPeriod newWorkPeriod)
         {
             var workPeriodToEdit = await GetByIdAsync(id);

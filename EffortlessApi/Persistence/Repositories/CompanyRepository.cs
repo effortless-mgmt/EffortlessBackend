@@ -16,6 +16,14 @@ namespace EffortlessApi.Persistence.Repositories
             get { return _context as EffortlessContext; }
         }
 
+        public async override Task<Company> GetByIdAsync(long id)
+        {
+            return await _context.Set<Company>()
+                .Include(c => c.Address)
+                .Include(c => c.ParentCompany)
+                .FirstOrDefaultAsync(c => c.Id == id);
+        }
+
         public async Task<Company> FindByVat(int vat)
         {
             return await _context.Set<Company>().FirstOrDefaultAsync(c => c.Vat == vat);

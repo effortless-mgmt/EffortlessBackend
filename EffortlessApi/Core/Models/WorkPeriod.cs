@@ -11,7 +11,7 @@ namespace EffortlessApi.Core.Models
     {
         public long Id { get; set; }
         public string Name { get; set; }
-        public ICollection<UserWorkPeriod> UserWorkPeriods { get; set; }
+        public virtual ICollection<UserWorkPeriod> UserWorkPeriods { get; set; }
         public virtual IList<User> AssignedUsers
         {
             get
@@ -26,6 +26,8 @@ namespace EffortlessApi.Core.Models
         public virtual Department Department { get; set; }
         public virtual Agreement Agreement { get; set; }
         public long AgreementId { get; set; }
+
+        public virtual IList<Appointment> Appointments { get; set; }
         [Required]
         public DateTime Start { get; set; }
         public DateTime LastAppointment { get; set; }

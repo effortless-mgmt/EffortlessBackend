@@ -53,10 +53,7 @@ namespace EffortlessApi.Controllers
             var companyModel = await _unitOfWork.Companies.GetByIdAsync(id);
             if (companyModel == null) return NotFound($"Company {id} could not be found.");
 
-            var addressModel = await _unitOfWork.Addresses.GetByIdAsync(companyModel?.AddressId);
             var companyDTO = _mapper.Map<CompanyDTO>(companyModel);
-            var companyAddressDTO = _mapper.Map<AddressDTO>(addressModel);
-            companyDTO.Address = companyAddressDTO;
 
             return Ok(companyDTO);
         }

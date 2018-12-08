@@ -16,6 +16,13 @@ namespace EffortlessApi.Persistence.Repositories
             get { return _context as EffortlessContext; }
         }
 
+        public override async Task<Appointment> GetByIdAsync(long id)
+        {
+            return await _context.Set<Appointment>()
+                .Include(a => a.Owner)
+                .FirstOrDefaultAsync(a => a.Id == id);
+        }
+
         public override async Task UpdateAsync(Appointment newAppointment)
         {
             await UpdateAsync(newAppointment.Id, newAppointment);

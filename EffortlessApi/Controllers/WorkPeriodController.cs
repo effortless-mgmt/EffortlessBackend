@@ -30,16 +30,22 @@ namespace EffortlessApi.Controllers
             if (workPeriodModels == null) return NotFound();
 
             var workPeriodDTOs = _mapper.Map<List<WorkPeriodOutDTO>>(workPeriodModels);
-            var workPeriodModelsList = workPeriodModels.ToList();
 
-            for (int i = 0; i < workPeriodDTOs.Count; i++)
+            foreach (WorkPeriodOutDTO wp in workPeriodDTOs)
             {
-                var agreementModel = await _unitOfWork.Agreements.GetByIdAsync(workPeriodModelsList[i].AgreementId);
-                var departmentModel = await _unitOfWork.Departments.GetByIdAsync(workPeriodModelsList[i].DepartmentId);
-                var agreementDTO = _mapper.Map<AgreementDTO>(agreementModel);
-                var departmentDTO = _mapper.Map<DepartmentDTO>(departmentModel);
-                workPeriodDTOs[i].Agreement = agreementDTO;
-                workPeriodDTOs[i].Department = departmentDTO;
+                wp.Agreement = _mapper.Map<AgreementDTO>(await _unitOfWork.Agreements.GetByIdAsync(wp.AgreementId));
+                wp.Department = _mapper.Map<DepartmentDTO>(await _unitOfWork.Departments.GetByIdAsync(wp.DepartmentId));
+                wp.UserWorkPeriods = _mapper.Map<List<UserWorkPeriodDTO>>(await _unitOfWork.UserWorkPeriods.FindAsync(u => u.WorkPeriodId == wp.Id));
+                wp.Appointments = _mapper.Map<List<AppointmentWpDTO>>(await _unitOfWork.Appointments.FindAsync(a => a.WorkPeriodId == wp.Id));
+
+                foreach (AppointmentWpDTO a in wp.Appointments)
+                {
+                    a.Owner = _mapper.Map<UserStrippedDTO>(await _unitOfWork.Users.GetByIdAsync(a.OwnerId));
+                }
+                foreach (UserWorkPeriodDTO u in wp.UserWorkPeriods)
+                {
+                    u.User = _mapper.Map<UserStrippedDTO>(await _unitOfWork.Users.GetByIdAsync(u.UserId));
+                }
             }
 
             return Ok(workPeriodDTOs);
@@ -52,11 +58,7 @@ namespace EffortlessApi.Controllers
             if (workPeriodModel == null) return NotFound($"Work period {id} could not be found.");
 
             var workPeriodDTO = _mapper.Map<WorkPeriodOutDTO>(workPeriodModel);
-            workPeriodDTO.Agreement = _mapper.Map<AgreementDTO>(await _unitOfWork.Agreements.GetByIdAsync(workPeriodModel.AgreementId));
             workPeriodDTO.Appointments = _mapper.Map<List<AppointmentWpDTO>>(await _unitOfWork.Appointments.FindAsync(a => a.WorkPeriodId == id));
-            workPeriodDTO.Department = _mapper.Map<DepartmentDTO>(await _unitOfWork.Departments.GetByIdAsync(workPeriodModel.DepartmentId));
-            workPeriodDTO.Department.Address = _mapper.Map<AddressDTO>(await _unitOfWork.Addresses.GetByIdAsync(workPeriodModel.Department.AddressId));
-            workPeriodDTO.Department.Company = _mapper.Map<CompanySimpleDTO>(await _unitOfWork.Companies.GetByIdAsync(workPeriodModel.Department.CompanyId));
             workPeriodDTO.UserWorkPeriods = _mapper.Map<List<UserWorkPeriodDTO>>(await _unitOfWork.UserWorkPeriods.FindAsync(u => u.WorkPeriodId == id));
 
             foreach (AppointmentWpDTO a in workPeriodDTO.Appointments)
@@ -88,11 +90,6 @@ namespace EffortlessApi.Controllers
                 await _unitOfWork.CompleteAsync();
 
                 var workPeriodOutDTO = _mapper.Map<WorkPeriodOutDTO>(workPeriodModel);
-                var agreementDTO = _mapper.Map<AgreementDTO>(await _unitOfWork.Agreements.GetByIdAsync(workPeriodModel.AgreementId));
-                var departmentDTO = _mapper.Map<DepartmentDTO>(await _unitOfWork.Departments.GetByIdAsync(workPeriodModel.DepartmentId));
-                departmentDTO.Company = _mapper.Map<CompanySimpleDTO>(await _unitOfWork.Companies.GetByIdAsync(departmentModel.CompanyId));
-                departmentDTO.Address = _mapper.Map<AddressDTO>(await _unitOfWork.Addresses.GetByIdAsync(departmentModel.AddressId));
-
 
                 if (workPeriodModel.UserWorkPeriods != null)
                 {
@@ -107,9 +104,7 @@ namespace EffortlessApi.Controllers
                     workPeriodOutDTO.UserWorkPeriods = userWorkPeriodDTOs;
                 }
 
-                workPeriodOutDTO.Agreement = agreementDTO;
-                workPeriodOutDTO.Department = departmentDTO;
-                workPeriodOutDTO.Id = workPeriodModel.Id;
+                workPeriodOutDTO = _mapper.Map<WorkPeriodOutDTO>(await _unitOfWork.WorkPeriods.GetByIdAsync(workPeriodOutDTO.Id));
 
                 return CreatedAtRoute("GetWorkPeriod", new { id = workPeriodOutDTO.Id }, workPeriodOutDTO);
             }

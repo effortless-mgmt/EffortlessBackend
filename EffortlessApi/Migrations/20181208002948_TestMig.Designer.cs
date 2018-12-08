@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EffortlessApi.Migrations
 {
     [DbContext(typeof(EffortlessContext))]
-    [Migration("20181207160219_TestMig")]
+    [Migration("20181208002948_TestMig")]
     partial class TestMig
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -110,6 +110,8 @@ namespace EffortlessApi.Migrations
 
                     b.Property<long>("WorkPeriodId");
 
+                    b.Property<long?>("WorkPeriodId1");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ApprovedById");
@@ -119,6 +121,8 @@ namespace EffortlessApi.Migrations
                     b.HasIndex("OwnerId");
 
                     b.HasIndex("WorkPeriodId");
+
+                    b.HasIndex("WorkPeriodId1");
 
                     b.ToTable("Appointments");
                 });
@@ -327,6 +331,10 @@ namespace EffortlessApi.Migrations
                         .WithMany()
                         .HasForeignKey("WorkPeriodId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("EffortlessApi.Core.Models.WorkPeriod")
+                        .WithMany("Appointments")
+                        .HasForeignKey("WorkPeriodId1");
                 });
 
             modelBuilder.Entity("EffortlessApi.Core.Models.Company", b =>
