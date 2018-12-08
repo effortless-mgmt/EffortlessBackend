@@ -54,6 +54,7 @@ namespace EffortlessApi.Controllers
             {
                 return BadRequest("UserDTO is null");
             }
+            
             var userModel = _mapper.Map<User>(userDTO);
             var existingUser = await _unitOfWork.Users.GetByUsernameAsync(userModel.UserName);
 
