@@ -6,10 +6,9 @@ namespace EffortlessLibrary.DTO
     {
         public long Id { get; set; }
         public string UserName { get; set; }
-        [JsonIgnore]
         public string FirstName { get; set; }
-        [JsonIgnore]
         public string LastName { get; set; }
+        [JsonIgnore]
         public string Name
         {
             get { return $"{FirstName} {LastName}"; }

@@ -5,10 +5,9 @@ namespace EffortlessLibrary.DTO
     public class UserStrippedDTO
     {
         public long Id { get; set; }
-        [JsonIgnore]
         public string FirstName { get; set; }
-        [JsonIgnore]
         public string LastName { get; set; }
+        [JsonIgnore]
         public string Name
         {
             get
