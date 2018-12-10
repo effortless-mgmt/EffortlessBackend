@@ -7,7 +7,7 @@ namespace EffortlessApi.Core.Models
         public long Id { get; set; }
         [Required]
         public int Vat { get; set; }
-        public int Pno { get; set; }
+        // public int Pno { get; set; }
         [Required]
         public string Name { get; set; }
         public long? ParentCompanyId { get; set; }

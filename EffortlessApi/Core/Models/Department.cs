@@ -6,6 +6,8 @@ namespace EffortlessApi.Core.Models
     {
         public long Id { get; set; }
         [Required]
+        public int Pno { get; set; }
+        [Required]
         public string Name { get; set; }
         [Required]
         public long CompanyId { get; set; }
