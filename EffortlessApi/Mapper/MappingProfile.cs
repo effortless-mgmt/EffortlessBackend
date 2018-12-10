@@ -74,6 +74,8 @@ namespace EffortlessApi.Mapper
             CreateMap<WorkPeriodInDTO, WorkPeriod>();
             CreateMap<WorkPeriod, WorkPeriodOutDTO>();
             CreateMap<WorkPeriodOutDTO, WorkPeriod>();
+            CreateMap<WorkPeriod, WorkPeriodUserAppointmentDTO>();
+            CreateMap<WorkPeriodUserAppointmentDTO, WorkPeriod>();
         }
     }
 }

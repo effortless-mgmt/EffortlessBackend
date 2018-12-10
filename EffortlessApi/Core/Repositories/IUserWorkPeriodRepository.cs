@@ -8,5 +8,6 @@ namespace EffortlessApi.Core.Repositories
 {
     public interface IUserWorkPeriodRepository : IRepository<UserWorkPeriod>
     {
+        Task<IEnumerable<UserWorkPeriod>> GetByWorkPeriodId(long id);
     }
 }

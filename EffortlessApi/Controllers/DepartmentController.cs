@@ -48,13 +48,33 @@ namespace EffortlessApi.Controllers
         public async Task<IActionResult> GetById(long id)
         {
             var departmentModel = await _unitOfWork.Departments.GetByIdAsync(id);
-            if (departmentModel == null) return NotFound($"Department {id} could not be found.");
+            if (departmentModel == null) return NotFound($"Department {departmentModel.Name} could not be found.");
 
             var departmentDTO = _mapper.Map<DepartmentDTO>(departmentModel);
 
             return Ok(departmentDTO);
         }
 
+        [HttpGet("{id}/workperiod")]
+        public async Task<IActionResult> GetWorkPeriodsById(long id)
+        {
+            var departmentModel = await _unitOfWork.Departments.GetByIdAsync(id);
+            if (departmentModel == null) return NotFound($"Department {departmentModel.Name} does not have any work periods.");
+
+            var workPeriodDTOs = _mapper.Map<List<WorkPeriodOutDTO>>(await _unitOfWork.WorkPeriods.GetByDepartmentIdAsync(id));
+            foreach (WorkPeriodOutDTO wp in workPeriodDTOs)
+            {
+                wp.Appointments = _mapper.Map<List<AppointmentWpDTO>>(await _unitOfWork.Appointments.GetByWorkPeriodId(wp.Id));
+                wp.UserWorkPeriods = _mapper.Map<List<UserWorkPeriodDTO>>(await _unitOfWork.UserWorkPeriods.GetByWorkPeriodId(wp.Id));
+
+                foreach (UserWorkPeriodDTO u in wp.UserWorkPeriods)
+                {
+                    u.User = _mapper.Map<UserStrippedDTO>(await _unitOfWork.Users.GetByIdAsync(u.UserId));
+                }
+            }
+
+            return Ok(workPeriodDTOs);
+        }
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] DepartmentDTO departmentDTO)
         {

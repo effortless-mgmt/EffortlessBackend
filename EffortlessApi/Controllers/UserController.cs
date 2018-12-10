@@ -178,5 +178,27 @@ namespace EffortlessApi.Controllers
             return Ok(userRoleDTOs);
         }
 
+        [HttpGet("{userName}/appointment")]
+        public async Task<IActionResult> GetUserAppointments(string userName)
+        {
+            var userModel = await _unitOfWork.Users.GetByUsernameAsync(userName);
+            if (userModel == null) return NotFound($"User {userName} does not exist.");
+
+            var userWorkPeriods = await _unitOfWork.UserWorkPeriods.FindAsync(u => u.UserId == userModel.Id);
+            List<WorkPeriodUserAppointmentDTO> workPeriodDTOs = new List<WorkPeriodUserAppointmentDTO>();
+
+            foreach (UserWorkPeriod uwp in userWorkPeriods)
+            {
+                workPeriodDTOs.Add(_mapper.Map<WorkPeriodUserAppointmentDTO>(await _unitOfWork.WorkPeriods.GetByIdAsync(uwp.WorkPeriodId)));
+            }
+
+            foreach (WorkPeriodUserAppointmentDTO wp in workPeriodDTOs)
+            {
+                wp.Appointments = _mapper.Map<List<AppointmentUserDTO>>(await _unitOfWork.Appointments.GetByUserIdAsync(userModel.Id));
+            }
+
+            return Ok(workPeriodDTOs);
+        }
+
     }
 }

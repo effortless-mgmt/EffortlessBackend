@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using EffortlessApi.Core.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace EffortlessApi.Persistence.Repositories 
+namespace EffortlessApi.Persistence.Repositories
 {
-    public abstract class Repository<T> : IRepository<T> where T : class 
+    public abstract class Repository<T> : IRepository<T> where T : class
     {
         protected readonly DbContext _context;
 
@@ -22,7 +22,7 @@ namespace EffortlessApi.Persistence.Repositories
         /// Fetches all <see cref="T"/> entities in the database.
         /// </summary>
         /// <returns>All elements in the context.</returns>
-        public async virtual Task<IEnumerable<T>> GetAllAsync() 
+        public async virtual Task<IEnumerable<T>> GetAllAsync()
         {
             return await _context.Set<T>().ToListAsync();
         }
@@ -32,7 +32,7 @@ namespace EffortlessApi.Persistence.Repositories
         /// </summary>
         /// <param name="id">The id of the element</param>
         /// <returns>The element with the given <see cref="id"/>.</returns>
-        public async virtual Task<T> GetByIdAsync(long id) 
+        public async virtual Task<T> GetByIdAsync(long id)
         {
             return await _context.Set<T>().FindAsync(id);
         }
@@ -45,7 +45,7 @@ namespace EffortlessApi.Persistence.Repositories
         /// <code>await entity.FindAsync(x => x.createdBy == someUser);</code>
         /// </param>
         /// <returns>A list of entities that mateches the predicate.</returns>
-        public async virtual Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate) 
+        public async virtual Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
         {
             return await _context.Set<T>().Where(predicate).ToListAsync();
         }
@@ -54,7 +54,7 @@ namespace EffortlessApi.Persistence.Repositories
         /// Adds a <see cref="T"/> entity to the database.
         /// </summary>
         /// <param name="entity"></param>
-        public async virtual Task AddAsync(T entity) 
+        public async virtual Task AddAsync(T entity)
         {
             await _context.Set<T>().AddAsync(entity);
         }
@@ -64,7 +64,7 @@ namespace EffortlessApi.Persistence.Repositories
         /// </summary>
         /// <param name="entities"></param>
         /// <returns></returns>
-        public async virtual Task AddRangeAsync(IEnumerable<T> entities) 
+        public async virtual Task AddRangeAsync(IEnumerable<T> entities)
         {
             await _context.Set<T>().AddRangeAsync(entities);
         }
@@ -79,7 +79,7 @@ namespace EffortlessApi.Persistence.Repositories
         /// Removes a specific <see cref="T"/> entity from the database.
         /// </summary>
         /// <param name="entity"></param>
-        public virtual void Remove(T entity) 
+        public virtual void Remove(T entity)
         {
             _context.Set<T>().Remove(entity);
         }
@@ -88,7 +88,7 @@ namespace EffortlessApi.Persistence.Repositories
         /// Removes a range of specified <see cref="T"/> entities from the database.
         /// </summary>
         /// <param name="entities"></param>
-        public virtual void RemoveRange(IEnumerable<T> entities) 
+        public virtual void RemoveRange(IEnumerable<T> entities)
         {
             _context.Set<T>().RemoveRange(entities);
         }

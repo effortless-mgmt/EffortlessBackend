@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using EffortlessApi.Core.Models;
 
@@ -6,5 +7,7 @@ namespace EffortlessApi.Core.Repositories
     public interface IAppointmentRepository : IRepository<Appointment>
     {
         Task UpdateAsync(long id, Appointment newAppointment);
+        Task<IEnumerable<Appointment>> GetByUserIdAsync(long id);
+        Task<IEnumerable<Appointment>> GetByWorkPeriodId(long id);
     }
 }

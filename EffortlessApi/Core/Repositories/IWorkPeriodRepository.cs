@@ -7,5 +7,6 @@ namespace EffortlessApi.Core.Repositories
     public interface IWorkPeriodRepository : IRepository<WorkPeriod>
     {
         Task UpdateAsync(long id, WorkPeriod newWorkPeriod);
+        Task<IEnumerable<WorkPeriod>> GetByDepartmentIdAsync(long id);
     }
 }

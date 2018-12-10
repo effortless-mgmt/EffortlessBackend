@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using EffortlessApi.Core.Models;
 using EffortlessApi.Core.Repositories;
@@ -11,7 +13,7 @@ namespace EffortlessApi.Persistence.Repositories
         {
         }
 
-        public EffortlessContext effortlessContext
+        public EffortlessContext EffortlessContext
         {
             get { return _context as EffortlessContext; }
         }
@@ -20,7 +22,21 @@ namespace EffortlessApi.Persistence.Repositories
         {
             return await _context.Set<Appointment>()
                 .Include(a => a.Owner)
+                .Include(a => a.WorkPeriod)
                 .FirstOrDefaultAsync(a => a.Id == id);
+        }
+
+        public async Task<IEnumerable<Appointment>> GetByWorkPeriodId(long id)
+        {
+            return await EffortlessContext.Appointments
+                .Where(a => a.WorkPeriodId == id)
+                    .Include(a => a.Owner)
+                    .ToListAsync();
+
+        }
+        public async Task<IEnumerable<Appointment>> GetByUserIdAsync(long ownerId)
+        {
+            return await FindAsync(a => a.OwnerId == ownerId);
         }
 
         public override async Task UpdateAsync(Appointment newAppointment)
@@ -44,5 +60,6 @@ namespace EffortlessApi.Persistence.Repositories
 
             _context.Set<Appointment>().Update(oldAppointment);
         }
+
     }
 }

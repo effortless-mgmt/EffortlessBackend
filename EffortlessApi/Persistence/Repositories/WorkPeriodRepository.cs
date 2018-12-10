@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using EffortlessApi.Core.Models;
 using EffortlessApi.Core.Repositories;
@@ -13,6 +14,16 @@ namespace EffortlessApi.Persistence.Repositories
         public EffortlessContext EffortlessContext
         {
             get { return _context as EffortlessContext; }
+        }
+
+        public async Task<IEnumerable<WorkPeriod>> GetByDepartmentIdAsync(long id)
+        {
+            return await EffortlessContext.WorkPeriods
+                .Where(wp => wp.DepartmentId == id)
+                    .Include(wp => wp.Agreement)
+                    .Include(wp => wp.UserWorkPeriods)
+                    .ToListAsync();
+            // WorkPeriowp => wp.DepartmentId == id);
         }
 
         public override async Task<WorkPeriod> GetByIdAsync(long id)
