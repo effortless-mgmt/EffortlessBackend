@@ -33,7 +33,7 @@ namespace EffortlessApi.Controllers
                 // Find all users with a specific role
                 var usersWithRole = await _unitOfWork.UserRoles.FindAsync(ur => ur.RoleId == roleId);
 
-                return Ok(usersWithRole);
+                return Ok(usersWithRole.Select(ur => ur.User));
             }
 
             if (userModels == null) return NotFound();
