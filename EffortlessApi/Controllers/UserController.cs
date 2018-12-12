@@ -24,12 +24,21 @@ namespace EffortlessApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync(int? roleId)
         {
-            var usersModels = await _unitOfWork.Users.GetAllAsync();
-            if (usersModels == null) return NotFound();
+            var userModels = await _unitOfWork.Users.GetAllAsync();
 
-            var userDTOs = _mapper.Map<List<UserSimpleDTO>>(usersModels);
+            if (roleId != null) 
+            {
+                // Find all users with a specific role
+                var usersWithRole = await _unitOfWork.UserRoles.FindAsync(ur => ur.RoleId == roleId);
+
+                return Ok(usersWithRole.Select(ur => ur.User));
+            }
+
+            if (userModels == null) return NotFound();
+
+            var userDTOs = _mapper.Map<List<UserSimpleDTO>>(userModels);
 
             foreach (UserSimpleDTO u in userDTOs)
             {
@@ -125,6 +134,25 @@ namespace EffortlessApi.Controllers
             // var userRoleDTO = _mapper.Map<UserRoleDTO>(userRoleModel);
 
             return CreatedAtRoute("GetUser", new { userName = userDTO.UserName }, userDTO);
+        }
+
+        [HttpPost("{userName}/workperiod/{workPeriodId}")]
+        public async Task<IActionResult> AddUserToWorkPeriod(string userName, long workPeriodId)
+        {
+            var userModel = await _unitOfWork.Users.GetByUsernameAsync(userName);
+            if (userModel == null) return NotFound($"User {userName} does not exist.");
+
+            var workPeriod = await _unitOfWork.WorkPeriods.GetByIdAsync(workPeriodId);
+            if (workPeriod == null) return NotFound($"Work period with id {workPeriodId} does not exist.");
+
+            var existingUserWorkperiod = await _unitOfWork.UserWorkPeriods.GetByIdAsync(userModel.Id, workPeriod.Id);
+            if (existingUserWorkperiod != null) return Ok(_mapper.Map<WorkPeriodOutDTO>(existingUserWorkperiod.WorkPeriod));
+
+            await _unitOfWork.UserWorkPeriods.AddAsync(new UserWorkPeriod { UserId = userModel.Id, WorkPeriodId = workPeriod.Id });
+            await _unitOfWork.CompleteAsync();
+
+            // TODO: This is supposed to return 201 Created
+            return Ok(workPeriod);
         }
 
         [HttpDelete("{userName}/role/{roleId}")]
