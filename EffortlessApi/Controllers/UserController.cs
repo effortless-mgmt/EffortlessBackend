@@ -143,12 +143,12 @@ namespace EffortlessApi.Controllers
             if (userModel == null) return NotFound($"User {userName} does not exist.");
 
             var workPeriod = await _unitOfWork.WorkPeriods.GetByIdAsync(workPeriodId);
-            if (workPeriodId == null) return NotFound($"Work period with id {workPeriodId} does not exist.");
+            if (workPeriod == null) return NotFound($"Work period with id {workPeriodId} does not exist.");
 
             var existingUserWorkperiod = await _unitOfWork.UserWorkPeriods.GetByIdAsync(userModel.Id, workPeriod.Id);
             if (existingUserWorkperiod != null) return Ok(_mapper.Map<WorkPeriodOutDTO>(existingUserWorkperiod.WorkPeriod));
 
-            workPeriod.UserWorkPeriods.Add(new UserWorkPeriod { UserId = userModel.Id, WorkPeriodId = workPeriod.Id });
+            await _unitOfWork.UserWorkPeriods.AddAsync(new UserWorkPeriod { UserId = userModel.Id, WorkPeriodId = workPeriod.Id });
             await _unitOfWork.CompleteAsync();
 
             // TODO: This is supposed to return 201 Created
