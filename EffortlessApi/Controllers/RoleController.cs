@@ -25,8 +25,13 @@ namespace EffortlessApi.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync(string roleName)
         {
+            if (!string.IsNullOrEmpty(roleName))
+            {
+                return Ok(await _unitOfWork.Roles.FindAsync(role => role.Name == roleName));
+            }
+
             var roleModels = await _unitOfWork.Roles.GetAllAsync();
             if (roleModels == null) return NotFound();
 
