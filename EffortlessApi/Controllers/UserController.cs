@@ -24,12 +24,21 @@ namespace EffortlessApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync(int? roleId)
         {
-            var usersModels = await _unitOfWork.Users.GetAllAsync();
-            if (usersModels == null) return NotFound();
+            var userModels = await _unitOfWork.Users.GetAllAsync();
 
-            var userDTOs = _mapper.Map<List<UserSimpleDTO>>(usersModels);
+            if (roleId != null) 
+            {
+                // Find all users with a specific role
+                var usersWithRole = await _unitOfWork.UserRoles.FindAsync(ur => ur.RoleId == roleId);
+
+                return Ok(usersWithRole);
+            }
+
+            if (userModels == null) return NotFound();
+
+            var userDTOs = _mapper.Map<List<UserSimpleDTO>>(userModels);
 
             foreach (UserSimpleDTO u in userDTOs)
             {
