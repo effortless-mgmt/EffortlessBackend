@@ -136,6 +136,25 @@ namespace EffortlessApi.Controllers
             return CreatedAtRoute("GetUser", new { userName = userDTO.UserName }, userDTO);
         }
 
+        [HttpPost("{userName}/workperiod/{workPeriodId}")]
+        public async Task<IActionResult> AddUserToWorkPeriod(string userName, long workPeriodId)
+        {
+            var userModel = await _unitOfWork.Users.GetByUsernameAsync(userName);
+            if (userModel == null) return NotFound($"User {userName} does not exist.");
+
+            var workPeriod = await _unitOfWork.WorkPeriods.GetByIdAsync(workPeriodId);
+            if (workPeriodId == null) return NotFound($"Work period with id {workPeriodId} does not exist.");
+
+            var existingUserWorkperiod = await _unitOfWork.UserWorkPeriods.GetByIdAsync(userModel.Id, workPeriod.Id);
+            if (existingUserWorkperiod != null) return Ok(_mapper.Map<WorkPeriodOutDTO>(existingUserWorkperiod.WorkPeriod));
+
+            workPeriod.UserWorkPeriods.Add(new UserWorkPeriod { UserId = userModel.Id, WorkPeriodId = workPeriod.Id });
+            await _unitOfWork.CompleteAsync();
+
+            // TODO: This is supposed to return 201 Created
+            return Ok(workPeriod);
+        }
+
         [HttpDelete("{userName}/role/{roleId}")]
         public async Task<IActionResult> DeleteUserRoleAsync(string userName, long roleId)
         {
