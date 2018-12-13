@@ -12,7 +12,7 @@ namespace EffortlessLibrary.DTO
         }
 
         public long UserId { get; set; }
-        public UserStrippedDTO User { get; set; }
+        public UserSimpleDTO User { get; set; }
         public long WorkPeriodId { get; set; }
         [JsonIgnore]
         public WorkPeriodSimpleDTO WorkPeriod { get; set; }
