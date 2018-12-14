@@ -40,11 +40,11 @@ namespace EffortlessApi.Controllers
 
                 foreach (AppointmentWpDTO a in wp.Appointments)
                 {
-                    a.Owner = _mapper.Map<UserStrippedDTO>(await _unitOfWork.Users.GetByIdAsync(a.OwnerId));
+                    a.Owner = _mapper.Map<UserSimpleDTO>(await _unitOfWork.Users.GetByIdAsync(a.OwnerId));
                 }
                 foreach (UserWorkPeriodDTO u in wp.UserWorkPeriods)
                 {
-                    u.User = _mapper.Map<UserStrippedDTO>(await _unitOfWork.Users.GetByIdAsync(u.UserId));
+                    u.User = _mapper.Map<UserSimpleDTO>(await _unitOfWork.Users.GetByIdAsync(u.UserId));
                 }
             }
 
@@ -63,12 +63,12 @@ namespace EffortlessApi.Controllers
 
             foreach (AppointmentWpDTO a in workPeriodDTO.Appointments)
             {
-                a.Owner = _mapper.Map<UserStrippedDTO>(await _unitOfWork.Users.GetByIdAsync(a.OwnerId));
+                a.Owner = _mapper.Map<UserSimpleDTO>(await _unitOfWork.Users.GetByIdAsync(a.OwnerId));
             }
 
             foreach (UserWorkPeriodDTO u in workPeriodDTO.UserWorkPeriods)
             {
-                u.User = _mapper.Map<UserStrippedDTO>(await _unitOfWork.Users.GetByIdAsync(u.UserId));
+                u.User = _mapper.Map<UserSimpleDTO>(await _unitOfWork.Users.GetByIdAsync(u.UserId));
             }
 
             return Ok(workPeriodDTO);

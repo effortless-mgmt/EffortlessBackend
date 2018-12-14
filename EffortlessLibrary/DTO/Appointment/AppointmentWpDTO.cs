@@ -11,7 +11,7 @@ namespace EffortlessLibrary.DTO
         public long Break { get; set; }
         [JsonIgnore]
         public long OwnerId { get; set; }
-        public UserStrippedDTO Owner { get; set; }
+        public UserSimpleDTO Owner { get; set; }
         [JsonIgnore]
         public long WorkPeriodId { get; set; }
     }

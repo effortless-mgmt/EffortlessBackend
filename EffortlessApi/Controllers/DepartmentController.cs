@@ -69,7 +69,7 @@ namespace EffortlessApi.Controllers
 
                 foreach (UserWorkPeriodDTO u in wp.UserWorkPeriods)
                 {
-                    u.User = _mapper.Map<UserStrippedDTO>(await _unitOfWork.Users.GetByIdAsync(u.UserId));
+                    u.User = _mapper.Map<UserSimpleDTO>(await _unitOfWork.Users.GetByIdAsync(u.UserId));
                 }
             }
 
