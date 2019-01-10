@@ -5,6 +5,7 @@ using AutoMapper;
 using EffortlessApi.Core.Models;
 using EffortlessApi.Persistence;
 using EffortlessLibrary.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EffortlessApi.Controllers
@@ -22,6 +23,7 @@ namespace EffortlessApi.Controllers
             _mapper = mapper;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -33,6 +35,7 @@ namespace EffortlessApi.Controllers
             return Ok(agreementDTOs.OrderBy(a => a.Id));
         }
 
+        [Authorize]
         [HttpGet("{id}", Name = "GetAgreement")]
         public async Task<IActionResult> GetByIdAsync(long id)
         {
@@ -44,6 +47,7 @@ namespace EffortlessApi.Controllers
             return Ok(agreementDTO);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] AgreementDTO agreementDTO)
         {
@@ -57,6 +61,7 @@ namespace EffortlessApi.Controllers
             return CreatedAtRoute("GetAgreement", new { id = agreementDTO.Id }, agreementDTO);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(long id, AgreementDTO agreementDTO)
         {
@@ -75,6 +80,7 @@ namespace EffortlessApi.Controllers
             return Ok(agreementDTO);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(long id)
         {

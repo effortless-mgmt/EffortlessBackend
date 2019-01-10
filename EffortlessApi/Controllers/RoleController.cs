@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using EffortlessApi.Persistence;
 using AutoMapper;
 using EffortlessLibrary.DTO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EffortlessApi.Controllers
 {
@@ -23,7 +24,7 @@ namespace EffortlessApi.Controllers
             _unitOfWork = new UnitOfWork(context);
         }
 
-
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAllAsync(string roleName)
         {
@@ -39,6 +40,7 @@ namespace EffortlessApi.Controllers
             return Ok(roleDTOs.OrderBy(r => r.Id));
         }
 
+        [Authorize]
         [HttpGet("{id}", Name = "GetRole")]
         public async Task<IActionResult> GetById(long id)
         {
@@ -50,6 +52,7 @@ namespace EffortlessApi.Controllers
             return Ok(roleDTO);
         }
 
+        [Authorize]
         [HttpGet("{id}/user")]
         public async Task<IActionResult> GetUsersByRoleId(long id)
         {
@@ -61,6 +64,7 @@ namespace EffortlessApi.Controllers
             return Ok(roleDTO.Users.OrderBy(u => u.UserName));
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] RoleDTO roleDTO)
         {
@@ -76,6 +80,7 @@ namespace EffortlessApi.Controllers
             return CreatedAtRoute("GetRole", new { id = roleDTO.Id }, roleDTO);
         }
 
+        [Authorize]
         [HttpPost("{id}/privilege/{privilegeId}")]
         public async Task<IActionResult> CreateRolePrivilegeAsync(long id, long privilegeId)
         {
@@ -93,6 +98,7 @@ namespace EffortlessApi.Controllers
             return CreatedAtRoute("GetRole", new { id = rolePrivilegeDTO.RoleId }, rolePrivilegeDTO);
         }
 
+        [Authorize]
         [HttpPut("{id}/privilege/{privilegeId}")]
         public async Task<IActionResult> UpdateRolePrivilegeAsync(long id, long privilegeId, RolePrivilegeDTO newRolePrivilegeDTO)
         {
@@ -112,6 +118,7 @@ namespace EffortlessApi.Controllers
             return Ok(newRolePrivilegeDTO);
         }
 
+        [Authorize]
         [HttpDelete("{id}/privilege/{privilegeId}")]
         public async Task<IActionResult> DeleteRolePrivilegeAsync(long id, long privilegeId)
         {
@@ -124,6 +131,7 @@ namespace EffortlessApi.Controllers
             return NoContent();
         }
 
+        [Authorize]
         [HttpGet("{id}/privilege/{privilegeId}")]
         public async Task<IActionResult> GetRolePrivilege(long id, long privilegeId)
         {
@@ -139,7 +147,7 @@ namespace EffortlessApi.Controllers
             return Ok(rolePrivilegeDTO);
         }
 
-
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(long id, [FromBody] RoleDTO newRoleDTO)
         {
@@ -156,6 +164,7 @@ namespace EffortlessApi.Controllers
             return Ok(newRoleDTO);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(long id)
         {
