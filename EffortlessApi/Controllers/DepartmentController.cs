@@ -6,6 +6,7 @@ using EffortlessApi.Core;
 using EffortlessApi.Core.Models;
 using EffortlessApi.Persistence;
 using EffortlessLibrary.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EffortlessApi.Controllers
@@ -22,6 +23,8 @@ namespace EffortlessApi.Controllers
             _unitOfWork = new UnitOfWork(context);
             _mapper = mapper;
         }
+
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -44,6 +47,7 @@ namespace EffortlessApi.Controllers
             return Ok(departmentDTOs);
         }
 
+        [Authorize]
         [HttpGet("{id}", Name = "GetDepartment")]
         public async Task<IActionResult> GetById(long id)
         {
@@ -55,6 +59,7 @@ namespace EffortlessApi.Controllers
             return Ok(departmentDTO);
         }
 
+        [Authorize]
         [HttpGet("{id}/workperiod")]
         public async Task<IActionResult> GetWorkPeriodsById(long id)
         {
@@ -75,6 +80,8 @@ namespace EffortlessApi.Controllers
 
             return Ok(workPeriodDTOs);
         }
+
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] DepartmentDTO departmentDTO)
         {
@@ -114,6 +121,7 @@ namespace EffortlessApi.Controllers
             return CreatedAtRoute("GetDepartment", new { id = departmentDTO.Id }, departmentDTO);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(long id, DepartmentDTO departmentDTO)
         {
@@ -140,6 +148,7 @@ namespace EffortlessApi.Controllers
             return Ok(departmentDTO);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(long id)
         {

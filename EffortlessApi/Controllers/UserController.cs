@@ -6,6 +6,7 @@ using EffortlessApi.Core;
 using EffortlessApi.Core.Models;
 using EffortlessApi.Persistence;
 using EffortlessLibrary.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EffortlessApi.Controllers
@@ -23,6 +24,7 @@ namespace EffortlessApi.Controllers
             _mapper = mapper;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAllAsync(int? roleId)
         {
@@ -49,6 +51,7 @@ namespace EffortlessApi.Controllers
             return Ok(userDTOs.OrderBy(u => u.UserName));
         }
 
+        [Authorize]
         [HttpGet("{username}", Name = "GetUser")]
         public async Task<IActionResult> GetByUsername(string userName)
         {
@@ -77,6 +80,7 @@ namespace EffortlessApi.Controllers
             return CreatedAtRoute("GetUser", new { userName = userDTO.UserName }, userDTO);
         }
 
+        [Authorize]
         [HttpPut("{userName}")]
         public async Task<IActionResult> UpdateAsync(string userName, UserDTO userDTO)
         {
@@ -102,6 +106,7 @@ namespace EffortlessApi.Controllers
             return Ok(userDTO);
         }
 
+        [Authorize]
         [HttpDelete("{userName}")]
         public async Task<IActionResult> DeleteAsync(string userName)
         {
@@ -114,6 +119,7 @@ namespace EffortlessApi.Controllers
             return NoContent();
         }
 
+        [Authorize]
         [HttpPost("{userName}/role/{roleId}")]
         public async Task<IActionResult> CreateUserRoleAsync(string userName, long roleId)
         {
@@ -136,6 +142,7 @@ namespace EffortlessApi.Controllers
             return CreatedAtRoute("GetUser", new { userName = userDTO.UserName }, userDTO);
         }
 
+        [Authorize]
         [HttpPost("{userName}/workperiod/{workPeriodId}")]
         public async Task<IActionResult> AddUserToWorkPeriod(string userName, long workPeriodId)
         {
@@ -155,6 +162,7 @@ namespace EffortlessApi.Controllers
             return Ok(workPeriod);
         }
 
+        [Authorize]
         [HttpDelete("{userName}/role/{roleId}")]
         public async Task<IActionResult> DeleteUserRoleAsync(string userName, long roleId)
         {
@@ -173,6 +181,7 @@ namespace EffortlessApi.Controllers
             return NoContent();
         }
 
+        [Authorize]
         [HttpGet("{userName}/role")]
         public async Task<IActionResult> GetRolesAssociatedWithUser(string userName)
         {
@@ -186,6 +195,7 @@ namespace EffortlessApi.Controllers
             return Ok(RoleDTOs);
         }
 
+        [Authorize]
         [HttpGet("workperiod")]
         public async Task<IActionResult> GetUserWorkPeriods()
         {
@@ -195,6 +205,7 @@ namespace EffortlessApi.Controllers
             return Ok(userWorkPeriodDTOs);
         }
 
+        [Authorize]
         [HttpGet("{userName}/workperiod")]
         public async Task<IActionResult> GetUserWorkPeriods(string userName)
         {
@@ -206,6 +217,7 @@ namespace EffortlessApi.Controllers
             return Ok(userRoleDTOs);
         }
 
+        [Authorize]
         [HttpGet("{userName}/appointment")]
         public async Task<IActionResult> GetUserAppointments(string userName)
         {

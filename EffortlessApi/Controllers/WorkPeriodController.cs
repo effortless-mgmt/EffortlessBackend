@@ -6,6 +6,7 @@ using EffortlessApi.Core;
 using EffortlessApi.Core.Models;
 using EffortlessApi.Persistence;
 using EffortlessLibrary.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EffortlessApi.Controllers
@@ -23,6 +24,7 @@ namespace EffortlessApi.Controllers
             _mapper = mapper;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -51,6 +53,7 @@ namespace EffortlessApi.Controllers
             return Ok(workPeriodDTOs);
         }
 
+        [Authorize]
         [HttpGet("{id}", Name = "GetWorkPeriod")]
         public async Task<IActionResult> GetById(long id)
         {
@@ -74,6 +77,7 @@ namespace EffortlessApi.Controllers
             return Ok(workPeriodDTO);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateWorkPeriodAsync([FromBody] WorkPeriodInDTO workPeriodInDTO)
         {
@@ -114,6 +118,7 @@ namespace EffortlessApi.Controllers
             }
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(long id, WorkPeriodInDTO newWorkPeriodDTO)
         {
@@ -129,6 +134,7 @@ namespace EffortlessApi.Controllers
             return Ok(newWorkPeriodDTO);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(long id)
         {

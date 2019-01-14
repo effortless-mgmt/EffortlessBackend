@@ -8,6 +8,7 @@ using EffortlessApi.Persistence;
 using EffortlessLibrary.DTO;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EffortlessApi.Controllers
 {
@@ -26,6 +27,7 @@ namespace EffortlessApi.Controllers
             _mapper = mapper;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -47,6 +49,7 @@ namespace EffortlessApi.Controllers
             return Ok(companyDTOs.OrderBy(c => c.Id));
         }
 
+        [Authorize]
         [HttpGet("{id}", Name = "GetCompany")]
         public async Task<IActionResult> GetByIdAsync(long id)
         {
@@ -58,6 +61,7 @@ namespace EffortlessApi.Controllers
             return Ok(companyDTO);
         }
 
+        [Authorize]
         [HttpGet("{id}/departments")]
         public async Task<IActionResult> GetDepartmentsAsync(long id)
         {
@@ -76,6 +80,7 @@ namespace EffortlessApi.Controllers
             return Ok(departmentDTOs.OrderBy(d => d.Id));
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] CompanyDTO companyDTO)
         {
@@ -98,6 +103,7 @@ namespace EffortlessApi.Controllers
             return CreatedAtRoute("GetCompany", new { id = companyDTO.Id }, companyDTO);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(long id, CompanyDTO companyDTO)
         {
@@ -121,6 +127,7 @@ namespace EffortlessApi.Controllers
             return Ok(companyDTO);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(long id)
         {

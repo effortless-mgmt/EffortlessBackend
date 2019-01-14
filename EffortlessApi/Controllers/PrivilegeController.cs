@@ -6,6 +6,7 @@ using EffortlessApi.Core;
 using EffortlessApi.Core.Models;
 using EffortlessApi.Persistence;
 using EffortlessLibrary.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EffortlessApi.Controllers
@@ -22,6 +23,7 @@ namespace EffortlessApi.Controllers
             _mapper = mapper;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -33,6 +35,7 @@ namespace EffortlessApi.Controllers
             return Ok(privilegeDTOs.OrderBy(p => p.Id));
         }
 
+        [Authorize]
         [HttpGet("{id}", Name = "GetPrivilege")]
         public async Task<IActionResult> GetByIdAsync(long id)
         {
@@ -44,6 +47,7 @@ namespace EffortlessApi.Controllers
             return Ok(privilegeDTO);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] PrivilegeDTO privilegeDTO)
         {
@@ -58,6 +62,7 @@ namespace EffortlessApi.Controllers
             return CreatedAtRoute("GetPrivilege", new { id = privilegeDTO.Id }, privilegeDTO);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(long id, [FromBody] PrivilegeDTO privilegeDTO)
         {
@@ -73,6 +78,7 @@ namespace EffortlessApi.Controllers
             return Ok(privilegeDTO);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(long id)
         {
