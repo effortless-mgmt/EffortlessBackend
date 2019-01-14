@@ -15,5 +15,6 @@ namespace EffortlessLibrary.DTO
                 return FirstName + " " + LastName;
             }
         }
+        public int PrimaryRoleType { get; set; }
     }
 }

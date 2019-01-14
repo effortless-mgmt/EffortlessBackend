@@ -16,6 +16,7 @@ namespace EffortlessLibrary.DTO
         public AddressDTO Address { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
+        public int PrimaryRoleType { get; set; }
         [JsonIgnore]
         public virtual ICollection<UserRoleDTO> UserRoles { get; set; }
         [JsonIgnore]
