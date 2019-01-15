@@ -14,7 +14,6 @@ namespace EffortlessApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
     public class AppointmentController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -36,7 +35,18 @@ namespace EffortlessApi.Controllers
             UserStrippedDTO userDTO;
             List<AppointmentStrippedDTO> appointmentDTOs = new List<AppointmentStrippedDTO>();
 
-            var appointmentModels = await _unitOfWork.Appointments.GetAllAsync();
+            var currentUser = await _unitOfWork.Users.GetByUsernameAsync(User.Identity.Name);
+
+            // var appointmentModels = await _unitOfWork.Appointments.GetAllAsync();
+            IEnumerable<Appointment> appointmentModels = null;
+            if (currentUser.PrimaryRole == PrimaryRoleType.Booker) {
+                appointmentModels = await _unitOfWork.Appointments.GetAllAsync();
+            } else if (currentUser.PrimaryRole == PrimaryRoleType.Client) {
+                throw new NotImplementedException("There is no way to corelate a user to a company.");
+            } else if (currentUser.PrimaryRole == PrimaryRoleType.Substitute) {
+                appointmentModels = await _unitOfWork.Appointments.GetByUserIdAsync(currentUser.Id);
+            }
+            
             if (appointmentModels == null) return NotFound($"No appointments could be found");
 
             foreach (Appointment a in appointmentModels)
