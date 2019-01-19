@@ -80,7 +80,7 @@ namespace EffortlessApi.Controllers
                 }
             }
 
-            return Ok(availableAppointmentsAssignedToUser.OrderByDescending(a => a.Start));
+            return Ok(availableAppointmentsAssignedToUser.OrderBy(a => a.Start));
         }
 
         [Authorize]
