@@ -5,9 +5,11 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using EffortlessApi.Core;
 using EffortlessApi.Core.Models;
 using EffortlessApi.Persistence;
+using EffortlessLibrary.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -19,11 +21,13 @@ namespace EffortlessApi.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IJwtSettings _jwtSettings;
+        private readonly IMapper _mapper;
 
-        public AuthController(EffortlessContext context, IJwtSettings jwtSettings)
+        public AuthController(EffortlessContext context, IJwtSettings jwtSettings, IMapper mapper)
         {
             _unitOfWork = new UnitOfWork(context);
             _jwtSettings = jwtSettings;
+            _mapper = mapper;
         }
 
         private async Task<ClaimsIdentity> GetClaimsIdentityAsync(User user)
@@ -76,11 +80,15 @@ namespace EffortlessApi.Controllers
             {
                 return Forbid("Username or password is incorrect.");
             }
+            
+            fetchedUser.Password = null;
 
             var identity = await GetClaimsIdentityAsync(fetchedUser);
             var token = GetJwtToken(identity);
 
-            return Ok(new { User = fetchedUser, Token = token });
+            var userDto = _mapper.Map<UserDTO>(fetchedUser);
+
+            return Ok(new { User = userDto, Token = token });
         }
 
         [HttpGet("config"), Authorize(Roles = "admin")]
