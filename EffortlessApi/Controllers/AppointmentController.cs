@@ -87,6 +87,69 @@ namespace EffortlessApi.Controllers
         }
 
         [Authorize]
+        [HttpGet("unapproved/substitute")]
+        public async Task<IActionResult> GetUnapprovedBySubstituteAsync()
+        {
+            var currentUser = await _unitOfWork.Users.GetByUsernameAsync(User.Identity.Name);
+
+            var unapprovedAppointments = await _unitOfWork.Appointments.FindAsync(appointment => 
+                appointment.OwnerId == currentUser.Id &&
+                appointment.Stop < DateTime.Now &&
+                appointment.ApprovedByOwner == false
+            );
+
+            return Ok(_mapper.Map<IEnumerable<AppointmentUserDTO>>(unapprovedAppointments));
+        }
+
+        [Authorize]
+        [HttpPut("{id}/approve")]
+        public async Task<IActionResult> ApproveAppointmentAsync(int id)
+        {
+            var currentUser = await _unitOfWork.Users.GetByUsernameAsync(User.Identity.Name);
+            var appointmentTask = Task.Run(() => _unitOfWork.Appointments.GetByIdAsync(id));
+
+            if (currentUser.PrimaryRole == PrimaryRoleType.Client)
+            {
+                return Forbid("Clients cannot approve appointments. Please contact the administration and make them approve the wanted appointment.");
+            }
+
+            var appointment = await appointmentTask;
+            // var appointment = await _unitOfWork.Appointments.GetByIdAsync(id);
+
+            if (appointment == null) 
+            {
+                return NotFound();
+            }
+
+            if (appointment.OwnerId == null) 
+            {
+                return BadRequest("Appointments without an assigned user cannot be approved.");
+            }
+            
+            if (currentUser.PrimaryRole == PrimaryRoleType.Booker)
+            {
+                if (appointment.ApprovedByOwner == false) 
+                {
+                    return BadRequest($"Substitute {appointment.Owner.FirstName} {appointment.Owner.LastName} (id: {appointment.Owner.Id}) have not " +
+                    "yet approved the appointment. You cannot approve an appointment that the owner have not approved yet. Consider sending them a reminder.");
+                }
+
+                appointment.ApprovedBy = currentUser;
+                appointment.ApprovedByUserId = currentUser.Id;
+                appointment.ApprovedDate = DateTime.Now;
+            }
+            else if (currentUser.PrimaryRole == PrimaryRoleType.Substitute)
+            {
+                appointment.ApprovedByOwner = true;
+                appointment.ApprovedByOwnerDate = DateTime.Now;
+            }
+
+            await _unitOfWork.CompleteAsync();
+
+            return Ok(_mapper.Map<AppointmentUserDTO>(appointment));
+        }
+
+        [Authorize]
         [HttpGet("{id}", Name = "GetAppointment")]
         public async Task<IActionResult> GetByIdAsync(long id)
         {
