@@ -64,7 +64,14 @@ namespace EffortlessApi.Controllers
                 signingCredentials: signingCredentials
             );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            // Fix stupid Microsoft's bug. Apparently they don't right pad the base64 with '='
+            // characters. That means that the length of the base64 string is not 
+            var unpaddedToken = new JwtSecurityTokenHandler().WriteToken(token).Split(".");
+            var middlePartDecoded = unpaddedToken[1];
+            var paddedMiddlePart = middlePartDecoded.PadRight(middlePartDecoded.Length + (4 - middlePartDecoded.Length % 4) % 4, '=');
+
+            // return new JwtSecurityTokenHandler().WriteToken(token);
+            return $"{unpaddedToken[0]}.{paddedMiddlePart}.{unpaddedToken[2]}";
         }
 
         [HttpPost, Route("login")]
