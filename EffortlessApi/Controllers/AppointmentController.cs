@@ -161,6 +161,43 @@ namespace EffortlessApi.Controllers
         }
 
         [Authorize]
+        [HttpPut("{id}/claim")]
+        public async Task<IActionResult> ClaimAppointmentAsync(int id)
+        {
+            var currentUserTask = Task.Run(() => _unitOfWork.Users.GetByUsernameAsync(User.Identity.Name));
+            var appointment = await _unitOfWork.Appointments.GetByIdAsync(id);
+
+            if (appointment == null)
+            {
+                return NotFound();
+            }
+
+            var currentUser = await currentUserTask;
+
+            if (currentUser.PrimaryRole != PrimaryRoleType.Substitute)
+            {
+                return Forbid("Only substitutes can claim appointments.");
+            }
+
+            if (appointment.OwnerId != null)
+            {
+                return BadRequest("Appointment is already claimed by another user.");
+            }
+
+            if (appointment.Start < DateTime.Now)
+            {
+                return BadRequest("Cannot claim appointments in the past.");
+            }
+
+            appointment.Owner = currentUser;
+            appointment.OwnerId = currentUser.Id;
+
+            await _unitOfWork.CompleteAsync();
+
+            return Ok(_mapper.Map<AppointmentUserDTO>(appointment));
+        }
+
+        [Authorize]
         [HttpGet("{id}", Name = "GetAppointment")]
         public async Task<IActionResult> GetByIdAsync(long id)
         {
