@@ -65,15 +65,18 @@ namespace EffortlessApi.Controllers
             //     )
             // );
             
-            foreach (var appointment in availableAppointments)
+            // Loop through all future available appointments 
+            foreach (var appointment in availableAppointments.Where(app => app.Stop > DateTime.Now))
             {
                 var currentUser = await currentUserTask;
                 var workperiod = await _unitOfWork.WorkPeriods.GetByIdAsync(appointment.WorkPeriodId);
 
-                // A simply hack to make it work...
-                IEnumerable<UserWorkPeriod> userWorkPeriods = await _unitOfWork.UserWorkPeriods.FindAsync(uwp => uwp.WorkPeriodId == appointment.WorkPeriodId);
+                // A simple hack to make it work...
+                IEnumerable<UserWorkPeriod> userWorkPeriods = await _unitOfWork.UserWorkPeriods.FindAsync(
+                    uwp => uwp.WorkPeriodId == appointment.WorkPeriodId);
                 workperiod.UserWorkPeriods = new List<UserWorkPeriod>(userWorkPeriods);
 
+                // Add 
                 if (workperiod.AssignedUsers.Any(user => user.Id == currentUser.Id))
                 {
                     availableAppointmentsAssignedToUser.Add(_mapper.Map<AppointmentUserDTO>(appointment));
@@ -81,6 +84,117 @@ namespace EffortlessApi.Controllers
             }
 
             return Ok(availableAppointmentsAssignedToUser.OrderBy(a => a.Start));
+        }
+
+        [Authorize]
+        [HttpGet("unapproved/substitute")]
+        public async Task<IActionResult> GetUnapprovedBySubstituteAsync()
+        {
+            var currentUser = await _unitOfWork.Users.GetByUsernameAsync(User.Identity.Name);
+
+            var unapprovedAppointments = await _unitOfWork.Appointments.FindAsync(appointment => 
+                appointment.OwnerId == currentUser.Id &&
+                appointment.Stop < DateTime.Now &&
+                appointment.ApprovedByOwner == false
+            );
+
+            return Ok(_mapper.Map<IEnumerable<AppointmentUserDTO>>(unapprovedAppointments));
+        }
+
+        [Authorize]
+        [HttpPut("{id}/approve")]
+        public async Task<IActionResult> ApproveAppointmentAsync(int id)
+        {
+            var currentUser = await _unitOfWork.Users.GetByUsernameAsync(User.Identity.Name);
+            var appointmentTask = Task.Run(() => _unitOfWork.Appointments.GetByIdAsync(id));
+
+            if (currentUser.PrimaryRole == PrimaryRoleType.Client)
+            {
+                return Forbid("Clients cannot approve appointments. Please contact the administration and make them approve the wanted appointment.");
+            }
+
+            var appointment = await appointmentTask;
+            // var appointment = await _unitOfWork.Appointments.GetByIdAsync(id);
+
+            if (appointment == null) 
+            {
+                return NotFound();
+            }
+
+            if (appointment.OwnerId == null) 
+            {
+                return BadRequest("Appointments without an assigned user cannot be approved.");
+            }
+            
+            if (currentUser.PrimaryRole == PrimaryRoleType.Booker)
+            {
+                if (appointment.ApprovedByOwner == false) 
+                {
+                    return BadRequest($"Substitute {appointment.Owner.FirstName} {appointment.Owner.LastName} (id: {appointment.Owner.Id}) have not " +
+                    "yet approved the appointment. You cannot approve an appointment that the owner have not approved yet. Consider sending them a reminder.");
+                }
+
+                appointment.ApprovedBy = currentUser;
+                appointment.ApprovedByUserId = currentUser.Id;
+                appointment.ApprovedDate = DateTime.Now;
+            }
+            else if (currentUser.PrimaryRole == PrimaryRoleType.Substitute)
+            {
+                appointment.ApprovedByOwner = true;
+                appointment.ApprovedByOwnerDate = DateTime.Now;
+            }
+
+            await _unitOfWork.CompleteAsync();
+
+            return Ok(_mapper.Map<AppointmentUserDTO>(appointment));
+        }
+
+        [Authorize]
+        [HttpGet("upcoming")]
+        public async Task<IActionResult> GetUpcomingAsync()
+        {
+            var upcomingAppointments = await _unitOfWork.Appointments.FindAsync(appointment =>
+                appointment.Start > DateTime.Now
+            );
+
+            return Ok(_mapper.Map<IEnumerable<AppointmentUserDTO>>(upcomingAppointments));
+        }
+
+        [Authorize]
+        [HttpPut("{id}/claim")]
+        public async Task<IActionResult> ClaimAppointmentAsync(int id)
+        {
+            var currentUserTask = Task.Run(() => _unitOfWork.Users.GetByUsernameAsync(User.Identity.Name));
+            var appointment = await _unitOfWork.Appointments.GetByIdAsync(id);
+
+            if (appointment == null)
+            {
+                return NotFound();
+            }
+
+            var currentUser = await currentUserTask;
+
+            if (currentUser.PrimaryRole != PrimaryRoleType.Substitute)
+            {
+                return Forbid("Only substitutes can claim appointments.");
+            }
+
+            if (appointment.OwnerId != null)
+            {
+                return BadRequest("Appointment is already claimed by another user.");
+            }
+
+            if (appointment.Start < DateTime.Now)
+            {
+                return BadRequest("Cannot claim appointments in the past.");
+            }
+
+            appointment.Owner = currentUser;
+            appointment.OwnerId = currentUser.Id;
+
+            await _unitOfWork.CompleteAsync();
+
+            return Ok(_mapper.Map<AppointmentUserDTO>(appointment));
         }
 
         [Authorize]

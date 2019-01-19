@@ -63,7 +63,7 @@ namespace EffortlessApi.Controllers
                 expires: DateTime.Now.AddHours(12),
                 signingCredentials: signingCredentials
             );
-
+            
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
