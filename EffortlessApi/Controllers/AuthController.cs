@@ -59,7 +59,8 @@ namespace EffortlessApi.Controllers
                 issuer: _jwtSettings.Issuer,
                 // audience: "http://localhost:5000",
                 claims: identity.Claims,
-                expires: DateTime.Now.AddMinutes(5),
+                // expires: DateTime.Now.AddMinutes(5),
+                expires: DateTime.Now.AddHours(12),
                 signingCredentials: signingCredentials
             );
 
