@@ -10,7 +10,7 @@ namespace EffortlessLibrary.DTO
         public DateTime Stop { get; set; }
         public long Break { get; set; }
         [JsonIgnore]
-        public long OwnerId { get; set; }
+        public long? OwnerId { get; set; }
         public UserSimpleDTO Owner { get; set; }
         [JsonIgnore]
         public long WorkPeriodId { get; set; }

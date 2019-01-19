@@ -42,7 +42,10 @@ namespace EffortlessApi.Controllers
 
                 foreach (AppointmentWpDTO a in wp.Appointments)
                 {
-                    a.Owner = _mapper.Map<UserSimpleDTO>(await _unitOfWork.Users.GetByIdAsync(a.OwnerId));
+                    if (a.OwnerId != null)
+                    {
+                        a.Owner = _mapper.Map<UserSimpleDTO>(await _unitOfWork.Users.GetByIdAsync(a.OwnerId ?? 0));
+                    }
                 }
                 foreach (UserWorkPeriodDTO u in wp.UserWorkPeriods)
                 {
@@ -66,7 +69,10 @@ namespace EffortlessApi.Controllers
 
             foreach (AppointmentWpDTO a in workPeriodDTO.Appointments)
             {
-                a.Owner = _mapper.Map<UserSimpleDTO>(await _unitOfWork.Users.GetByIdAsync(a.OwnerId));
+                if(a.OwnerId != null)
+                {
+                    a.Owner = _mapper.Map<UserSimpleDTO>(await _unitOfWork.Users.GetByIdAsync(a.OwnerId ?? 0));
+                }
             }
 
             foreach (UserWorkPeriodDTO u in workPeriodDTO.UserWorkPeriods)

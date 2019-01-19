@@ -8,7 +8,7 @@ namespace EffortlessLibrary.DTO
         public DateTime Start { get; set; }
         public DateTime Stop { get; set; }
         public long Break { get; set; }
-        public long OwnerId { get; set; }
+        public long? OwnerId { get; set; }
         public long WorkPeriodId { get; set; }
     }
 }

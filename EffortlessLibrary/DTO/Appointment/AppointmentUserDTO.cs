@@ -9,8 +9,8 @@ namespace EffortlessLibrary.DTO
         public DateTime Start { get; set; }
         public DateTime Stop { get; set; }
         public long Break { get; set; }
+        public WorkPeriodUserAppointmentDTO WorkPeriod { get; set; }
         public TimeSpan BreakTimeSpan => new TimeSpan(Break);
-        [JsonIgnore]
         public bool ApprovedByOwner { get; set; }
         public DateTime ApprovedByOwnerDate { get; set; }
         public long ApprovedByUserId { get; set; }
