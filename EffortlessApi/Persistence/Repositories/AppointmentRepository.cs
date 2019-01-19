@@ -18,6 +18,17 @@ namespace EffortlessApi.Persistence.Repositories
             get { return _context as EffortlessContext; }
         }
 
+        public override async Task<IEnumerable<Appointment>> GetAllAsync()
+        {
+            return await _context.Set<Appointment>()
+                .Include(a => a.Owner)
+                .Include(a => a.WorkPeriod)
+                    .ThenInclude(wp => wp.Department)
+                    .ThenInclude(d => d.Address)
+                .Include(a => a.ApprovedBy)
+                .ToListAsync();
+        }
+
         public override async Task<Appointment> GetByIdAsync(long id)
         {
             return await _context.Set<Appointment>()
@@ -31,12 +42,22 @@ namespace EffortlessApi.Persistence.Repositories
             return await EffortlessContext.Appointments
                 .Where(a => a.WorkPeriodId == id)
                     .Include(a => a.Owner)
+                    .Include(a => a.WorkPeriod)
+                        .ThenInclude(wp => wp.Department)
+                        .ThenInclude(d => d.Address)
+                    .Include(a => a.ApprovedBy)
                     .ToListAsync();
 
         }
         public async Task<IEnumerable<Appointment>> GetByUserIdAsync(long ownerId)
         {
-            return await FindAsync(a => a.OwnerId == ownerId);
+            return await _context.Set<Appointment>()
+                    .Where(a => a.OwnerId == ownerId)
+                    .Include(a => a.WorkPeriod)
+                        .ThenInclude(wp => wp.Department)
+                        .ThenInclude(d => d.Address)
+                    .Include(a => a.ApprovedBy)
+                    .ToListAsync();
         }
 
         public override async Task UpdateAsync(Appointment newAppointment)

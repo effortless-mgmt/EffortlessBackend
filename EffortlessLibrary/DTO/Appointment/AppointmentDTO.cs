@@ -11,7 +11,7 @@ namespace EffortlessLibrary.DTO
         public long Break { get; set; }
         public TimeSpan BreakTimeSpan => new TimeSpan(Break);
         [JsonIgnore]
-        public long OwnerId { get; set; }
+        public long? OwnerId { get; set; }
         public virtual UserDTO Owner { get; set; }
         public long WorkPeriodId { get; set; }
         public WorkPeriodSimpleDTO WorkPeriod { get; set; }

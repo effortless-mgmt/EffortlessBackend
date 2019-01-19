@@ -26,16 +26,18 @@ namespace EffortlessApi.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync(int? roleId)
+        public async Task<IActionResult> GetAllAsync(long? roleId, PrimaryRoleType? primaryRole)
         {
             var userModels = await _unitOfWork.Users.GetAllAsync();
 
             if (roleId != null) 
             {
-                // Find all users with a specific role
-                var usersWithRole = await _unitOfWork.UserRoles.FindAsync(ur => ur.RoleId == roleId);
-
-                return Ok(usersWithRole.Select(ur => ur.User));
+                var userRoles = await _unitOfWork.UserRoles.FindAsync(ur => ur.RoleId == roleId);
+                userModels = userRoles.Select(ur => ur.User);
+            }
+            if (primaryRole != null) 
+            {
+                userModels = await _unitOfWork.Users.FindAsync(u => u.PrimaryRole == primaryRole);
             }
 
             if (userModels == null) return NotFound();
@@ -72,6 +74,7 @@ namespace EffortlessApi.Controllers
             if (existingUser != null) return Conflict($"Username \"{userDTO.UserName}\" is already taken.");
 
             var userModel = _mapper.Map<User>(userDTO);
+            // userModel.PrimaryRole = (PrimaryRoleType) userDTO.PrimaryRole;
             await _unitOfWork.Users.AddAsync(userModel);
             await _unitOfWork.CompleteAsync();
 

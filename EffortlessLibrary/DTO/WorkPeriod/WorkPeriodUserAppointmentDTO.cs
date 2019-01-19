@@ -11,8 +11,9 @@ namespace EffortlessLibrary.DTO
         public string Name { get; set; }
         [JsonIgnore]
         public long DepartmentId { get; set; }
-        public DepartmentDTO Department { get; set; }
+        public DepartmentSimpleDTO Department { get; set; }
         public IList<AppointmentUserDTO> Appointments { get; set; }
+        public AgreementDTO Agreement { get; set; }
         public DateTime Start { get; set; }
         public DateTime LastAppointmentDate
         {

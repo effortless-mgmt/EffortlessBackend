@@ -30,6 +30,7 @@ namespace EffortlessApi.Persistence.Repositories
         {
             return await _context.Set<WorkPeriod>()
                 .Include(wp => wp.UserWorkPeriods)
+                .Include(wp => wp.AssignedUsers)
                 .Include(wp => wp.Department).ThenInclude(d => d.Address)
                 .Include(wp => wp.Department.Company)
                 .Include(wp => wp.Agreement)

@@ -62,6 +62,10 @@ namespace EffortlessApi.Mapper
             CreateMap<User, UserStrippedDTO>();
             CreateMap<UserStrippedDTO, User>();
 
+            // PrimaryRoleType
+            CreateMap<PrimaryRoleType, PrimaryRoleTypeDTO>();
+            CreateMap<PrimaryRoleTypeDTO, PrimaryRoleType>();
+
             //UserRole
             CreateMap<UserRole, UserRoleDTO>();
             CreateMap<UserRoleDTO, UserRole>();

@@ -18,5 +18,6 @@ namespace EffortlessLibrary.DTO
         public AddressSimpleDTO Address { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
+        public PrimaryRoleTypeDTO PrimaryRole { get; set; }
     }
 }

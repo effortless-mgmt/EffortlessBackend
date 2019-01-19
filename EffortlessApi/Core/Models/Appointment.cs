@@ -14,7 +14,7 @@ namespace EffortlessApi.Core.Models
         public DateTime Stop { get; set; }
         public long Break { get; set; }
         public TimeSpan BreakTimeSpan => new TimeSpan(Break);
-        public long OwnerId { get; set; }
+        public long? OwnerId { get; set; }
         public virtual User Owner { get; set; }
         [Required]
         public long WorkPeriodId { get; set; }

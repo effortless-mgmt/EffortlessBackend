@@ -3,15 +3,17 @@ using System;
 using EffortlessApi.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace EffortlessApi.Migrations
 {
     [DbContext(typeof(EffortlessContext))]
-    partial class EffortlessContextModelSnapshot : ModelSnapshot
+    [Migration("20190115134812_primaryUserRole")]
+    partial class primaryUserRole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -100,7 +102,7 @@ namespace EffortlessApi.Migrations
 
                     b.Property<decimal>("Earnings");
 
-                    b.Property<long?>("OwnerId");
+                    b.Property<long>("OwnerId");
 
                     b.Property<DateTime>("Start");
 
@@ -328,7 +330,8 @@ namespace EffortlessApi.Migrations
 
                     b.HasOne("EffortlessApi.Core.Models.User", "Owner")
                         .WithMany()
-                        .HasForeignKey("OwnerId");
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("EffortlessApi.Core.Models.WorkPeriod", "WorkPeriod")
                         .WithMany()
