@@ -150,6 +150,17 @@ namespace EffortlessApi.Controllers
         }
 
         [Authorize]
+        [HttpGet("upcoming")]
+        public async Task<IActionResult> GetUpcomingAsync()
+        {
+            var upcomingAppointments = await _unitOfWork.Appointments.FindAsync(appointment =>
+                appointment.Start > DateTime.Now
+            );
+
+            return Ok(_mapper.Map<IEnumerable<AppointmentUserDTO>>(upcomingAppointments));
+        }
+
+        [Authorize]
         [HttpGet("{id}", Name = "GetAppointment")]
         public async Task<IActionResult> GetByIdAsync(long id)
         {
