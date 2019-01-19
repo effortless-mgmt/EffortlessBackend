@@ -65,15 +65,18 @@ namespace EffortlessApi.Controllers
             //     )
             // );
             
-            foreach (var appointment in availableAppointments)
+            // Loop through all future available appointments 
+            foreach (var appointment in availableAppointments.Where(app => app.Stop > DateTime.Now))
             {
                 var currentUser = await currentUserTask;
                 var workperiod = await _unitOfWork.WorkPeriods.GetByIdAsync(appointment.WorkPeriodId);
 
-                // A simply hack to make it work...
-                IEnumerable<UserWorkPeriod> userWorkPeriods = await _unitOfWork.UserWorkPeriods.FindAsync(uwp => uwp.WorkPeriodId == appointment.WorkPeriodId);
+                // A simple hack to make it work...
+                IEnumerable<UserWorkPeriod> userWorkPeriods = await _unitOfWork.UserWorkPeriods.FindAsync(
+                    uwp => uwp.WorkPeriodId == appointment.WorkPeriodId);
                 workperiod.UserWorkPeriods = new List<UserWorkPeriod>(userWorkPeriods);
 
+                // Add 
                 if (workperiod.AssignedUsers.Any(user => user.Id == currentUser.Id))
                 {
                     availableAppointmentsAssignedToUser.Add(_mapper.Map<AppointmentUserDTO>(appointment));
