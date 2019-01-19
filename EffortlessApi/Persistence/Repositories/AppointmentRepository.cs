@@ -72,12 +72,12 @@ namespace EffortlessApi.Persistence.Repositories
             oldAppointment.Start = newAppointment.Start;
             oldAppointment.Stop = newAppointment.Stop;
             oldAppointment.Break = newAppointment.Break;
-            oldAppointment.OwnerId = newAppointment.OwnerId;
-            oldAppointment.ApprovedByUserId = newAppointment.ApprovedByUserId;
-            oldAppointment.ApprovedDate = newAppointment.ApprovedDate;
-            oldAppointment.ApprovedByOwner = newAppointment.ApprovedByOwner;
-            oldAppointment.ApprovedByOwnerDate = newAppointment.ApprovedByOwnerDate;
-            oldAppointment.Earnings = newAppointment.Earnings;
+            // oldAppointment.OwnerId = newAppointment.OwnerId;
+            // oldAppointment.ApprovedByUserId = newAppointment.ApprovedByUserId;
+            // oldAppointment.ApprovedDate = newAppointment.ApprovedDate;
+            // oldAppointment.ApprovedByOwner = newAppointment.ApprovedByOwner;
+            // oldAppointment.ApprovedByOwnerDate = newAppointment.ApprovedByOwnerDate;
+            // oldAppointment.Earnings = newAppointment.Earnings;
 
             _context.Set<Appointment>().Update(oldAppointment);
         }
