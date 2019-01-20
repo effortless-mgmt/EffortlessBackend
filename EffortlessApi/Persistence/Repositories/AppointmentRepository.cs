@@ -27,6 +27,8 @@ namespace EffortlessApi.Persistence.Repositories
                 .Include(a => a.WorkPeriod)
                     .ThenInclude(wp => wp.Department)
                     .ThenInclude(d => d.Address)
+                .Include(a => a.WorkPeriod)
+                    .ThenInclude(wp => wp.Agreement)
                 .Include(a => a.ApprovedBy)
                 .ToListAsync();
         }
@@ -36,6 +38,10 @@ namespace EffortlessApi.Persistence.Repositories
             return await _context.Set<Appointment>()
                 .Include(a => a.Owner)
                 .Include(a => a.WorkPeriod)
+                    .ThenInclude(wp => wp.Department)
+                    .ThenInclude(d => d.Address)
+                .Include(a => a.WorkPeriod)
+                    .ThenInclude(wp => wp.Agreement)
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
 
@@ -46,6 +52,8 @@ namespace EffortlessApi.Persistence.Repositories
                 .Include(a => a.WorkPeriod)
                     .ThenInclude(wp => wp.Department)
                     .ThenInclude(d => d.Address)
+                .Include(a => a.WorkPeriod)
+                    .ThenInclude(wp => wp.Agreement)
                 .Include(a => a.ApprovedBy)
                 .ToListAsync();
         }
@@ -58,6 +66,8 @@ namespace EffortlessApi.Persistence.Repositories
                     .Include(a => a.WorkPeriod)
                         .ThenInclude(wp => wp.Department)
                         .ThenInclude(d => d.Address)
+                    .Include(a => a.WorkPeriod)
+                        .ThenInclude(wp => wp.Agreement)
                     .Include(a => a.ApprovedBy)
                     .ToListAsync();
 
@@ -69,6 +79,8 @@ namespace EffortlessApi.Persistence.Repositories
                     .Include(a => a.WorkPeriod)
                         .ThenInclude(wp => wp.Department)
                         .ThenInclude(d => d.Address)
+                    .Include(a => a.WorkPeriod)
+                        .ThenInclude(wp => wp.Agreement)
                     .Include(a => a.ApprovedBy)
                     .ToListAsync();
         }
