@@ -151,13 +151,24 @@ namespace EffortlessApi.Controllers
 
         [Authorize]
         [HttpGet("upcoming")]
-        public async Task<IActionResult> GetUpcomingAsync()
+        public async Task<IActionResult> GetUpcomingAsync(int? limit)
         {
+            var currentUser = await _unitOfWork.Users.GetByUsernameAsync(User.Identity.Name);
             var upcomingAppointments = await _unitOfWork.Appointments.FindAsync(appointment =>
-                appointment.Start > DateTime.Now
+                appointment.Start > DateTime.Now &&
+                appointment.OwnerId == currentUser.Id
             );
 
-            return Ok(_mapper.Map<IEnumerable<AppointmentUserDTO>>(upcomingAppointments).OrderBy(appointment => appointment.Start));
+            var appointments = _mapper.Map<IEnumerable<AppointmentUserDTO>>(upcomingAppointments).OrderBy(appointment => appointment.Start);
+
+            if (limit != null && limit > 0)
+            {
+                return Ok(appointments.Take(limit ?? 1));
+            }
+            else
+            {
+                return Ok(appointments);
+            }
         }
 
         [Authorize]
