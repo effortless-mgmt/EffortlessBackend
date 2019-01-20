@@ -107,5 +107,16 @@ namespace EffortlessApi.Persistence.Repositories
             _context.Set<Appointment>().Update(oldAppointment);
         }
 
+        public async Task<IEnumerable<Appointment>> FindNoOwnerAsync(Expression<Func<Appointment, bool>> predicate)
+        {
+            return await _context.Set<Appointment>()
+                .Where(predicate)
+                .Include(a => a.WorkPeriod)
+                    .ThenInclude(wp => wp.Department)
+                    .ThenInclude(d => d.Address)
+                .Include(a => a.WorkPeriod)
+                    .ThenInclude(wp => wp.Agreement)
+                .ToListAsync();
+        }
     }
 }

@@ -55,7 +55,7 @@ namespace EffortlessApi.Controllers
         {
             var currentUserTask = _unitOfWork.Users.GetByUsernameAsync(User.Identity.Name);
 
-            var availableAppointments = await _unitOfWork.Appointments.FindAsync(appointment => appointment.Owner == null);
+            var availableAppointments = await _unitOfWork.Appointments.FindNoOwnerAsync(appointment => appointment.Owner == null);
             var availableAppointmentsAssignedToUser = new List<AppointmentUserDTO>();
             
             // Following code could replace the foreach loop below
@@ -77,9 +77,16 @@ namespace EffortlessApi.Controllers
                 workperiod.UserWorkPeriods = new List<UserWorkPeriod>(userWorkPeriods);
 
                 // Add 
-                if (workperiod.AssignedUsers.Any(user => user.Id == currentUser.Id))
+                // if (workperiod.AssignedUsers.Any(user => user.Id == currentUser.Id))
+                // {
+                //     availableAppointmentsAssignedToUser.Add(_mapper.Map<AppointmentUserDTO>(appointment));
+                // }
+                foreach (var user in workperiod.AssignedUsers)
                 {
-                    availableAppointmentsAssignedToUser.Add(_mapper.Map<AppointmentUserDTO>(appointment));
+                    if (user != null && user.Id == currentUser.Id)
+                    {
+                        availableAppointmentsAssignedToUser.Add(_mapper.Map<AppointmentUserDTO>(appointment));
+                    }
                 }
             }
 
