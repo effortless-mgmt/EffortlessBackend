@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using EffortlessApi.Core.Models;
 using EffortlessApi.Core.Repositories;
@@ -35,6 +37,17 @@ namespace EffortlessApi.Persistence.Repositories
                 .Include(a => a.Owner)
                 .Include(a => a.WorkPeriod)
                 .FirstOrDefaultAsync(a => a.Id == id);
+        }
+
+        public async override Task<IEnumerable<Appointment>> FindAsync(Expression<Func<Appointment, bool>> predicate)
+        {
+            return await _context.Set<Appointment>()
+                .Where(predicate)
+                .Include(a => a.WorkPeriod)
+                    .ThenInclude(wp => wp.Department)
+                    .ThenInclude(d => d.Address)
+                .Include(a => a.ApprovedBy)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<Appointment>> GetByWorkPeriodId(long id)
