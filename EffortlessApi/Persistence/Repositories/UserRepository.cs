@@ -35,6 +35,7 @@ namespace EffortlessApi.Persistence.Repositories
             userToEdit.Password = newUser.Password ?? userToEdit.Password;
             userToEdit.Email = newUser.Email ?? userToEdit.Email;
             userToEdit.Phone = newUser.Phone ?? userToEdit.Phone;
+            userToEdit.ProfilePictureUrl = newUser.ProfilePictureUrl ?? userToEdit.ProfilePictureUrl;
 
             _context.Set<User>().Update(userToEdit);
         }
