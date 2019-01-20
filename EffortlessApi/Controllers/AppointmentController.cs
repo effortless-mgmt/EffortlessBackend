@@ -98,7 +98,7 @@ namespace EffortlessApi.Controllers
                 appointment.ApprovedByOwner == false
             );
 
-            return Ok(_mapper.Map<IEnumerable<AppointmentUserDTO>>(unapprovedAppointments));
+            return Ok(_mapper.Map<IEnumerable<AppointmentUserDTO>>(unapprovedAppointments).OrderBy(app => app.Start));
         }
 
         [Authorize]
@@ -157,7 +157,7 @@ namespace EffortlessApi.Controllers
                 appointment.Start > DateTime.Now
             );
 
-            return Ok(_mapper.Map<IEnumerable<AppointmentUserDTO>>(upcomingAppointments));
+            return Ok(_mapper.Map<IEnumerable<AppointmentUserDTO>>(upcomingAppointments).OrderBy(appointment => appointment.Start));
         }
 
         [Authorize]
