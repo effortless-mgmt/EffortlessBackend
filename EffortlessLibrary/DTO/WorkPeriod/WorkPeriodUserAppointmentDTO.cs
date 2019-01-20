@@ -9,6 +9,7 @@ namespace EffortlessLibrary.DTO
     {
         public long Id { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
         [JsonIgnore]
         public long DepartmentId { get; set; }
         public DepartmentSimpleDTO Department { get; set; }

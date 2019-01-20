@@ -11,6 +11,7 @@ namespace EffortlessApi.Core.Models
     {
         public long Id { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
         public virtual ICollection<UserWorkPeriod> UserWorkPeriods { get; set; }
         public virtual IList<User> AssignedUsers
         {
