@@ -45,6 +45,7 @@ namespace EffortlessApi.Persistence.Repositories
             workPeriodToEdit.AgreementId = newWorkPeriod.AgreementId;
             workPeriodToEdit.Name = newWorkPeriod.Name;
             workPeriodToEdit.Start = newWorkPeriod.Start;
+            workPeriodToEdit.Description = newWorkPeriod.Description;
 
             _context.Set<WorkPeriod>().Update(workPeriodToEdit);
         }

@@ -11,6 +11,7 @@ namespace EffortlessLibrary.DTO
         public string Name { get; set; }
         [JsonIgnore]
         public long AgreementId { get; set; }
+        public string Description { get; set; }
         public AgreementDTO Agreement { get; set; }
         [JsonIgnore]
         public ICollection<UserWorkPeriodDTO> UserWorkPeriods { get; set; }

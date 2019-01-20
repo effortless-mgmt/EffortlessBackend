@@ -19,6 +19,7 @@ namespace EffortlessApi.Core.Models
         public string LastName { get; set; }
         public long? AddressId { get; set; }
         public Address Address { get; set; }
+        public string ProfilePictureUrl { get; set; }
         public string Email { get; set; }
         [Required]
         public string Phone { get; set; }

@@ -3,15 +3,17 @@ using System;
 using EffortlessApi.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace EffortlessApi.Migrations
 {
     [DbContext(typeof(EffortlessContext))]
-    partial class EffortlessContextModelSnapshot : ModelSnapshot
+    [Migration("20190120133512_UserProfilePicture")]
+    partial class UserProfilePicture
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -302,8 +304,6 @@ namespace EffortlessApi.Migrations
                     b.Property<long>("AgreementId");
 
                     b.Property<long>("DepartmentId");
-
-                    b.Property<string>("Description");
 
                     b.Property<DateTime>("LastAppointment");
 

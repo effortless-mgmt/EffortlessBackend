@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EffortlessApi.Core.Models
 {
@@ -17,23 +18,26 @@ namespace EffortlessApi.Core.Models
         public int ZipCode { get; set; }
         [Required]
         public string Country { get; set; }
-
-        public override string ToString()
+        [NotMapped]        
+        public string ReadableAddress
         {
-            if (this.Side == null && this.Floor == null)
+            get
             {
-                return $"{this.Street} {this.No}\n{this.ZipCode} {this.City}\n{this.Country}";
-            }
-            else if (this.Side == null)
-            {
-                return $"{this.Street} {this.No}, {this.Floor}\n{this.ZipCode} {this.City}\n{this.Country}";
-            }
-            else if (this.Floor == null)
-            {
-                return $"{this.Street} {this.No}, {this.Side}\n{this.ZipCode} {this.City}\n{this.Country}";
-            }
+                if (this.Side == null && this.Floor == null)
+                {
+                    return $"{this.Street} {this.No}\n{this.ZipCode} {this.City}\n{this.Country}";
+                }
+                else if (this.Side == null)
+                {
+                    return $"{this.Street} {this.No}, {this.Floor}\n{this.ZipCode} {this.City}\n{this.Country}";
+                }
+                else if (this.Floor == null)
+                {
+                    return $"{this.Street} {this.No}, {this.Side}\n{this.ZipCode} {this.City}\n{this.Country}";
+                }
 
-            return $"{this.Street} {this.No}, {this.Floor}{this.Side}\n{this.ZipCode} {this.City}\n{this.Country}";
+                return $"{this.Street} {this.No}, {this.Floor}{this.Side}\n{this.ZipCode} {this.City}\n{this.Country}";
+            }
         }
     }
 }
