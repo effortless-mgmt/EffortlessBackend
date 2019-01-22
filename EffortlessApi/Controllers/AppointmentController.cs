@@ -110,7 +110,7 @@ namespace EffortlessApi.Controllers
 
         [Authorize]
         [HttpPut("{id}/approve")]
-        public async Task<IActionResult> ApproveAppointmentAsync(int id, AppointmentInDTO appointmentDtoToApprove)
+        public async Task<IActionResult> ApproveAppointmentAsync(int id)
         {
             var currentUser = await _unitOfWork.Users.GetByUsernameAsync(User.Identity.Name);
             var appointmentTask = Task.Run(() => _unitOfWork.Appointments.GetByIdAsync(id));
@@ -149,12 +149,6 @@ namespace EffortlessApi.Controllers
             {
                 appointment.ApprovedByOwner = true;
                 appointment.ApprovedByOwnerDate = DateTime.Now;
-
-                if (appointmentDtoToApprove != null)
-                {
-                    var appointmentToApprove = _mapper.Map<Appointment>(appointmentDtoToApprove);
-                    await _unitOfWork.Appointments.UpdateAsync(id, appointmentToApprove);
-                }
             }
 
             await _unitOfWork.CompleteAsync();
