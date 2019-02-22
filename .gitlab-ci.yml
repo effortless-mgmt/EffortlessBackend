@@ -11,7 +11,7 @@ deploy_staging:
   script:
     - echo "Deploy to staging server"
     - pwd && ls
-    - git remote add staging ssh://gitlab@staging.effortless.dk:22022/srv/git/EffortlessBackend.git
+    - git remote add staging ssh://gitlab@2001:878:25a:ff00::c8:22022/srv/git/EffortlessBackend.git
     - git push staging master
   environment:
     name: staging
