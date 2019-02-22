@@ -1,0 +1,21 @@
+stages:
+  - deploy
+deploy_staging:
+  stage: deploy
+  script:
+    - echo "Deploy to staging server"
+  environment:
+    name: staging
+    url: https://staging.effortless.dk
+  only: 
+  - master
+deploy_production:
+  stage: deploy
+  script:
+    - echo "Deploying to master server..."
+  environment:
+    name: production
+    url: https://effortless.dk
+  when: manual
+  only:
+  - master
