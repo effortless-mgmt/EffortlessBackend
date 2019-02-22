@@ -10,7 +10,8 @@ deploy_staging:
   stage: deploy
   script:
     - echo "Deploy to staging server"
-    - git remote set-url staging ssh://staging.effortless.dk:22022/srv/git/EffortlessBackend.git
+    - pwd && ls
+    - git remote add staging ssh://staging.effortless.dk:22022/srv/git/EffortlessBackend.git
     - git push staging master
   environment:
     name: staging
@@ -21,7 +22,7 @@ deploy_production:
   stage: deploy
   script:
     - echo "Deploying to master server..."
-    - git remote set-url production ssh://api.effortless.dk:22022/srv/git/EffortlessBackend.git
+    - git remote add production ssh://api.effortless.dk:22022/srv/git/EffortlessBackend.git
     - git push production master
   environment:
     name: production
