@@ -30,12 +30,12 @@ namespace EffortlessApi.Controllers
         {
             var userModels = await _unitOfWork.Users.GetAllAsync();
 
-            if (roleId != null) 
+            if (roleId != null)
             {
                 var userRoles = await _unitOfWork.UserRoles.FindAsync(ur => ur.RoleId == roleId);
                 userModels = userRoles.Select(ur => ur.User);
             }
-            if (primaryRole != null) 
+            if (primaryRole != null)
             {
                 userModels = await _unitOfWork.Users.FindAsync(u => u.PrimaryRole == primaryRole);
             }
@@ -89,17 +89,6 @@ namespace EffortlessApi.Controllers
         {
             var existing = await _unitOfWork.Users.GetByUsernameAsync(userName);
             if (existing == null) return NotFound($"User {userName} could not be found.");
-
-            if (userDTO.Address != null)
-            {
-                var userAddressModel = _mapper.Map<Address>(userDTO.Address);
-                await _unitOfWork.Addresses.AddAsync(userAddressModel);
-                await _unitOfWork.CompleteAsync();
-
-                userDTO.AddressId = userAddressModel.Id;
-            }
-
-            var addressModel = _mapper.Map<Address>(await _unitOfWork.Addresses.GetByIdAsync(userDTO.AddressId));
             var userModel = _mapper.Map<User>(userDTO);
             await _unitOfWork.Users.UpdateAsync(userName, userModel);
             await _unitOfWork.CompleteAsync();

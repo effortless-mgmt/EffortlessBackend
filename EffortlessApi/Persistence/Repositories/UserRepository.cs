@@ -31,7 +31,7 @@ namespace EffortlessApi.Persistence.Repositories
 
             userToEdit.FirstName = newUser.FirstName ?? userToEdit.FirstName;
             userToEdit.LastName = newUser.LastName ?? userToEdit.LastName;
-            userToEdit.LastName = newUser.LastName ?? userToEdit.LastName;
+            userToEdit.Address = newUser.Address ?? userToEdit.Address;
             userToEdit.Password = newUser.Password ?? userToEdit.Password;
             userToEdit.Email = newUser.Email ?? userToEdit.Email;
             userToEdit.Phone = newUser.Phone ?? userToEdit.Phone;
