@@ -30,6 +30,7 @@ namespace EffortlessApi.Controllers
         {
             var userModels = await _unitOfWork.Users.GetAllAsync();
 
+            if (userModels == null) return NotFound();
             if (roleId != null)
             {
                 var userRoles = await _unitOfWork.UserRoles.FindAsync(ur => ur.RoleId == roleId);
@@ -40,15 +41,7 @@ namespace EffortlessApi.Controllers
                 userModels = await _unitOfWork.Users.FindAsync(u => u.PrimaryRole == primaryRole);
             }
 
-            if (userModels == null) return NotFound();
-
-            var userDTOs = _mapper.Map<List<UserSimpleDTO>>(userModels);
-
-            foreach (UserSimpleDTO u in userDTOs)
-            {
-                if (u.AddressId != 0)
-                    u.Address = _mapper.Map<AddressSimpleDTO>(await _unitOfWork.Addresses.GetByIdAsync(u.AddressId));
-            }
+            var userDTOs = _mapper.Map<List<UserDTO>>(userModels);
 
             return Ok(userDTOs.OrderBy(u => u.UserName));
         }
@@ -74,7 +67,7 @@ namespace EffortlessApi.Controllers
             if (existingUser != null) return Conflict($"Username \"{userDTO.UserName}\" is already taken.");
 
             var userModel = _mapper.Map<User>(userDTO);
-            // userModel.PrimaryRole = (PrimaryRoleType) userDTO.PrimaryRole;
+            // userModel.PrimaryRole = (PrimaryRoleType) userDTO.PrimaryRogitle;
             await _unitOfWork.Users.AddAsync(userModel);
             await _unitOfWork.CompleteAsync();
 

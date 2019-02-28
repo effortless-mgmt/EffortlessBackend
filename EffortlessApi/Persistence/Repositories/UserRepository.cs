@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using EffortlessApi.Core.Models;
 using EffortlessApi.Core.Repositories;
@@ -12,6 +13,12 @@ namespace EffortlessApi.Persistence.Repositories
         public EffortlessContext EffortlessContext
         {
             get { return _context as EffortlessContext; }
+        }
+
+
+        public override async Task<IEnumerable<User>> GetAllAsync()
+        {
+            return await _context.Set<User>().Include(u => u.Address).ToListAsync();
         }
 
         public async Task<User> GetByUsernameAsync(string userName)
