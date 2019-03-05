@@ -26,7 +26,7 @@ namespace EffortlessApi.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync(bool? today)
         {
             var workPeriodModels = await _unitOfWork.WorkPeriods.GetAllAsync();
             if (workPeriodModels == null) return NotFound();
@@ -38,8 +38,14 @@ namespace EffortlessApi.Controllers
                 wp.Agreement = _mapper.Map<AgreementDTO>(await _unitOfWork.Agreements.GetByIdAsync(wp.AgreementId));
                 wp.Department = _mapper.Map<DepartmentDTO>(await _unitOfWork.Departments.GetByIdAsync(wp.DepartmentId));
                 wp.UserWorkPeriods = _mapper.Map<List<UserWorkPeriodDTO>>(await _unitOfWork.UserWorkPeriods.FindAsync(u => u.WorkPeriodId == wp.Id));
-                wp.Appointments = _mapper.Map<List<AppointmentWpDTO>>(await _unitOfWork.Appointments.FindAsync(a => a.WorkPeriodId == wp.Id));
-
+                if (today != null)
+                {
+                    wp.Appointments = _mapper.Map<List<AppointmentWpDTO>>(await _unitOfWork.Appointments.GetByWorkPeriodId(wp.Id)).Where(a => a.Start.Date == System.DateTime.Today).OrderBy(a => a.Start).ToList();
+                }
+                else
+                {
+                    wp.Appointments = _mapper.Map<List<AppointmentWpDTO>>(await _unitOfWork.Appointments.FindAsync(a => a.WorkPeriodId == wp.Id));
+                }
                 foreach (AppointmentWpDTO a in wp.Appointments)
                 {
                     if (a.OwnerId != null)
@@ -52,7 +58,11 @@ namespace EffortlessApi.Controllers
                     u.User = _mapper.Map<UserSimpleDTO>(await _unitOfWork.Users.GetByIdAsync(u.UserId));
                 }
             }
-
+            if (today != null)
+            {
+                var workPeriodsToday = workPeriodDTOs.Where(wp => wp.Appointments.Count > 0).OrderBy(wp => wp.Start).ToList();
+                return Ok(workPeriodsToday);
+            }
             return Ok(workPeriodDTOs);
         }
 
@@ -69,7 +79,7 @@ namespace EffortlessApi.Controllers
 
             foreach (AppointmentWpDTO a in workPeriodDTO.Appointments)
             {
-                if(a.OwnerId != null)
+                if (a.OwnerId != null)
                 {
                     a.Owner = _mapper.Map<UserSimpleDTO>(await _unitOfWork.Users.GetByIdAsync(a.OwnerId ?? 0));
                 }
