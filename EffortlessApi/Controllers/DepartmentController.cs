@@ -61,15 +61,22 @@ namespace EffortlessApi.Controllers
 
         [Authorize]
         [HttpGet("{id}/workperiod")]
-        public async Task<IActionResult> GetWorkPeriodsById(long id)
+        public async Task<IActionResult> GetWorkPeriodsById(long id, bool? today)
         {
             var departmentModel = await _unitOfWork.Departments.GetByIdAsync(id);
-            if (departmentModel == null) return NotFound($"Department {departmentModel.Name} does not have any work periods.");
+            if (departmentModel == null) return NotFound($"Department {departmentModel.Name} does not exist.");
 
             var workPeriodDTOs = _mapper.Map<List<WorkPeriodOutDTO>>(await _unitOfWork.WorkPeriods.GetByDepartmentIdAsync(id));
             foreach (WorkPeriodOutDTO wp in workPeriodDTOs)
             {
-                wp.Appointments = _mapper.Map<List<AppointmentWpDTO>>(await _unitOfWork.Appointments.GetByWorkPeriodId(wp.Id));
+                if (today != null)
+                {
+                    wp.Appointments = _mapper.Map<List<AppointmentWpDTO>>(await _unitOfWork.Appointments.GetByWorkPeriodId(wp.Id)).Where(a => a.Start.Date == System.DateTime.Today).OrderBy(a => a.Start).ToList();
+                }
+                else
+                {
+                    wp.Appointments = _mapper.Map<List<AppointmentWpDTO>>(await _unitOfWork.Appointments.GetByWorkPeriodId(wp.Id));
+                }
                 wp.UserWorkPeriods = _mapper.Map<List<UserWorkPeriodDTO>>(await _unitOfWork.UserWorkPeriods.GetByWorkPeriodId(wp.Id));
 
                 foreach (UserWorkPeriodDTO u in wp.UserWorkPeriods)
@@ -78,6 +85,11 @@ namespace EffortlessApi.Controllers
                 }
             }
 
+            if (today != null)
+            {
+                var todaysWorkPeriods = workPeriodDTOs.Where(wp => wp.Appointments.Count > 0).ToList();
+                return Ok(todaysWorkPeriods);
+            }
             return Ok(workPeriodDTOs);
         }
 
